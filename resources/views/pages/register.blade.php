@@ -55,39 +55,53 @@
                 </div>
 
                 <!-- Form -->
-                <form class="space-y-5">
+                <form method="POST" action="{{ route('register.post') }}" class="space-y-5">
+                    @csrf
+
                     <!-- Name -->
                     <div>
                         <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
-                        <input id="name" type="text" placeholder="Nama lengkap kamu"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        <input id="name" name="name" type="text" placeholder="Nama lengkap kamu"
+                            value="{{ old('name') }}"
+                            class="w-full px-4 py-3 bg-gray-50 border @error('name') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        @error('name')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Email -->
                     <div>
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-                        <input id="email" type="email" placeholder="nama@email.com"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        <input id="email" name="email" type="email" placeholder="nama@email.com"
+                            value="{{ old('email') }}"
+                            class="w-full px-4 py-3 bg-gray-50 border @error('email') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        @error('email')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Password -->
                     <div>
                         <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-                        <input id="password" type="password" placeholder="Minimal 8 karakter"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        <input id="password" name="password" type="password" placeholder="Minimal 8 karakter"
+                            class="w-full px-4 py-3 bg-gray-50 border @error('password') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        @error('password')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Confirm Password -->
                     <div>
                         <label for="password_confirmation"
                             class="block text-sm font-semibold text-gray-700 mb-1">Konfirmasi Password</label>
-                        <input id="password_confirmation" type="password" placeholder="Ulangi password kamu"
+                        <input id="password_confirmation" name="password_confirmation" type="password"
+                            placeholder="Ulangi password kamu"
                             class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
                     </div>
 
                     <!-- Terms -->
                     <div class="flex items-start gap-3">
-                        <input id="terms" type="checkbox"
+                        <input id="terms" name="terms" type="checkbox"
                             class="mt-1 w-4 h-4 accent-pink-500 rounded border-gray-300 cursor-pointer" />
                         <label for="terms" class="text-sm text-gray-500 leading-relaxed">
                             Saya menyetujui
@@ -97,6 +111,9 @@
                             Salonkita.
                         </label>
                     </div>
+                    @error('terms')
+                        <p class="text-xs text-red-500">{{ $message }}</p>
+                    @enderror
 
                     <!-- Submit -->
                     <button type="submit"

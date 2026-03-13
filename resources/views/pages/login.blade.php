@@ -55,12 +55,18 @@
                 </div>
 
                 <!-- Form -->
-                <form class="space-y-5">
+                <form method="POST" action="{{ route('login.post') }}" class="space-y-5">
+                    @csrf
+
                     <!-- Email -->
                     <div>
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-                        <input id="email" type="email" placeholder="nama@email.com"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        <input id="email" name="email" type="email" placeholder="nama@email.com"
+                            value="{{ old('email') }}"
+                            class="w-full px-4 py-3 bg-gray-50 border @error('email') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        @error('email')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Password -->
@@ -69,8 +75,11 @@
                             <label for="password" class="block text-sm font-semibold text-gray-700">Password</label>
                             <a href="#" class="text-xs text-pink-500 hover:text-pink-600 font-medium">Lupa password?</a>
                         </div>
-                        <input id="password" type="password" placeholder="Masukkan password"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        <input id="password" name="password" type="password" placeholder="Masukkan password"
+                            class="w-full px-4 py-3 bg-gray-50 border @error('password') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                        @error('password')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Submit -->
