@@ -109,7 +109,7 @@
                             <div class="flex items-center justify-between">
                                 <span class="text-xl font-bold text-pink-500">Rp
                                     {{ number_format((int) $course->price, 0, ',', '.') }}</span>
-                                <a href="{{ route('course') }}"
+                                <a href="{{ route('course', ['slug' => $course->slug]) }}"
                                     class="px-3 py-1.5 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition">
                                     Lihat Detail
                                 </a>
@@ -180,7 +180,7 @@
                             <div class="flex items-center justify-between">
                                 <span class="text-xl font-bold text-pink-500">Rp
                                     {{ number_format((int) $course->price, 0, ',', '.') }}</span>
-                                <a href="{{ route('course') }}"
+                                <a href="{{ route('course', ['slug' => $course->slug]) }}"
                                     class="px-3 py-1.5 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition">
                                     Lihat Detail
                                 </a>

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Courses\RelationManagers;
 
+use App\Support\Youtube;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -61,9 +62,15 @@ class SectionsRelationManager extends RelationManager
                             ->required()
                             ->maxLength(255),
                         TextInput::make('video_url')
-                            ->label('Video URL')
-                            ->url()
-                            ->required(),
+                            ->label('YouTube URL / ID')
+                            ->required()
+                            ->placeholder('https://www.youtube.com/watch?v=XXXXXXXXXXX atau XXXXXXX')
+                            ->helperText('Sistem akan simpan hanya ID video YouTube (11 karakter).')
+                            ->rule('regex:/^(?:[A-Za-z0-9_-]{11}|(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&?][^\s]*)?)$/i')
+                            ->validationMessages([
+                                'regex' => 'Masukkan URL YouTube valid atau ID video YouTube (11 karakter).',
+                            ])
+                            ->dehydrateStateUsing(fn (?string $state): ?string => Youtube::extractId($state)),
                         TextInput::make('duration_seconds')
                             ->label('Duration (mm:ss)')
                             ->required()

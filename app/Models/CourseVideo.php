@@ -22,4 +22,13 @@ class CourseVideo extends Model
     {
         return $this->belongsTo(CourseSection::class, 'course_section_id');
     }
+
+    public function getDurationLabelAttribute(): string
+    {
+        $seconds = max(0, (int) $this->duration_seconds);
+        $minutes = intdiv($seconds, 60);
+        $remainingSeconds = $seconds % 60;
+
+        return sprintf('%02d:%02d', $minutes, $remainingSeconds);
+    }
 }

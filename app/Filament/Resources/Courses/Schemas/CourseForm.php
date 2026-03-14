@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Courses\Schemas;
 
+use App\Support\Youtube;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -50,7 +51,14 @@ class CourseForm
                                 ->default(false)
                                 ->required(),
                             TextInput::make('introduction_video_url')
-                                ->url(),
+                                ->label('Introduction Video (YouTube URL / ID)')
+                                ->placeholder('https://www.youtube.com/watch?v=XXXXXXXXXXX atau XXXXXXX')
+                                ->helperText('Admin boleh isi URL YouTube lengkap atau langsung ID. Sistem akan simpan ID unik.')
+                                ->rule('regex:/^(?:[A-Za-z0-9_-]{11}|(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&?][^\s]*)?)$/i')
+                                ->validationMessages([
+                                    'regex' => 'Masukkan URL YouTube valid atau ID video YouTube (11 karakter).',
+                                ])
+                                ->dehydrateStateUsing(fn (?string $state): ?string => Youtube::extractId($state)),
                         ])
                         ->columns(2),
 

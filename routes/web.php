@@ -10,7 +10,7 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 
-Route::get('/course', [HomeController::class, 'course'])->name('course');
+Route::get('/course/{slug?}', [HomeController::class, 'course'])->name('course');
 
 Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
 

@@ -6,7 +6,7 @@
                 <!-- Footer Brand -->
                 <div>
                     <div class="mb-4">
-                        <img src="assets/images/logos/logo_skid.webp" alt="Salonkita Logo"
+                        <img src="{{ asset('assets/images/logos/logo_skid.webp') }}" alt="Salonkita Logo"
                             class="w-8 h-8 rounded-lg object-contain">
                     </div>
                     <p class="text-gray-400 text-sm">Belajar Beauty Skill Profesional dari Rumah dengan Instruktur

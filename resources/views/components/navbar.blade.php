@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <a href="/" class="flex items-center">
                     <div class="flex items-center gap-2">
-                        <img src="assets/images/logos/logo_skid.webp" alt="Salonkita Logo"
+                        <img src="{{ asset('assets/images/logos/logo_skid.webp') }}" alt="Salonkita Logo"
                             class="w-20 h-20 rounded-lg object-contain">
                     </div>
                 </a>

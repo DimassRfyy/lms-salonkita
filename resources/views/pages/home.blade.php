@@ -1,64 +1,5 @@
 <x-layout>
-    <!-- NAVBAR -->
-    <nav class="sticky top-0 z-50 bg-white border-b border-pink-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <div class="flex items-center gap-2">
-                        <img src="assets/images/logos/logo_skid.webp" alt="Salonkita Logo"
-                            class="w-20 h-20 rounded-lg object-contain">
-                    </div>
-                </div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center gap-6">
-                    <button class="px-6 py-2 text-gray-700 font-medium hover:text-pink-500 transition">
-                        Masuk
-                    </button>
-                    <button
-                        class="px-6 py-2 bg-pink-500 text-white font-medium rounded-lg hover:bg-pink-600 transition">
-                        Daftar
-                    </button>
-
-                    <!-- Language Dropdown -->
-                    <div class="relative group">
-                        <button class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-pink-500">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
-                                </path>
-                            </svg>
-                            <span>ID</span>
-                        </button>
-                        <div
-                            class="hidden group-hover:block absolute right-0 mt-2 w-32 bg-white border border-pink-200 rounded-lg shadow-lg">
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-pink-50 first:rounded-t-lg">Bahasa
-                                Indonesia</a>
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-pink-50">English</a>
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-pink-50 last:rounded-b-lg">中文</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center gap-4">
-                    <button class="md:hidden" onclick="toggleMobileMenu()">
-                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="hidden md:hidden pb-4">
-                <button class="block w-full text-left px-4 py-2 text-gray-700 hover:text-pink-500">Masuk</button>
-                <button class="block w-full text-left px-4 py-2 text-gray-700 hover:text-pink-500">Daftar</button>
-            </div>
-        </div>
-    </nav>
+    <x-navbar />
 
     <!-- BANNER UTAMA -->
     <section class="py-12 md:py-20 px-4 sm:px-6 lg:px-12 bg-gradient-to-br from-pink-50 to-white">
@@ -234,7 +175,7 @@
                             <div class="flex items-center justify-between gap-3">
                                 <span class="text-xl font-bold text-pink-500">Rp
                                     {{ number_format((int) $course->price, 0, ',', '.') }}</span>
-                                <a href="{{ route('course') }}"
+                                <a href="{{ route('course', ['slug' => $course->slug]) }}"
                                     class="px-3 py-1.5 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition">
                                     Lihat Detail
                                 </a>
