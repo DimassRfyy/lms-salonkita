@@ -16,51 +16,71 @@
         <section class="mb-12">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Lanjutkan Menonton</h2>
 
-            <div
-                class="bg-white rounded-xl overflow-hidden shadow-md border border-pink-100 hover:shadow-lg transition">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
-                    <!-- Video Thumbnail -->
-                    <div class="h-48 md:h-auto bg-gradient-to-br from-pink-400 to-pink-300 relative overflow-hidden">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <button
-                                class="w-16 h-16 bg-white rounded-full flex items-center justify-center hover:scale-110 transition shadow-lg">
-                                <svg class="w-8 h-8 text-pink-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="md:col-span-2 p-6 md:p-8 flex flex-col justify-between">
-                        <div>
-                            <p class="text-sm text-pink-600 font-medium mb-2">Makeup Dasar</p>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">
-                                Teknik Foundation yang Sempurna
-                            </h3>
-                            <p class="text-gray-600 mb-4">
-                                Pelajari cara mengaplikasikan foundation dengan sempurna sesuai dengan jenis kulit Anda
-                            </p>
-
-                            <!-- Progress Bar -->
-                            <div class="mb-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm text-gray-600">Progress</span>
-                                    <span class="text-sm font-bold text-gray-900">65%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-pink-500 h-2 rounded-full" style="width: 65%"></div>
-                                </div>
+            @if($continueWatching)
+                <div
+                    class="bg-white rounded-xl overflow-hidden shadow-md border border-pink-100 hover:shadow-lg transition">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                        <!-- Video Thumbnail -->
+                        <div class="h-48 md:h-auto relative overflow-hidden">
+                            <img src="{{ $continueWatching->course->thumbnail ? Storage::url($continueWatching->course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
+                                alt="{{ $continueWatching->course->name }}"
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
+                                class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <a href="{{ $continueWatching->url }}"
+                                    class="w-16 h-16 bg-white rounded-full flex items-center justify-center hover:scale-110 transition shadow-lg"
+                                    aria-label="Lanjutkan video {{ $continueWatching->video->title }}">
+                                    <svg class="w-8 h-8 text-pink-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"></path>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
 
-                        <button
-                            class="px-6 py-3 bg-pink-500 text-white font-bold rounded-lg hover:bg-pink-600 transition w-full md:w-auto">
-                            Lanjutkan Video
-                        </button>
+                        <!-- Content -->
+                        <div class="md:col-span-2 p-6 md:p-8 flex flex-col justify-between">
+                            <div>
+                                <p class="text-sm text-pink-600 font-medium mb-2">
+                                    {{ $continueWatching->course->category->name }}</p>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2">
+                                    {{ $continueWatching->video->title }}
+                                </h3>
+                                <p class="text-gray-600 mb-4">
+                                    {{ \Illuminate\Support\Str::limit($continueWatching->course->description, 120) }}
+                                </p>
+
+                                <!-- Progress Bar -->
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm text-gray-600">Progress</span>
+                                        <span
+                                            class="text-sm font-bold text-gray-900">{{ $continueWatching->progress_label }}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-pink-500 h-2 rounded-full"
+                                            style="width: {{ $continueWatching->progress_percentage }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <a href="{{ $continueWatching->url }}"
+                                class="inline-flex justify-center px-6 py-3 bg-pink-500 text-white font-bold rounded-lg hover:bg-pink-600 transition w-full md:w-auto">
+                                Lanjutkan Video
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="bg-white rounded-xl border border-pink-100 shadow-md p-6 md:p-8 text-center">
+                    <p class="text-gray-700 font-medium mb-2">Belum ada histori tonton</p>
+                    <p class="text-gray-500 mb-4">Mulai tonton kelas kamu, lalu progress akan muncul di sini.</p>
+                    <a href="{{ route('all-courses') }}"
+                        class="inline-flex items-center justify-center px-5 py-2.5 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition">
+                        Jelajahi Kelas
+                    </a>
+                </div>
+            @endif
         </section>
 
         <!-- RECOMMENDATIONS SECTION -->

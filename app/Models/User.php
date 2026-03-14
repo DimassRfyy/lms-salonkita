@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\CourseTaskSubmission;
+use App\Models\CourseVideoWatch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -79,5 +80,10 @@ class User extends Authenticatable
     public function courseTaskSubmissions(): HasMany
     {
         return $this->hasMany(CourseTaskSubmission::class);
+    }
+
+    public function courseVideoWatches(): HasMany
+    {
+        return $this->hasMany(CourseVideoWatch::class);
     }
 }

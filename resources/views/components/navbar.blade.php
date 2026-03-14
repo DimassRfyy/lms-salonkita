@@ -38,7 +38,8 @@
                         <!-- Profile Dropdown -->
                         <div class="relative group">
                             <div class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
-                                <div class="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center text-pink-700 font-bold text-sm">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center text-pink-700 font-bold text-sm">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
                                 <span class="hidden sm:inline font-medium text-gray-900">{{ auth()->user()->name }}</span>
@@ -66,7 +67,7 @@
                                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                         </path>
                                     </svg>
-                                    Kelas Saya
+                                    Dashboard Kelas
                                 </a>
                                 <a href="{{ route('task') }}"
                                     class="flex items-center gap-3 px-4 py-3 text-gray-900 hover:bg-gray-50 border-b">

@@ -7,6 +7,7 @@ use App\Models\CourseKeypoint;
 use App\Models\CourseReview;
 use App\Models\CourseSection;
 use App\Models\CourseTaskSubmission;
+use App\Models\CourseVideoWatch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
@@ -119,5 +120,10 @@ class Course extends Model
     {
         return $this->belongsToMany(User::class, 'course_user')
             ->withTimestamps();
+    }
+
+    public function videoWatches(): HasMany
+    {
+        return $this->hasMany(CourseVideoWatch::class);
     }
 }
