@@ -150,7 +150,9 @@
                     <div
                         class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition border border-pink-100">
                         <div class="relative h-40">
-                            <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->name }}"
+                            <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
+                                alt="{{ $course->name }}"
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
                             <div
                                 class="absolute top-2 right-2 flex items-center gap-1 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">

@@ -74,7 +74,9 @@
                         class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition border border-pink-100">
                         <!-- Thumbnail -->
                         <div class="relative h-40">
-                            <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->name }}"
+                            <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
+                                alt="{{ $course->name }}"
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
                             <!-- Rating top-right -->
                             <div
@@ -125,13 +127,13 @@
             </div>
         </section>
 
-        <!-- ALL CLASSES SECTION -->
+        <!-- OWNED CLASSES SECTION -->
         <section>
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Semua Kelas</h2>
+                <h2 class="text-2xl font-bold text-gray-900">Kelas Saya</h2>
                 <a href="{{ route('all-courses') }}"
                     class="text-pink-500 font-medium hover:text-pink-600 transition flex items-center gap-2">
-                    Lihat Semua
+                    Jelajahi Kelas
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -139,13 +141,15 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @forelse($allCourses as $course)
+                @forelse($ownedCourses as $course)
                     <!-- Course Card -->
                     <div
                         class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition border border-pink-100">
                         <!-- Thumbnail -->
                         <div class="relative h-40">
-                            <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->name }}"
+                            <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
+                                alt="{{ $course->name }}"
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
                             <!-- Rating top-right -->
                             <div
@@ -182,24 +186,16 @@
                                     {{ number_format((int) $course->price, 0, ',', '.') }}</span>
                                 <a href="{{ route('course', ['slug' => $course->slug]) }}"
                                     class="px-3 py-1.5 bg-pink-500 text-white text-sm font-medium rounded-lg hover:bg-pink-600 transition">
-                                    Lihat Detail
+                                    Buka Kelas
                                 </a>
                             </div>
                         </div>
                     </div>
                 @empty
                     <div class="md:col-span-2 lg:col-span-4 text-center py-8 text-gray-500">
-                        Belum ada kelas yang tersedia.
+                        Kamu belum punya kelas aktif. Beli kelas terlebih dahulu agar muncul di halaman ini.
                     </div>
                 @endforelse
-            </div>
-
-            <!-- Load More Button -->
-            <div class="text-center mt-8">
-                <button
-                    class="px-8 py-3 border-2 border-pink-500 text-pink-500 font-bold rounded-lg hover:bg-pink-50 transition">
-                    Muat Lebih Banyak
-                </button>
             </div>
         </section>
     </main>

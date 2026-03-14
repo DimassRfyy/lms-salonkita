@@ -8,6 +8,7 @@ use App\Models\CourseReview;
 use App\Models\CourseSection;
 use App\Models\CourseTaskSubmission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -107,5 +108,16 @@ class Course extends Model
     public function taskSubmissions(): HasMany
     {
         return $this->hasMany(CourseTaskSubmission::class)->orderBy('created_at');
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'course_user')
+            ->withTimestamps();
     }
 }

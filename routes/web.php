@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'home'])->name('home');
 
-Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 
 Route::get('/course/{slug?}', [HomeController::class, 'course'])->name('course');
 
@@ -34,3 +34,4 @@ Route::post('/logout', function () {
 })->name('logout')->middleware('auth');
 
 Route::get('/transaction', [HomeController::class, 'transaction'])->name('transaction')->middleware('auth');
+Route::post('/transaction', [HomeController::class, 'storeTransaction'])->name('transaction.store')->middleware('auth');

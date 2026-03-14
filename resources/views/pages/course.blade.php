@@ -102,6 +102,16 @@
             color: #f472b6;
         }
 
+        .video-item.locked {
+            color: #9ca3af;
+            background-color: #f9fafb;
+            cursor: not-allowed;
+        }
+
+        .video-item.locked .video-icon {
+            color: #9ca3af;
+        }
+
         .section-header {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -163,7 +173,7 @@
                                 <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
                                 </svg>
-                                <span>{{ $averageRating }} ({{ $course->reviews->count() }} ulasan)</span>
+                                <span>{{ $averageRating }} ({{ $course->reviews->count() }} ulasan) &bull; {{ number_format($studentsCount, 0, ',', '.') }} siswa</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
@@ -286,6 +296,15 @@
                     <div class="bg-white rounded-xl p-6 sticky top-24">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Daftar Kelas</h2>
 
+                        @if(! $hasCourseAccess)
+                            <div class="mb-4 bg-amber-50 border border-amber-200 text-amber-700 text-sm rounded-lg px-3 py-2 flex items-start gap-2">
+                                <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                <span>Video materi masih terkunci. Kamu hanya bisa menonton video perkenalan sampai membeli kelas ini.</span>
+                            </div>
+                        @endif
+
                         <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
                             @forelse($courseSections as $section)
 
@@ -302,19 +321,29 @@
 
                                     <div class="dropdown-content bg-gray-50 {{ $section->has_current_video ? 'active' : '' }}">
                                         @foreach($section->videos as $video)
-                                            <a href="{{ $video->url }}" class="video-item {{ $video->state_class }}">
-                                                @if($video->is_watched)
-                                                    <svg class="video-icon w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                                            @if($video->is_locked)
+                                                <div class="video-item locked">
+                                                    <svg class="video-icon w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                                     </svg>
-                                                @else
-                                                    <svg class="video-icon w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M8 5v14l11-7z"></path>
-                                                    </svg>
-                                                @endif
-                                                <span class="video-title">{{ $video->title }}</span>
-                                                <span class="video-duration">{{ $video->duration_label }}</span>
-                                            </a>
+                                                    <span class="video-title">{{ $video->title }}</span>
+                                                    <span class="video-duration">Terkunci</span>
+                                                </div>
+                                            @else
+                                                <a href="{{ $video->url }}" class="video-item {{ $video->state_class }}">
+                                                    @if($video->is_watched)
+                                                        <svg class="video-icon w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                                                        </svg>
+                                                    @else
+                                                        <svg class="video-icon w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M8 5v14l11-7z"></path>
+                                                        </svg>
+                                                    @endif
+                                                    <span class="video-title">{{ $video->title }}</span>
+                                                    <span class="video-duration">{{ $video->duration_label }}</span>
+                                                </a>
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>
@@ -323,9 +352,11 @@
                             @endforelse
                         </div>
 
-                        <button class="w-full bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
-                            Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
-                        </button>
+                        @if(! $hasCourseAccess)
+                            <a href="{{ route('transaction', ['course' => $course->slug]) }}" class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
+                                Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

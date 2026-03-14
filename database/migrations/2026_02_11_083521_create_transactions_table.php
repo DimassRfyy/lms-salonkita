@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('trx_id')->unique();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->string('payment_method');
+            $table->string('proof_of_payment')->nullable();
+            $table->boolean('is_paid')->default(false);
+            $table->unsignedBigInteger('price');
             $table->timestamps();
         });
     }

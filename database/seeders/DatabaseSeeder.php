@@ -96,7 +96,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 299000,
                 'rating' => 4.80,
                 'is_published' => true,
-                'introduction_video_url' => 'https://www.youtube.com/watch?v=example_makeup',
+                'introduction_video_url' => 'https://youtu.be/xlIo3NcG734?si=SICQ-9Is7d6MVp_E',
             ]
         );
 
@@ -110,7 +110,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 349000,
                 'rating' => 4.70,
                 'is_published' => true,
-                'introduction_video_url' => 'https://www.youtube.com/watch?v=example_hair',
+                'introduction_video_url' => 'https://youtu.be/xlIo3NcG734?si=SICQ-9Is7d6MVp_E',
             ]
         );
 
@@ -127,7 +127,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'course_section_id' => $section->id,
                     'title' => 'Video 1: Perkenalan Alat & Bahan',
-                    'video_url' => 'https://www.youtube.com/watch?v=video1_course' . ($index + 1),
+                    'video_url' => 'https://youtu.be/b2Hg1CbXTKo?si=Y_lYSaQfoiCSKHTC' . ($index + 1),
                     'duration_seconds' => 480,
                 ]
             );
@@ -137,7 +137,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'course_section_id' => $section->id,
                     'title' => 'Video 2: Teknik Dasar',
-                    'video_url' => 'https://www.youtube.com/watch?v=video2_course' . ($index + 1),
+                    'video_url' => 'https://youtu.be/b2Hg1CbXTKo?si=Y_lYSaQfoiCSKHTC' . ($index + 1),
                     'duration_seconds' => 720,
                 ]
             );

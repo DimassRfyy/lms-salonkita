@@ -18,10 +18,23 @@
 
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Pembayaran</h1>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <form method="POST" action="{{ url('/transaction') }}" enctype="multipart/form-data"
+            class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            @csrf
+            <input type="hidden" name="course_id" value="{{ $course->id }}">
 
             <!-- ===== LEFT: Payment Form ===== -->
             <div class="lg:col-span-2 space-y-6">
+
+                @if ($errors->any())
+                    <div class="bg-red-50 border border-red-100 text-red-600 rounded-xl p-4 text-sm">
+                        <ul class="space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <!-- Step 1: Pilih Metode Pembayaran -->
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
@@ -31,81 +44,31 @@
                         Pilih Metode Pembayaran
                     </h2>
 
-                    <!-- Transfer Bank -->
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Transfer Bank</p>
-                    <div class="space-y-3 mb-6">
-                        <!-- BCA -->
+                    <div class="space-y-3">
                         <label
                             class="flex items-center gap-4 p-4 rounded-xl border-2 border-pink-400 bg-pink-50 cursor-pointer transition hover:border-pink-400">
-                            <input type="radio" name="payment" value="bca" class="accent-pink-500 w-4 h-4" checked>
+                            <input type="radio" name="payment_method" value="bank_transfer" class="accent-pink-500 w-4 h-4" checked>
                             <div class="flex items-center gap-3 flex-1">
                                 <div
                                     class="w-14 h-8 bg-blue-700 rounded-md flex items-center justify-center text-white text-xs font-extrabold tracking-wide">
-                                    BCA</div>
+                                    BANK</div>
                                 <div>
-                                    <p class="font-semibold text-gray-800 text-sm">Bank Central Asia (BCA)</p>
-                                    <p class="text-xs text-gray-500">No. Rek: 1234-5678-90</p>
+                                    <p class="font-semibold text-gray-800 text-sm">Bank Transfer</p>
+                                    <p class="text-xs text-gray-500">Transfer manual ke rekening admin</p>
                                 </div>
                             </div>
                         </label>
-                        <!-- Mandiri -->
-                        <label
-                            class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
-                            <input type="radio" name="payment" value="mandiri" class="accent-pink-500 w-4 h-4">
-                            <div class="flex items-center gap-3 flex-1">
-                                <div
-                                    class="w-14 h-8 bg-yellow-500 rounded-md flex items-center justify-center text-white text-xs font-extrabold">
-                                    MANDIRI</div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">Bank Mandiri</p>
-                                    <p class="text-xs text-gray-500">No. Rek: 0987-6543-21</p>
-                                </div>
-                            </div>
-                        </label>
-                        <!-- BNI -->
-                        <label
-                            class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
-                            <input type="radio" name="payment" value="bni" class="accent-pink-500 w-4 h-4">
-                            <div class="flex items-center gap-3 flex-1">
-                                <div
-                                    class="w-14 h-8 bg-orange-500 rounded-md flex items-center justify-center text-white text-xs font-extrabold">
-                                    BNI</div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">Bank Negara Indonesia (BNI)</p>
-                                    <p class="text-xs text-gray-500">No. Rek: 1122-3344-55</p>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
 
-                    <!-- E-Wallet -->
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">E-Wallet</p>
-                    <div class="space-y-3">
-                        <!-- GoPay -->
                         <label
                             class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
-                            <input type="radio" name="payment" value="gopay" class="accent-pink-500 w-4 h-4">
+                            <input type="radio" name="payment_method" value="e_wallet" class="accent-pink-500 w-4 h-4">
                             <div class="flex items-center gap-3 flex-1">
                                 <div
                                     class="w-14 h-8 bg-teal-500 rounded-md flex items-center justify-center text-white text-xs font-extrabold">
-                                    GoPay</div>
+                                    EWALLET</div>
                                 <div>
-                                    <p class="font-semibold text-gray-800 text-sm">GoPay</p>
-                                    <p class="text-xs text-gray-500">Bayar via aplikasi Gojek</p>
-                                </div>
-                            </div>
-                        </label>
-                        <!-- OVO -->
-                        <label
-                            class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
-                            <input type="radio" name="payment" value="ovo" class="accent-pink-500 w-4 h-4">
-                            <div class="flex items-center gap-3 flex-1">
-                                <div
-                                    class="w-14 h-8 bg-purple-600 rounded-md flex items-center justify-center text-white text-xs font-extrabold">
-                                    OVO</div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">OVO</p>
-                                    <p class="text-xs text-gray-500">Bayar via aplikasi OVO</p>
+                                    <p class="font-semibold text-gray-800 text-sm">E-Wallet</p>
+                                    <p class="text-xs text-gray-500">Bayar lewat dompet digital</p>
                                 </div>
                             </div>
                         </label>
@@ -136,13 +99,13 @@
                             <p class="font-semibold text-gray-700 text-sm">Klik untuk upload atau drag & drop</p>
                             <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG — maks. 5 MB</p>
                         </div>
-                        <input id="bukti-upload" type="file" accept="image/*" class="hidden"
+                        <input id="bukti-upload" name="proof_of_payment" type="file" accept="image/*" class="hidden"
                             onchange="previewFile(this)">
                     </label>
 
                     <!-- Preview -->
                     <div id="file-preview"
-                        class="hidden mt-4 flex items-center gap-3 p-3 bg-pink-50 border border-pink-200 rounded-xl">
+                        class="hidden mt-4 items-center gap-3 p-3 bg-pink-50 border border-pink-200 rounded-xl">
                         <svg class="w-8 h-8 text-pink-400 shrink-0" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -163,7 +126,7 @@
                 </div>
 
                 <!-- Step 3: Konfirmasi & Bayar -->
-                <button type="button"
+                <button type="submit"
                     class="w-full py-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-lg rounded-xl transition shadow-sm flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -181,18 +144,19 @@
                     <!-- Course Item -->
                     <div class="flex gap-3 mb-5 pb-5 border-b border-gray-100">
                         <div class="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-pink-100">
-                            <img src="https://placehold.co/80x64/f9a8d4/ffffff?text=Kelas" alt="Thumbnail Kelas"
+                            <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}" alt="Thumbnail Kelas"
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-gray-800 leading-snug">Makeup Dasar untuk Pemula</p>
-                            <p class="text-xs text-pink-500 font-medium mt-1">Makeup</p>
+                            <p class="text-sm font-bold text-gray-800 leading-snug">{{ $course->name }}</p>
+                            <p class="text-xs text-pink-500 font-medium mt-1">{{ $course->category->name }}</p>
                             <div class="flex items-center gap-1 mt-1">
                                 <svg class="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 20 20">
                                     <path
                                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
-                                <span class="text-xs text-gray-500">4.8 · 320 peserta</span>
+                                <span class="text-xs text-gray-500">{{ $course->rating_label }} · Kelas Premium</span>
                             </div>
                         </div>
                     </div>
@@ -201,35 +165,18 @@
                     <div class="space-y-3 mb-5 pb-5 border-b border-gray-100 text-sm">
                         <div class="flex justify-between text-gray-600">
                             <span>Harga kelas</span>
-                            <span>Rp 299.000</span>
-                        </div>
-                        <div class="flex justify-between text-green-600 font-medium">
-                            <span>Diskon 20%</span>
-                            <span>- Rp 59.800</span>
+                            <span>Rp {{ number_format((int) $course->price, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
                             <span>Biaya admin</span>
-                            <span>Rp 5.000</span>
+                            <span>Rp 0</span>
                         </div>
                     </div>
 
                     <!-- Total -->
                     <div class="flex justify-between items-center mb-6">
                         <span class="font-bold text-gray-900">Total Pembayaran</span>
-                        <span class="text-xl font-extrabold text-pink-500">Rp 244.200</span>
-                    </div>
-
-                    <!-- Promo Code -->
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700 mb-2">Kode Promo</p>
-                        <div class="flex gap-2">
-                            <input type="text" placeholder="Masukkan kode promo"
-                                class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
-                            <button
-                                class="px-4 py-2 border-2 border-pink-500 text-pink-500 font-bold rounded-lg hover:bg-pink-50 transition text-sm">
-                                Pakai
-                            </button>
-                        </div>
+                        <span class="text-xl font-extrabold text-pink-500">Rp {{ number_format((int) $course->price, 0, ',', '.') }}</span>
                     </div>
 
                     <!-- Security Note -->
@@ -245,7 +192,7 @@
                 </div>
             </div>
 
-        </div>
+        </form>
     </main>
 
     <x-footer />
@@ -261,18 +208,21 @@
                 fileName.textContent = file.name;
                 fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
                 preview.classList.remove('hidden');
+                preview.classList.add('flex');
             }
         }
 
         function clearFile() {
             document.getElementById('bukti-upload').value = '';
-            document.getElementById('file-preview').classList.add('hidden');
+            const preview = document.getElementById('file-preview');
+            preview.classList.add('hidden');
+            preview.classList.remove('flex');
         }
 
         // Highlight selected payment method border
-        document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
             radio.addEventListener('change', function () {
-                document.querySelectorAll('input[name="payment"]').forEach(r => {
+                document.querySelectorAll('input[name="payment_method"]').forEach(r => {
                     r.closest('label').classList.remove('border-pink-400', 'bg-pink-50');
                     r.closest('label').classList.add('border-gray-200');
                 });
