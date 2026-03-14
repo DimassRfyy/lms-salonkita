@@ -17,10 +17,13 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class CourseReviewResource extends Resource
 {
     protected static ?string $model = CourseReview::class;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Course Management';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Star;
 

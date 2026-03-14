@@ -17,10 +17,13 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class CourseTaskSubmissionResource extends Resource
 {
     protected static ?string $model = CourseTaskSubmission::class;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Course Management';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ClipboardDocumentList;
 

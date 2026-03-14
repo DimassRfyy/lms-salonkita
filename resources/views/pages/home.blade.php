@@ -60,7 +60,7 @@
                 <!-- Right Design - 4 Images Grid -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="rounded-xl h-40 md:h-48 overflow-hidden">
-                        <img src="assets/images/thumbnails/class (1).png" alt="Makeup Profesional"
+                        <img src="assets/images/thumbnails/class (7).jpg" alt="Makeup Profesional"
                             class="w-full h-full object-cover">
                     </div>
                     <div class="rounded-xl h-40 md:h-48 overflow-hidden">
@@ -68,11 +68,11 @@
                             class="w-full h-full object-cover">
                     </div>
                     <div class="rounded-xl h-40 md:h-48 overflow-hidden">
-                        <img src="assets/images/thumbnails/class (3).png" alt="Hair Styling"
+                        <img src="assets/images/thumbnails/class (5).png" alt="Hair Styling"
                             class="w-full h-full object-cover">
                     </div>
                     <div class="rounded-xl h-40 md:h-48 overflow-hidden">
-                        <img src="assets/images/thumbnails/class (4).png" alt="Nail Art Design"
+                        <img src="assets/images/thumbnails/class (1).png" alt="Nail Art Design"
                             class="w-full h-full object-cover">
                     </div>
                 </div>
