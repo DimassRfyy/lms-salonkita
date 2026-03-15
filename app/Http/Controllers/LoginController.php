@@ -22,7 +22,12 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'));
+            $role = Auth::user()?->role;
+            $targetRoute = in_array($role, ['admin', 'mentor', 'coach'], true)
+                ? 'filament.admin.pages.dashboard'
+                : 'dashboard';
+
+            return redirect()->intended(route($targetRoute));
         }
 
         return back()->withErrors([
