@@ -122,6 +122,12 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    public function savedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'saved_courses')
+            ->withTimestamps();
+    }
+
     public function videoWatches(): HasMany
     {
         return $this->hasMany(CourseVideoWatch::class);

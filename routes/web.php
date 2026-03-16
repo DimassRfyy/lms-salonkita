@@ -14,7 +14,9 @@ Route::get('/course/{slug?}', [HomeController::class, 'course'])->name('course')
 
 Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
 
-Route::get('/savedCourses', [HomeController::class, 'savedCourses'])->name('saved-courses');
+Route::get('/savedCourses', [HomeController::class, 'savedCourses'])->name('saved-courses')->middleware('auth');
+Route::post('/savedCourses/{course}', [HomeController::class, 'storeSavedCourse'])->name('saved-courses.store')->middleware('auth');
+Route::delete('/savedCourses/{course}', [HomeController::class, 'destroySavedCourse'])->name('saved-courses.destroy')->middleware('auth');
 
 Route::get('/all-courses', [HomeController::class, 'allCourses'])->name('all-courses');
 

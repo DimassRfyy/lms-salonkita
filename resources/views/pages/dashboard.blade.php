@@ -89,6 +89,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @forelse($recommendedCourses as $course)
+                    @php($isSaved = $savedCourseIds->contains($course->id))
                     <!-- Course Card -->
                     <div
                         class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition border border-pink-100">
@@ -109,14 +110,36 @@
                                 <span class="text-xs font-bold text-gray-700">{{ $course->rating_label }}</span>
                             </div>
                             <!-- Save button bottom-right -->
-                            <button
-                                class="absolute bottom-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-pink-50 transition">
-                                <svg class="w-4 h-4 text-gray-500 hover:text-pink-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
-                                </svg>
-                            </button>
+                            @if($isSaved)
+                                <form method="POST" action="{{ route('saved-courses.destroy', ['course' => $course->id]) }}"
+                                    class="absolute bottom-2 right-2">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-pink-50 transition"
+                                        aria-label="Hapus {{ $course->name }} dari tersimpan">
+                                        <svg class="w-4 h-4 text-pink-500" fill="currentColor" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('saved-courses.store', ['course' => $course->id]) }}"
+                                    class="absolute bottom-2 right-2">
+                                    @csrf
+                                    <button type="submit"
+                                        class="p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-pink-50 transition"
+                                        aria-label="Simpan {{ $course->name }} ke tersimpan">
+                                        <svg class="w-4 h-4 text-gray-500 hover:text-pink-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                         <div class="p-4">
                             <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $course->name }}</h3>
@@ -162,6 +185,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @forelse($ownedCourses as $course)
+                    @php($isSaved = $savedCourseIds->contains($course->id))
                     <!-- Course Card -->
                     <div
                         class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition border border-pink-100">
@@ -182,14 +206,36 @@
                                 <span class="text-xs font-bold text-gray-700">{{ $course->rating_label }}</span>
                             </div>
                             <!-- Save button bottom-right -->
-                            <button
-                                class="absolute bottom-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-pink-50 transition">
-                                <svg class="w-4 h-4 text-gray-500 hover:text-pink-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
-                                </svg>
-                            </button>
+                            @if($isSaved)
+                                <form method="POST" action="{{ route('saved-courses.destroy', ['course' => $course->id]) }}"
+                                    class="absolute bottom-2 right-2">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-pink-50 transition"
+                                        aria-label="Hapus {{ $course->name }} dari tersimpan">
+                                        <svg class="w-4 h-4 text-pink-500" fill="currentColor" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('saved-courses.store', ['course' => $course->id]) }}"
+                                    class="absolute bottom-2 right-2">
+                                    @csrf
+                                    <button type="submit"
+                                        class="p-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-pink-50 transition"
+                                        aria-label="Simpan {{ $course->name }} ke tersimpan">
+                                        <svg class="w-4 h-4 text-gray-500 hover:text-pink-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                         <div class="p-4">
                             <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $course->name }}</h3>

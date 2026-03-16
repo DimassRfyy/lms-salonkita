@@ -24,6 +24,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'avatar',
         'role',
         'password',
     ];
@@ -64,6 +65,12 @@ class User extends Authenticatable
     public function ownedCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_user')
+            ->withTimestamps();
+    }
+
+    public function savedCourses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'saved_courses')
             ->withTimestamps();
     }
 

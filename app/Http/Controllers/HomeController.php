@@ -79,7 +79,10 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        return view('pages.dashboard', compact('ownedCourses', 'recommendedCourses', 'continueWatching'));
+        $savedCourseIds = $user->savedCourses()
+            ->pluck('courses.id');
+
+        return view('pages.dashboard', compact('ownedCourses', 'recommendedCourses', 'continueWatching', 'savedCourseIds'));
     }
 
     public function course(?string $slug = null, Request $request)
@@ -228,7 +231,38 @@ class HomeController extends Controller
 
     public function savedCourses()
     {
-        return view('pages.saved_courses');
+        /** @var User $user */
+        $user = request()->user();
+
+        $savedCourses = $user->savedCourses()
+            ->with('category')
+            ->withSum('videos as total_duration_seconds', 'duration_seconds')
+            ->orderByPivot('created_at', 'desc')
+            ->get();
+
+        return view('pages.saved_courses', compact('savedCourses'));
+    }
+
+    public function storeSavedCourse(Request $request, Course $course)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        abort_unless($course->is_published, 404);
+
+        $user->savedCourses()->syncWithoutDetaching([$course->id]);
+
+        return back()->with('success', 'Kelas berhasil disimpan.');
+    }
+
+    public function destroySavedCourse(Request $request, Course $course)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $user->savedCourses()->detach($course->id);
+
+        return back()->with('success', 'Kelas dihapus dari tersimpan.');
     }
 
     public function allCourses()
