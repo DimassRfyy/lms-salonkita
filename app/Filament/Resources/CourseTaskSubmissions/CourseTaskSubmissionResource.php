@@ -17,13 +17,26 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use UnitEnum;
 
 class CourseTaskSubmissionResource extends Resource
 {
     protected static ?string $model = CourseTaskSubmission::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Course Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Course Management';
+
+    protected static ?string $navigationLabel = 'Task Submissions';
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Tugas menunggu review';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::query()
+            ->where('status', CourseTaskSubmission::STATUS_PENDING)
+            ->count();
+    }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ClipboardDocumentList;
 
@@ -42,6 +55,18 @@ class CourseTaskSubmissionResource extends Resource
                 TextInput::make('google_drive_url')
                     ->url()
                     ->required(),
+                Select::make('status')
+                    ->options([
+                        CourseTaskSubmission::STATUS_PENDING => 'Pending Review',
+                        CourseTaskSubmission::STATUS_REVIEWED => 'Reviewed',
+                    ])
+                    ->default(CourseTaskSubmission::STATUS_PENDING)
+                    ->required(),
+                TextInput::make('score')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(100)
+                    ->nullable(),
             ]);
     }
 
@@ -56,8 +81,19 @@ class CourseTaskSubmissionResource extends Resource
                     ->sortable(),
                 TextColumn::make('subject')
                     ->searchable(),
-                TextColumn::make('google_drive_url')
-                    ->searchable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->colors([
+                        'warning' => CourseTaskSubmission::STATUS_PENDING,
+                        'success' => CourseTaskSubmission::STATUS_REVIEWED,
+                    ])
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        CourseTaskSubmission::STATUS_REVIEWED => 'Reviewed',
+                        default => 'Pending Review',
+                    }),
+                TextColumn::make('score')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

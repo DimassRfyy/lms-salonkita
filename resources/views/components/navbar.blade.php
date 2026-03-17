@@ -38,10 +38,15 @@
                         <!-- Profile Dropdown -->
                         <div class="relative group">
                             <div class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center text-pink-700 font-bold text-sm">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                                </div>
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}"
+                                        class="w-8 h-8 rounded-full object-cover">
+                                @else
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center text-pink-700 font-bold text-sm">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
                                 <span class="hidden sm:inline font-medium text-gray-900">{{ auth()->user()->name }}</span>
                                 <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

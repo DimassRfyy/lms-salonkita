@@ -11,6 +11,9 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 
 Route::get('/course/{slug?}', [HomeController::class, 'course'])->name('course');
+Route::post('/course/{slug}/task-submission', [HomeController::class, 'storeCourseTaskSubmission'])
+    ->name('course.task-submission.store')
+    ->middleware('auth');
 
 Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
 
@@ -20,7 +23,9 @@ Route::delete('/savedCourses/{course}', [HomeController::class, 'destroySavedCou
 
 Route::get('/all-courses', [HomeController::class, 'allCourses'])->name('all-courses');
 
-Route::get('/task', [HomeController::class, 'task'])->name('task');
+Route::get('/task', [HomeController::class, 'task'])->name('task')->middleware('auth');
+
+Route::get('/claim-certificate/{slug}', [HomeController::class, 'claimCertificate'])->name('claim-certificate')->middleware('auth');
 
 Route::get('/login', [LoginController::class, 'login'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post')->middleware('guest');

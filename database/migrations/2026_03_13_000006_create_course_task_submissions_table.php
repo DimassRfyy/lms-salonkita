@@ -17,10 +17,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('subject');
             $table->string('google_drive_url');
+            $table->string('status')->default('pending');
+            $table->unsignedTinyInteger('score')->nullable();
             $table->timestamps();
 
             $table->unique(['course_id', 'user_id']);
             $table->index('course_id');
+            $table->index('status');
             $table->index('user_id');
         });
     }
