@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('role')->default('student');
+            $table->string('provider')->nullable();
+            $table->string('provider_id')->nullable()->unique();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

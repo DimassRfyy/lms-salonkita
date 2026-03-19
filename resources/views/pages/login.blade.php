@@ -29,7 +29,7 @@
             <div class="bg-white rounded-2xl shadow-md border border-pink-100 px-8 py-8">
 
                 <!-- Google Login -->
-                <button
+                <a href="{{ route('google.redirect') }}"
                     class="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-700 font-semibold hover:border-pink-300 hover:bg-pink-50 transition mb-6">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4"
@@ -42,7 +42,7 @@
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                     </svg>
                     Masuk dengan Google
-                </button>
+                </a>
 
                 <!-- Divider -->
                 <div class="relative mb-6">

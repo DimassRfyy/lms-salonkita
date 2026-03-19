@@ -35,11 +35,19 @@
                     </button>
 
                     @auth
+                        @php
+                            $avatar = auth()->user()->avatar;
+                            $avatarUrl = $avatar
+                                ? ((str_starts_with($avatar, 'http://') || str_starts_with($avatar, 'https://'))
+                                    ? $avatar
+                                    : Storage::url($avatar))
+                                : null;
+                        @endphp
                         <!-- Profile Dropdown -->
                         <div class="relative group">
                             <div class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
-                                @if(auth()->user()->avatar)
-                                    <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}"
+                                @if($avatarUrl)
+                                    <img src="{{ $avatarUrl }}" alt="{{ auth()->user()->name }}"
                                         class="w-8 h-8 rounded-full object-cover">
                                 @else
                                     <div
