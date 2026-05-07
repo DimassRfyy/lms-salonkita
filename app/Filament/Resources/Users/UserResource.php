@@ -9,8 +9,12 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -18,7 +22,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 class UserResource extends Resource
 {
@@ -33,17 +36,42 @@ class UserResource extends Resource
                 FileUpload::make('avatar')
                     ->label('Avatar')
                     ->image()
-                    ->directory('avatars')
-                    ->visibility('public')
-                    ->deleteUploadedFileUsing(function (string $path) {
-                        Storage::disk('public')->delete($path);
-                    }),
+                    ->disk('public')
+                    ->directory('avatars'),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('email')
                     ->label('Email address')
                     ->email()
                     ->required(),
+                TextInput::make('whatsapp_number')
+                    ->label('WhatsApp Number')
+                    ->maxLength(30),
+                DatePicker::make('birth_date')
+                    ->label('Birth Date')
+                    ->native(false),
+                TextInput::make('city')
+                    ->maxLength(100),
+                TextInput::make('country')
+                    ->maxLength(100),
+                TextInput::make('job_title')
+                    ->label('Job Title')
+                    ->maxLength(150),
+                Textarea::make('bio')
+                    ->rows(3)
+                    ->columnSpanFull(),
+                TextInput::make('instagram_url')
+                    ->label('Instagram URL')
+                    ->url()
+                    ->maxLength(1000),
+                TextInput::make('tiktok_url')
+                    ->label('TikTok URL')
+                    ->url()
+                    ->maxLength(1000),
+                TextInput::make('youtube_url')
+                    ->label('YouTube URL')
+                    ->url()
+                    ->maxLength(1000),
                 Select::make('role')
                     ->required()
                     ->default('student')
@@ -55,7 +83,11 @@ class UserResource extends Resource
                     ]),
                 TextInput::make('password')
                     ->password()
-                    ->required(),
+                    ->autocomplete('new-password')
+                    ->placeholder('Leave blank to keep current password')
+                    ->helperText('Only fill this field if you want to change the password.')
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (?string $state): bool => filled($state)),
             ]);
     }
 
@@ -89,8 +121,14 @@ class UserResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    ActionGroup::make([
+                        ViewAction::make(),
+                        EditAction::make(),
+                    ])
+                        ->dropdown(false),
+                    DeleteAction::make()
+                ])->icon('heroicon-m-bars-3')
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

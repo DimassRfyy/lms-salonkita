@@ -1,6 +1,6 @@
 <div>
     <!-- NAVBAR -->
-    <nav class="sticky top-0 z-50 bg-white border-b border-pink-100 shadow-sm">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-pink-100 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
@@ -36,17 +36,12 @@
 
                     @auth
                         @php
-                            $avatar = auth()->user()->avatar;
-                            $avatarUrl = $avatar
-                                ? ((str_starts_with($avatar, 'http://') || str_starts_with($avatar, 'https://'))
-                                    ? $avatar
-                                    : Storage::url($avatar))
-                                : null;
+                            $avatarUrl = auth()->user()->avatar_url;
                         @endphp
                         <!-- Profile Dropdown -->
                         <div class="relative group">
                             <div class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg">
-                                @if($avatarUrl)
+                                @if ($avatarUrl)
                                     <img src="{{ $avatarUrl }}" alt="{{ auth()->user()->name }}"
                                         class="w-8 h-8 rounded-full object-cover">
                                 @else

@@ -194,8 +194,8 @@
                     </div>
 
                     @if($hasCourseAccess)
-                    <div class="bg-white rounded-xl p-6 mb-6">
-                        <h2 class="text-base font-bold text-gray-900 mb-5">Progress Penyelesaian Kelas</h2>
+                    <div class="bg-white rounded-xl p-4 md:p-6 mb-6">
+                        <h2 class="text-sm md:text-base font-bold text-gray-900 mb-3 md:mb-5">Progress Penyelesaian Kelas</h2>
 
                         @php
                             $allVideosWatched = $totalVideosCount > 0 && $watchedVideosCount >= $totalVideosCount;
@@ -248,7 +248,40 @@
                             ];
                         @endphp
 
-                        <div class="flex items-start gap-0">
+                        <!-- Mobile Version (< md) -->
+                        <div class="md:hidden grid grid-cols-3 gap-2">
+                            @foreach ($steps as $i => $step)
+                                @php
+                                    $useFilledIcon = $step['done'];
+                                    $circleClass = $step['done']
+                                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                                        : ($step['active'] ? 'bg-pink-500 border-pink-500 text-white' : 'bg-white border-gray-300 text-gray-400');
+                                    $labelClass  = $step['done']
+                                        ? 'text-emerald-600 font-semibold'
+                                        : ($step['active'] ? 'text-pink-600 font-semibold' : 'text-gray-400');
+                                @endphp
+                                <div class="flex flex-col items-center">
+                                    @if (isset($step['url']) && $step['url'])
+                                        <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
+                                            class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
+                                            <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}" stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
+                                            <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}" stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <p class="mt-1.5 text-center text-[11px] leading-tight {{ $labelClass }}">{{ $step['label'] }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Desktop Version (>= md) -->
+                        <div class="hidden md:flex items-start gap-0">
                             @foreach ($steps as $i => $step)
                                 @php
                                     $isLast      = $i === count($steps) - 1;
@@ -266,7 +299,6 @@
                                 @endphp
 
                                 <div class="flex flex-col items-center {{ $isLast ? '' : 'flex-1' }}">
-                                    <!-- Circle + icon -->
                                     @if (! $isLast && isset($step['url']) && $step['url'])
                                         <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
                                             class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
@@ -289,13 +321,11 @@
                                         </div>
                                     @endif
 
-                                    <!-- Label below circle -->
                                     <p class="mt-1.5 text-center text-xs leading-tight {{ $labelClass }}">{{ $step['label'] }}</p>
                                     <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">{{ $step['sublabel'] }}</p>
                                 </div>
 
                                 @if (! $isLast)
-                                    <!-- Connector line -->
                                     <div class="flex-1 mt-4 mx-1">
                                         <div class="h-0.5 w-full {{ $lineClass }} rounded-full"></div>
                                     </div>

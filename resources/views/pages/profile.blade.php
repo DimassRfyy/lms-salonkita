@@ -1,21 +1,27 @@
 <x-layout>
     <style>
+        :root {
+            --profile-pink: #ec4899;
+            --profile-pink-dark: #db2777;
+            --profile-border: rgba(236, 72, 153, 0.14);
+        }
+
         .navbar-shadow {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .card-shadow {
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.1);
+            box-shadow: 0 12px 30px rgba(236, 72, 153, 0.08);
         }
 
         .btn-pink-gradient {
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            background: linear-gradient(135deg, var(--profile-pink) 0%, var(--profile-pink-dark) 100%);
             transition: all 0.3s ease;
         }
 
         .btn-pink-gradient:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.24);
         }
 
         .badge-achievement {
@@ -23,8 +29,8 @@
         }
 
         .tab-active {
-            color: #ec4899;
-            border-bottom: 3px solid #ec4899;
+            color: var(--profile-pink);
+            border-bottom: 3px solid var(--profile-pink);
         }
 
         .transition-smooth {
@@ -32,12 +38,24 @@
         }
 
         .profile-cover {
-            height: 200px;
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            min-height: 220px;
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.22), transparent 30%),
+                linear-gradient(135deg, var(--profile-pink) 0%, #c026d3 45%, var(--profile-pink-dark) 100%);
         }
 
         .medal-icon {
             font-size: 32px;
+        }
+
+        .profile-input {
+            border: 1px solid rgba(156, 163, 175, 0.28);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .profile-input:focus {
+            border-color: var(--profile-pink);
+            box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.12);
         }
     </style>
     <x-navbar />
@@ -45,34 +63,248 @@
     <div class="profile-cover"></div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 -mt-16 relative z-10">
-        <!-- Profile Header -->
-        <div class="bg-white rounded-lg card-shadow p-6 mb-8">
-            <div class="flex flex-col md:flex-row md:items-end gap-6">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop"
-                    alt="Profile" class="w-32 h-32 rounded-lg border-4 border-white shadow-lg">
-                <div class="flex-1">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Jessica Tan</h1>
-                    <p class="text-gray-600 mb-4">Beauty Professional | Makeup Artist</p>
-                    <div class="flex flex-wrap gap-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 -mt-16 relative z-10 pb-16">
+        @php
+            $avatarUrl = $user->avatar_url ?: 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=ec4899&color=fff&size=256';
+        @endphp
+
+        @if (session('success'))
+            <div class="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+                Please review the highlighted fields and try again.
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-8">
+            @csrf
+            @method('PUT')
+
+            <div
+                class="bg-white/95 rounded-3xl card-shadow p-6 sm:p-8 border border-[var(--profile-border)] backdrop-blur-sm">
+                <div class="flex flex-col md:flex-row md:items-end gap-6">
+                    <div class="relative self-start">
+                        <img src="{{ $avatarUrl }}" alt="{{ $user->name }}"
+                            class="w-32 h-32 rounded-3xl border-4 border-white shadow-lg object-cover bg-pink-50">
+                        <label
+                            class="absolute -bottom-2 -right-2 inline-flex cursor-pointer items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-700 shadow-md ring-1 ring-gray-200 hover:text-pink-600">
+                            Change
+                            <input type="file" name="avatar" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+
+                    <div class="flex-1 space-y-4">
                         <div>
-                            <p class="text-gray-600 text-sm">Member Sejak</p>
-                            <p class="font-bold text-gray-900">12 Agustus 2024</p>
+                            <p
+                                class="inline-flex items-center rounded-full bg-pink-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-pink-600">
+                                Profile Settings
+                            </p>
+                            <h1 class="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl">Update your profile</h1>
+                            <p class="mt-2 max-w-2xl text-gray-600">Keep your profile details current so your learners,
+                                instructors, and future collaborations can find the right information.</p>
                         </div>
+
+                        <div class="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="name">Full
+                                    Name</label>
+                                <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="Your full name">
+                                @error('name')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="email">Email
+                                    Address</label>
+                                <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="name@example.com">
+                                @error('email')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div>
-                            <p class="text-gray-600 text-sm">Email</p>
-                            <p class="font-bold text-gray-900">jessica@email.com</p>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700" for="bio">Bio</label>
+                            <textarea id="bio" name="bio" rows="4"
+                                class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                placeholder="Tell people a bit about yourself">{{ old('bio', $user->bio) }}</textarea>
+                            @error('bio')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>
-                <button class="btn-pink-gradient text-white px-6 py-2 rounded-lg font-semibold self-start md:self-end">
-                    Edit Profil
-                </button>
             </div>
-        </div>
+
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                <div class="space-y-8 lg:col-span-2">
+                    <div class="bg-white rounded-3xl card-shadow p-6 sm:p-8 border border-[var(--profile-border)]">
+                        <div class="mb-6 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-pink-500">Personal
+                                    Information</p>
+                                <h2 class="mt-2 text-2xl font-bold text-gray-900">Contact & Location</h2>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700"
+                                    for="whatsapp_number">WhatsApp Number</label>
+                                <input id="whatsapp_number" name="whatsapp_number" type="text"
+                                    value="{{ old('whatsapp_number', $user->whatsapp_number) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="+62 812 3456 7890">
+                                @error('whatsapp_number')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="birth_date">Birth
+                                    Date</label>
+                                <input id="birth_date" name="birth_date" type="date"
+                                    value="{{ old('birth_date', $user->birth_date?->format('Y-m-d')) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none">
+                                @error('birth_date')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="city">City</label>
+                                <input id="city" name="city" type="text" value="{{ old('city', $user->city) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="Jakarta">
+                                @error('city')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700"
+                                    for="country">Country</label>
+                                <input id="country" name="country" type="text"
+                                    value="{{ old('country', $user->country) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="Indonesia">
+                                @error('country')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="job_title">Job
+                                    Title</label>
+                                <input id="job_title" name="job_title" type="text"
+                                    value="{{ old('job_title', $user->job_title) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="Makeup Artist">
+                                @error('job_title')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl card-shadow p-6 sm:p-8 border border-[var(--profile-border)]">
+                        <div class="mb-6">
+                            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-pink-500">Social Presence
+                            </p>
+                            <h2 class="mt-2 text-2xl font-bold text-gray-900">Social Links</h2>
+                        </div>
+
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700"
+                                    for="instagram_url">Instagram Link</label>
+                                <input id="instagram_url" name="instagram_url" type="url"
+                                    value="{{ old('instagram_url', $user->instagram_url) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="https://instagram.com/yourname">
+                                @error('instagram_url')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="tiktok_url">TikTok
+                                    Link</label>
+                                <input id="tiktok_url" name="tiktok_url" type="url"
+                                    value="{{ old('tiktok_url', $user->tiktok_url) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="https://tiktok.com/@yourname">
+                                @error('tiktok_url')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="mb-2 block text-sm font-semibold text-gray-700" for="youtube_url">YouTube
+                                    Link</label>
+                                <input id="youtube_url" name="youtube_url" type="url"
+                                    value="{{ old('youtube_url', $user->youtube_url) }}"
+                                    class="profile-input w-full rounded-2xl px-4 py-3 text-gray-900 focus:outline-none"
+                                    placeholder="https://youtube.com/@yourchannel">
+                                @error('youtube_url')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div
+                        class="sticky top-6 rounded-3xl border border-[var(--profile-border)] bg-white p-6 sm:p-8 card-shadow">
+                        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-pink-500">Account Summary</p>
+                        <h2 class="mt-2 text-2xl font-bold text-gray-900">Profile Status</h2>
+
+                        <div class="mt-6 space-y-4 rounded-2xl bg-pink-50 p-4">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-pink-500">Member Since
+                                </p>
+                                <p class="mt-1 text-sm font-semibold text-gray-900">
+                                    {{ $user->created_at?->format('d F Y') ?? '-' }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-pink-500">Current Email
+                                </p>
+                                <p class="mt-1 break-words text-sm font-semibold text-gray-900">{{ $user->email }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-pink-500">Profile Image
+                                </p>
+                                <p class="mt-1 text-sm font-semibold text-gray-900">
+                                    {{ $user->avatar ? 'Custom avatar uploaded' : 'Using default avatar' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="btn-pink-gradient mt-6 inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 text-base font-semibold text-white">
+                            Save Changes
+                        </button>
+
+                        <p class="mt-4 text-sm text-gray-500">Upload a new avatar to replace the current one. Changes
+                            will apply as soon as you save.</p>
+                    </div>
+                </div>
+            </div>
+        </form>
 
         <!-- Stats Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-8">
             <!-- Kelas Terdaftar -->
             <div class="bg-white rounded-lg card-shadow p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -284,63 +516,44 @@
 
         <!-- Kelas Terdaftar Section -->
         <div class="bg-white rounded-lg card-shadow p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Kelas yang Saat Ini Diambil</h2>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Kelas yang Saat Ini Diambil</h2>
+                <span class="text-sm text-gray-500">{{ $ownedCourses->count() }} kelas</span>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Class Card 1 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-smooth">
-                    <img src="https://images.unsplash.com/photo-1596885289519-5ab0e4a4eb78?w=300&h=150&fit=crop"
-                        alt="Class" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Natural Makeup Daily</h3>
-                        <p class="text-gray-600 text-sm mb-3">Makeup untuk Penggunaan Sehari-hari</p>
-                        <div class="bg-gray-100 rounded-full h-2 mb-2">
-                            <div class="bg-pink-600 h-2 rounded-full" style="width: 65%"></div>
-                        </div>
-                        <p class="text-gray-600 text-xs">65% Selesai</p>
-                    </div>
-                </div>
+                @forelse($ownedCourses as $course)
+                    @php
+                        $thumbnailUrl = $course->thumbnail
+                            ? Storage::url($course->thumbnail)
+                            : asset('assets/images/thumbnails/img_placeholder.png');
+                        $totalVideos = (int) ($course->videos_count ?? $course->videos()->count());
+                        $watchedVideos = auth()->user()->courseVideoWatches()
+                            ->where('course_id', $course->id)
+                            ->distinct('course_video_id')
+                            ->count('course_video_id');
+                        $progressPercentage = $totalVideos > 0 ? (int) round(($watchedVideos / $totalVideos) * 100) : 0;
+                    @endphp
 
-                <!-- Class Card 2 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-smooth">
-                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&h=150&fit=crop"
-                        alt="Class" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Contouring Mastery</h3>
-                        <p class="text-gray-600 text-sm mb-3">Teknik Kontur Profesional</p>
-                        <div class="bg-gray-100 rounded-full h-2 mb-2">
-                            <div class="bg-pink-600 h-2 rounded-full" style="width: 45%"></div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-smooth">
+                        <img src="{{ $thumbnailUrl }}" alt="{{ $course->name }}"
+                            onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
+                            class="w-full h-40 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-gray-900 mb-2">{{ $course->name }}</h3>
+                            <p class="text-gray-600 text-sm mb-3">{{ $course->category?->name ?? 'General Course' }}</p>
+                            <div class="bg-gray-100 rounded-full h-2 mb-2">
+                                <div class="bg-pink-600 h-2 rounded-full" style="width: {{ $progressPercentage }}%">
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-xs">{{ $progressPercentage }}% Selesai</p>
                         </div>
-                        <p class="text-gray-600 text-xs">45% Selesai</p>
                     </div>
-                </div>
-
-                <!-- Class Card 3 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-smooth">
-                    <img src="https://images.unsplash.com/photo-1600965962160-e38dae4f9ed9?w=300&h=150&fit=crop"
-                        alt="Class" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Bridal Makeup</h3>
-                        <p class="text-gray-600 text-sm mb-3">Makeup Khusus Pengantin</p>
-                        <div class="bg-gray-100 rounded-full h-2 mb-2">
-                            <div class="bg-pink-600 h-2 rounded-full" style="width: 20%"></div>
-                        </div>
-                        <p class="text-gray-600 text-xs">20% Selesai</p>
+                @empty
+                    <div class="col-span-full rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+                        Belum ada kelas yang diambil.
                     </div>
-                </div>
-
-                <!-- Class Card 4 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-smooth">
-                    <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=300&h=150&fit=crop"
-                        alt="Class" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-gray-900 mb-2">Skincare Foundation</h3>
-                        <p class="text-gray-600 text-sm mb-3">Dasar-dasar Perawatan Kulit</p>
-                        <div class="bg-gray-100 rounded-full h-2 mb-2">
-                            <div class="bg-pink-600 h-2 rounded-full" style="width: 90%"></div>
-                        </div>
-                        <p class="text-gray-600 text-xs">90% Selesai</p>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </div>

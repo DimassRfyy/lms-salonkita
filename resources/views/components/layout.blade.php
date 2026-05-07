@@ -21,7 +21,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-gray-50 pt-16">
     {{ $slot }}
 </body>
 

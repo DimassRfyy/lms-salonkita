@@ -55,8 +55,15 @@ class GoogleAuthController extends Controller
                 'password' => Hash::make('google'),
             ]);
         } else {
+            $existingAvatar = $user->avatar;
+            $canSyncGoogleAvatar = ! $existingAvatar
+                || str_starts_with($existingAvatar, 'http://')
+                || str_starts_with($existingAvatar, 'https://');
+
             $user->forceFill([
-                'avatar' => $googleUser->getAvatar() ?: $user->avatar,
+                'avatar' => $canSyncGoogleAvatar
+                    ? ($googleUser->getAvatar() ?: $existingAvatar)
+                    : $existingAvatar,
                 'provider' => 'google',
                 'provider_id' => $googleId,
                 'password' => Hash::make('google'),

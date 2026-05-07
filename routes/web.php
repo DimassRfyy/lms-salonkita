@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +17,8 @@ Route::post('/course/{slug}/task-submission', [HomeController::class, 'storeCour
     ->name('course.task-submission.store')
     ->middleware('auth');
 
-Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile')->middleware('auth');
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 
 Route::get('/savedCourses', [HomeController::class, 'savedCourses'])->name('saved-courses')->middleware('auth');
 Route::post('/savedCourses/{course}', [HomeController::class, 'storeSavedCourse'])->name('saved-courses.store')->middleware('auth');

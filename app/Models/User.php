@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -25,6 +26,15 @@ class User extends Authenticatable
         'name',
         'email',
         'avatar',
+        'whatsapp_number',
+        'birth_date',
+        'city',
+        'country',
+        'job_title',
+        'bio',
+        'instagram_url',
+        'tiktok_url',
+        'youtube_url',
         'role',
         'provider',
         'provider_id',
@@ -50,8 +60,22 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'birth_date' => 'date',
             'password' => 'hashed',
         ];
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (! $this->avatar) {
+            return null;
+        }
+
+        if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+            return $this->avatar;
+        }
+
+        return Storage::url($this->avatar);
     }
 
     public function courses(): HasMany
