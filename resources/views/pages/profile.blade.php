@@ -68,12 +68,6 @@
             $avatarUrl = $user->avatar_url ?: 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=ec4899&color=fff&size=256';
         @endphp
 
-        @if (session('success'))
-            <div class="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
-                {{ session('success') }}
-            </div>
-        @endif
-
         @if ($errors->any())
             <div class="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                 Please review the highlighted fields and try again.
@@ -89,7 +83,7 @@
                 <div class="flex flex-col md:flex-row md:items-end gap-6">
                     <div class="relative self-start">
                         <img src="{{ $avatarUrl }}" alt="{{ $user->name }}"
-                            class="w-32 h-32 rounded-3xl border-4 border-white shadow-lg object-cover bg-pink-50">
+                            class="w-32 h-32 rounded-3xl border-4 border-white object-cover bg-pink-50">
                         <label
                             class="absolute -bottom-2 -right-2 inline-flex cursor-pointer items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-700 shadow-md ring-1 ring-gray-200 hover:text-pink-600">
                             Change
@@ -280,7 +274,7 @@
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-pink-500">Current Email
                                 </p>
-                                <p class="mt-1 break-words text-sm font-semibold text-gray-900">{{ $user->email }}</p>
+                                <p class="mt-1 wrap-break-word text-sm font-semibold text-gray-900">{{ $user->email }}</p>
                             </div>
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-pink-500">Profile Image

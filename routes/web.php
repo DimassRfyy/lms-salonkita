@@ -38,6 +38,27 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleC
 Route::get('/register', [RegisterController::class, 'register'])->name('register')->middleware('guest');
 Route::post('/register', [RegisterController::class, 'store'])->name('register.post')->middleware('guest');
 
+Route::get('/register/mentor-coach/{role?}', [RegisterController::class, 'mentorCoachRegister'])
+    ->name('register.mentor-coach')
+    ->whereIn('role', ['mentor', 'coach'])
+    ->middleware('guest');
+
+Route::post('/register/mentor-coach', [RegisterController::class, 'storeMentorCoach'])
+    ->name('register.mentor-coach.store')
+    ->middleware('guest');
+
+Route::get('/mentor-coach/complete-profile', [ProfileController::class, 'mentorCoachProfile'])
+    ->name('mentor-coach.profile')
+    ->middleware('auth');
+    
+Route::post('/mentor-coach/complete-profile', [ProfileController::class, 'update'])
+    ->name('mentor-coach.profile.update')
+    ->middleware('auth');
+
+Route::get('/mentor-coach/waiting', [ProfileController::class, 'mentorCoachWaiting'])
+    ->name('mentor-coach.waiting')
+    ->middleware('auth');
+
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();

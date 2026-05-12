@@ -23,6 +23,7 @@
 
 <body class="bg-gray-50 pt-16">
     {{ $slot }}
+    @include('sweetalert2::index')
 </body>
 
 </html>

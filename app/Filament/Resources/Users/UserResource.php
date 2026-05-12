@@ -11,14 +11,17 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -81,6 +84,9 @@ class UserResource extends Resource
                         'coach' => 'Coach',
                         'admin' => 'Admin',
                     ]),
+                Toggle::make('is_approved')
+                    ->label('Is Approved')
+                    ->helperText('Toggle to mark user as approved for mentor/coach'),
                 TextInput::make('password')
                     ->password()
                     ->autocomplete('new-password')
@@ -107,6 +113,9 @@ class UserResource extends Resource
                 TextColumn::make('role')
                     ->badge()
                     ->searchable(),
+                IconColumn::make('is_approved')
+                    ->label('Approved')
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -125,6 +134,13 @@ class UserResource extends Resource
                     ActionGroup::make([
                         ViewAction::make(),
                         EditAction::make(),
+                        Action::make('approve')
+                        ->label('Approve')
+                        ->color('success')
+                        ->icon('heroicon-m-check')
+                        ->action(fn ($record) => $record->update(['is_approved' => true]))
+                        ->requiresConfirmation()
+                        ->visible(fn ($record) => ! $record->is_approved),
                     ])
                         ->dropdown(false),
                     DeleteAction::make()

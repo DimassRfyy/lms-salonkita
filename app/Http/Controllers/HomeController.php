@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Support\Youtube;
 use Illuminate\Http\Request;
+use SweetAlert2\Laravel\Swal;
 
 class HomeController extends Controller
 {
@@ -64,18 +65,39 @@ class HomeController extends Controller
         $ownedCourses = $user
             ->ownedCourses()
             ->with('category')
+            ->withCount('videos')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
             ->orderByPivot('created_at', 'desc')
             ->take(8)
             ->get();
 
-        $ownedCourseIds = $ownedCourses->pluck('id');
+        $ownedCourseIds = $ownedCourses->modelKeys();
+
+        $watchedVideoCounts = CourseVideoWatch::query()
+            ->selectRaw('course_id, COUNT(DISTINCT course_video_id) as watched_videos_count')
+            ->where('user_id', $user->id)
+            ->whereIn('course_id', $ownedCourseIds, 'and', false)
+            ->groupBy('course_id')
+            ->pluck('watched_videos_count', 'course_id');
+
+        $ownedCourses = $ownedCourses->map(function ($course) use ($watchedVideoCounts) {
+            $totalVideosCount = (int) ($course->videos_count ?? 0);
+            $watchedVideosCount = (int) ($watchedVideoCounts[$course->id] ?? 0);
+            $progressPercentage = $totalVideosCount > 0
+                ? (int) round(($watchedVideosCount / $totalVideosCount) * 100)
+                : 0;
+
+            $course->setAttribute('progress_percentage', min(100, $progressPercentage));
+            $course->setAttribute('progress_label', min(100, $progressPercentage) . '%');
+
+            return $course;
+        });
 
         $recommendedCourses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
             ->where('is_published', true)
-            ->when($ownedCourseIds->isNotEmpty(), fn($query) => $query->whereNotIn('id', $ownedCourseIds))
+            ->when(! empty($ownedCourseIds), fn($query) => $query->whereNotIn('id', $ownedCourseIds, 'and'))
             ->latest()
             ->take(4)
             ->get();
@@ -329,7 +351,16 @@ class HomeController extends Controller
 
         $user->savedCourses()->syncWithoutDetaching([$course->id]);
 
-        return back()->with('success', 'Kelas berhasil disimpan.');
+        Swal::toastSuccess([
+            'title' => 'Kelas berhasil disimpan.',
+            'position' => 'top-end',
+            'showConfirmButton' => false,
+            'timer' => 2200,
+            'timerProgressBar' => true,
+            'didOpen' => '(toast) => { toast.onmouseenter = Swal.stopTimer; toast.onmouseleave = Swal.resumeTimer; }',
+        ]);
+
+        return back();
     }
 
     public function destroySavedCourse(Request $request, Course $course)
@@ -339,7 +370,16 @@ class HomeController extends Controller
 
         $user->savedCourses()->detach($course->id);
 
-        return back()->with('success', 'Kelas dihapus dari tersimpan.');
+        Swal::toastSuccess([
+            'title' => 'Kelas dihapus dari tersimpan.',
+            'position' => 'top-end',
+            'showConfirmButton' => false,
+            'timer' => 2200,
+            'timerProgressBar' => true,
+            'didOpen' => '(toast) => { toast.onmouseenter = Swal.stopTimer; toast.onmouseleave = Swal.resumeTimer; }',
+        ]);
+
+        return back();
     }
 
     public function allCourses()

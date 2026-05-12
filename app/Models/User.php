@@ -5,6 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoWatch;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -36,6 +38,7 @@ class User extends Authenticatable
         'tiktok_url',
         'youtube_url',
         'role',
+        'is_approved',
         'provider',
         'provider_id',
         'password',
@@ -62,6 +65,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'birth_date' => 'date',
             'password' => 'hashed',
+            'is_approved' => 'boolean',
         ];
     }
 
@@ -118,5 +122,14 @@ class User extends Authenticatable
     public function courseVideoWatches(): HasMany
     {
         return $this->hasMany(CourseVideoWatch::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return match ($this->role) {
+            'admin' => true,
+            'mentor', 'coach' => (bool) $this->is_approved,
+            default => false,
+        };
     }
 }

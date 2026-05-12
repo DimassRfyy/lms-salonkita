@@ -1,6 +1,11 @@
 <x-layout>
+    @php
+        $nameInputClass = 'w-full px-4 py-3 bg-gray-50 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 transition ' . ($errors->has('name') ? 'border-red-400' : 'border-gray-200');
+        $emailInputClass = 'w-full px-4 py-3 bg-gray-50 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 transition ' . ($errors->has('email') ? 'border-red-400' : 'border-gray-200');
+        $passwordInputClass = 'w-full px-4 py-3 bg-gray-50 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 transition ' . ($errors->has('password') ? 'border-red-400' : 'border-gray-200');
+    @endphp
     <div
-        class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        class="min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
 
         <!-- Back to Home -->
         <div class="absolute top-6 left-6">
@@ -44,6 +49,17 @@
                     Masuk dengan Google
                 </a>
 
+                <div class="grid gap-3 sm:grid-cols-2 mb-6">
+                    <a href="{{ route('register.mentor-coach', ['role' => 'mentor']) }}"
+                        class="rounded-lg border px-4 py-3 text-center font-semibold transition border-pink-200 bg-pink-50 text-pink-700 hover:border-pink-300 hover:bg-pink-100">
+                        Daftar sebagai Mentor
+                    </a>
+                    <a href="{{ route('register.mentor-coach', ['role' => 'coach']) }}"
+                        class="rounded-lg border px-4 py-3 text-center font-semibold transition border-gray-200 bg-white text-gray-700 hover:border-pink-300 hover:bg-pink-50 hover:text-pink-600">
+                        Daftar sebagai Coach
+                    </a>
+                </div>
+
                 <!-- Divider -->
                 <div class="relative mb-6">
                     <div class="absolute inset-0 flex items-center">
@@ -62,8 +78,7 @@
                     <div>
                         <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
                         <input id="name" name="name" type="text" placeholder="Nama lengkap kamu"
-                            value="{{ old('name') }}"
-                            class="w-full px-4 py-3 bg-gray-50 border @error('name') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                            value="{{ old('name') }}" class="{{ $nameInputClass }}" />
                         @error('name')
                             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror
@@ -73,8 +88,7 @@
                     <div>
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                         <input id="email" name="email" type="email" placeholder="nama@email.com"
-                            value="{{ old('email') }}"
-                            class="w-full px-4 py-3 bg-gray-50 border @error('email') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                            value="{{ old('email') }}" class="{{ $emailInputClass }}" />
                         @error('email')
                             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror
@@ -84,7 +98,7 @@
                     <div>
                         <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
                         <input id="password" name="password" type="password" placeholder="Minimal 8 karakter"
-                            class="w-full px-4 py-3 bg-gray-50 border @error('password') border-red-400 @else border-gray-200 @enderror rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition" />
+                            class="{{ $passwordInputClass }}" />
                         @error('password')
                             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror

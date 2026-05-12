@@ -22,8 +22,27 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            $role = Auth::user()?->role;
-            $targetRoute = in_array($role, ['admin', 'mentor', 'coach'], true)
+            $user = Auth::user();
+
+            if (in_array($user?->role, ['mentor', 'coach'], true)) {
+                $hasCompleteMentorProfile = filled($user->whatsapp_number)
+                    && filled($user->job_title)
+                    && filled($user->instagram_url)
+                    && filled($user->city)
+                    && filled($user->country);
+
+                if (! $hasCompleteMentorProfile) {
+                    return redirect()->route('mentor-coach.profile');
+                }
+
+                if (! $user->is_approved) {
+                    return redirect()->route('mentor-coach.waiting');
+                }
+
+                return redirect()->intended(route('filament.admin.pages.dashboard'));
+            }
+
+            $targetRoute = in_array($user?->role, ['admin'], true)
                 ? 'filament.admin.pages.dashboard'
                 : 'dashboard';
 
