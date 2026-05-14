@@ -158,6 +158,32 @@
             border-radius: 9999px;
             margin-top: 0.2rem;
         }
+
+        .quiz-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            padding: 1rem;
+        }
+
+        .quiz-modal-backdrop.active {
+            display: flex;
+        }
+
+        .quiz-modal-card {
+            width: 100%;
+            max-width: 42rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid #fbcfe8;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+        }
     </style>
 
     <x-navbar />
@@ -193,146 +219,189 @@
                         </div>
                     </div>
 
+                    @if($hasCourseAccess && $currentVideo)
+                        <div class="mb-6 bg-white rounded-xl p-4 border border-pink-100">
+                            <div class="flex flex-wrap items-center gap-3 justify-between">
+                                <div class="text-sm text-gray-600">
+                                    @if ($hasCurrentVideoQuiz)
+                                        Quiz tersedia untuk video ini.
+                                    @else
+                                        Video ini tidak memiliki quiz.
+                                    @endif
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
+                                        <button type="button" onclick="openQuizModal()"
+                                            class="bg-primary hover-primary text-white font-medium px-4 py-2 rounded-lg transition">
+                                            Isi Quiz
+                                        </button>
+                                    @elseif ($nextVideoUrl)
+                                        <a href="{{ $nextVideoUrl }}"
+                                            class="bg-primary hover-primary text-white font-medium px-4 py-2 rounded-lg transition">
+                                            Next Video
+                                        </a>
+                                    @else
+                                        <span
+                                            class="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full">
+                                            Ini video terakhir
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     @if($hasCourseAccess)
-                    <div class="bg-white rounded-xl p-4 md:p-6 mb-6">
-                        <h2 class="text-sm md:text-base font-bold text-gray-900 mb-3 md:mb-5">Progress Penyelesaian Kelas</h2>
+                        <div class="bg-white rounded-xl p-4 md:p-6 mb-6">
+                            <h2 class="text-sm md:text-base font-bold text-gray-900 mb-3 md:mb-5">Progress Penyelesaian
+                                Kelas</h2>
 
-                        @php
-                            $allVideosWatched = $totalVideosCount > 0 && $watchedVideosCount >= $totalVideosCount;
-                            $hasSubmission     = ! is_null($taskSubmission);
-                            $isPending         = $hasSubmission && $taskSubmission->isPending();
-                            $isReviewed        = $hasSubmission && $taskSubmission->isReviewed();
+                            @php
+                                $allVideosWatched = $totalVideosCount > 0 && $watchedVideosCount >= $totalVideosCount;
+                                $hasSubmission = !is_null($taskSubmission);
+                                $isPending = $hasSubmission && $taskSubmission->isPending();
+                                $isReviewed = $hasSubmission && $taskSubmission->isReviewed();
 
-                            $steps = [
-                                [
-                                    'label'     => 'Tonton Video',
-                                    'sublabel'  => $allVideosWatched ? ($totalVideosCount . '/' . $totalVideosCount . ' video') : ($watchedVideosCount . '/' . $totalVideosCount . ' video'),
-                                    'done'      => $allVideosWatched,
-                                    'active'    => ! $allVideosWatched,
-                                    'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                    'icon_todo' => '<path d="M8 5v14l11-7z"/>',
-                                ],
-                                [
-                                    'label'     => 'Submit Tugas',
-                                    'sublabel'  => $hasSubmission ? 'Tugas terkirim' : 'Belum di-submit',
-                                    'done'      => $hasSubmission,
-                                    'active'    => $allVideosWatched && ! $hasSubmission,
-                                    'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                    'icon_todo' => '<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>',
-                                ],
-                                [
-                                    'label'     => 'Di Review',
-                                    'sublabel'  => $isReviewed ? 'Review selesai' : ($isPending ? 'Sedang direview' : 'Menunggu submit'),
-                                    'done'      => $isReviewed,
-                                    'active'    => $isPending,
-                                    'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                    'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
-                                ],
-                                [
-                                    'label'     => 'Selesai Direview',
-                                    'sublabel'  => $isReviewed ? (is_null($taskSubmission->score) ? 'Sudah dinilai' : 'Nilai: ' . $taskSubmission->score . '/100') : 'Belum direview',
-                                    'done'      => $isReviewed,
-                                    'active'    => false,
-                                    'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                    'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
-                                ],
-                                [
-                                    'label'     => 'Dapatkan Sertifikat',
-                                    'sublabel'  => $isReviewed ? 'Klik untuk klaim' : 'Selesaikan review dulu',
-                                    'done'      => false,
-                                    'active'    => $isReviewed,
-                                    'url'       => $isReviewed ? route('claim-certificate', ['slug' => $course->slug]) : null,
-                                    'icon_done' => '',
-                                    'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
-                                ],
-                            ];
-                        @endphp
+                                $steps = [
+                                    [
+                                        'label' => 'Tonton Video',
+                                        'sublabel' => $allVideosWatched ? ($totalVideosCount . '/' . $totalVideosCount . ' video') : ($watchedVideosCount . '/' . $totalVideosCount . ' video'),
+                                        'done' => $allVideosWatched,
+                                        'active' => !$allVideosWatched,
+                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                        'icon_todo' => '<path d="M8 5v14l11-7z"/>',
+                                    ],
+                                    [
+                                        'label' => 'Submit Tugas',
+                                        'sublabel' => $hasSubmission ? 'Tugas terkirim' : 'Belum di-submit',
+                                        'done' => $hasSubmission,
+                                        'active' => $allVideosWatched && !$hasSubmission,
+                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                        'icon_todo' => '<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>',
+                                    ],
+                                    [
+                                        'label' => 'Di Review',
+                                        'sublabel' => $isReviewed ? 'Review selesai' : ($isPending ? 'Sedang direview' : 'Menunggu submit'),
+                                        'done' => $isReviewed,
+                                        'active' => $isPending,
+                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                        'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
+                                    ],
+                                    [
+                                        'label' => 'Selesai Direview',
+                                        'sublabel' => $isReviewed ? (is_null($taskSubmission->score) ? 'Sudah dinilai' : 'Nilai: ' . $taskSubmission->score . '/100') : 'Belum direview',
+                                        'done' => $isReviewed,
+                                        'active' => false,
+                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                        'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
+                                    ],
+                                    [
+                                        'label' => 'Dapatkan Sertifikat',
+                                        'sublabel' => $isReviewed ? 'Klik untuk klaim' : 'Selesaikan review dulu',
+                                        'done' => false,
+                                        'active' => $isReviewed,
+                                        'url' => $isReviewed ? route('claim-certificate', ['slug' => $course->slug]) : null,
+                                        'icon_done' => '',
+                                        'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
+                                    ],
+                                ];
+                            @endphp
 
-                        <!-- Mobile Version (< md) -->
-                        <div class="md:hidden grid grid-cols-3 gap-2">
-                            @foreach ($steps as $i => $step)
-                                @php
-                                    $useFilledIcon = $step['done'];
-                                    $circleClass = $step['done']
-                                        ? 'bg-emerald-500 border-emerald-500 text-white'
-                                        : ($step['active'] ? 'bg-pink-500 border-pink-500 text-white' : 'bg-white border-gray-300 text-gray-400');
-                                    $labelClass  = $step['done']
-                                        ? 'text-emerald-600 font-semibold'
-                                        : ($step['active'] ? 'text-pink-600 font-semibold' : 'text-gray-400');
-                                @endphp
-                                <div class="flex flex-col items-center">
-                                    @if (isset($step['url']) && $step['url'])
-                                        <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
-                                            class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
-                                            <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}" stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
-                                                {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
-                                            </svg>
-                                        </a>
-                                    @else
-                                        <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
-                                            <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}" stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
-                                                {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
-                                            </svg>
-                                        </div>
-                                    @endif
-                                    <p class="mt-1.5 text-center text-[11px] leading-tight {{ $labelClass }}">{{ $step['label'] }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        <!-- Desktop Version (>= md) -->
-                        <div class="hidden md:flex items-start gap-0">
-                            @foreach ($steps as $i => $step)
-                                @php
-                                    $isLast      = $i === count($steps) - 1;
-                                    $useFilledIcon = $step['done'];
-                                    $circleClass = $step['done']
-                                        ? 'bg-emerald-500 border-emerald-500 text-white'
-                                        : ($step['active'] ? 'bg-pink-500 border-pink-500 text-white' : 'bg-white border-gray-300 text-gray-400');
-                                    $labelClass  = $step['done']
-                                        ? 'text-emerald-600 font-semibold'
-                                        : ($step['active'] ? 'text-pink-600 font-semibold' : 'text-gray-400');
-                                    $subClass    = $step['done']
-                                        ? 'text-emerald-500'
-                                        : ($step['active'] ? 'text-pink-400' : 'text-gray-400');
-                                    $lineClass   = $step['done'] ? 'bg-emerald-400' : 'bg-gray-200';
-                                @endphp
-
-                                <div class="flex flex-col items-center {{ $isLast ? '' : 'flex-1' }}">
-                                    @if (! $isLast && isset($step['url']) && $step['url'])
-                                        <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
-                                            class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
-                                            <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}" stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
-                                                {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
-                                            </svg>
-                                        </a>
-                                    @elseif ($isLast && isset($step['url']) && $step['url'])
-                                        <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
-                                            class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                {!! $step['icon_todo'] !!}
-                                            </svg>
-                                        </a>
-                                    @else
-                                        <div class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
-                                            <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}" stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
-                                                {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
-                                            </svg>
-                                        </div>
-                                    @endif
-
-                                    <p class="mt-1.5 text-center text-xs leading-tight {{ $labelClass }}">{{ $step['label'] }}</p>
-                                    <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">{{ $step['sublabel'] }}</p>
-                                </div>
-
-                                @if (! $isLast)
-                                    <div class="flex-1 mt-4 mx-1">
-                                        <div class="h-0.5 w-full {{ $lineClass }} rounded-full"></div>
+                            <!-- Mobile Version (< md) -->
+                            <div class="md:hidden grid grid-cols-3 gap-2">
+                                @foreach ($steps as $i => $step)
+                                    @php
+                                        $useFilledIcon = $step['done'];
+                                        $circleClass = $step['done']
+                                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                                            : ($step['active'] ? 'bg-pink-500 border-pink-500 text-white' : 'bg-white border-gray-300 text-gray-400');
+                                        $labelClass = $step['done']
+                                            ? 'text-emerald-600 font-semibold'
+                                            : ($step['active'] ? 'text-pink-600 font-semibold' : 'text-gray-400');
+                                    @endphp
+                                    <div class="flex flex-col items-center">
+                                        @if (isset($step['url']) && $step['url'])
+                                            <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
+                                                class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
+                                                <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <div
+                                                class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
+                                                <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                </svg>
+                                            </div>
+                                        @endif
+                                        <p class="mt-1.5 text-center text-[11px] leading-tight {{ $labelClass }}">
+                                            {{ $step['label'] }}</p>
                                     </div>
-                                @endif
-                            @endforeach
+                                @endforeach
+                            </div>
+
+                            <!-- Desktop Version (>= md) -->
+                            <div class="hidden md:flex items-start gap-0">
+                                @foreach ($steps as $i => $step)
+                                    @php
+                                        $isLast = $i === count($steps) - 1;
+                                        $useFilledIcon = $step['done'];
+                                        $circleClass = $step['done']
+                                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                                            : ($step['active'] ? 'bg-pink-500 border-pink-500 text-white' : 'bg-white border-gray-300 text-gray-400');
+                                        $labelClass = $step['done']
+                                            ? 'text-emerald-600 font-semibold'
+                                            : ($step['active'] ? 'text-pink-600 font-semibold' : 'text-gray-400');
+                                        $subClass = $step['done']
+                                            ? 'text-emerald-500'
+                                            : ($step['active'] ? 'text-pink-400' : 'text-gray-400');
+                                        $lineClass = $step['done'] ? 'bg-emerald-400' : 'bg-gray-200';
+                                    @endphp
+
+                                    <div class="flex flex-col items-center {{ $isLast ? '' : 'flex-1' }}">
+                                        @if (!$isLast && isset($step['url']) && $step['url'])
+                                            <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
+                                                class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
+                                                <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                </svg>
+                                            </a>
+                                        @elseif ($isLast && isset($step['url']) && $step['url'])
+                                            <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
+                                                class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    {!! $step['icon_todo'] !!}
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <div
+                                                class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
+                                                <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                </svg>
+                                            </div>
+                                        @endif
+
+                                        <p class="mt-1.5 text-center text-xs leading-tight {{ $labelClass }}">
+                                            {{ $step['label'] }}</p>
+                                        <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">
+                                            {{ $step['sublabel'] }}</p>
+                                    </div>
+
+                                    @if (!$isLast)
+                                        <div class="flex-1 mt-4 mx-1">
+                                            <div class="h-0.5 w-full {{ $lineClass }} rounded-full"></div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
                     @endif
 
                     <div class="bg-white rounded-xl p-6 mb-6">
@@ -370,13 +439,13 @@
                             <div class="flex gap-8">
                                 <button class="btn-tab active pb-3 text-gray-900 font-medium" data-tab="tentang"
                                     onclick="switchTab(event, 'tentang')">Tentang</button>
-                                <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900" data-tab="tugas"
-                                    onclick="switchTab(event, 'tugas')">Tugas</button>
-                                <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900" data-tab="ulasan"
-                                    onclick="switchTab(event, 'ulasan')">Ulasan</button>
+                                <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900"
+                                    data-tab="tugas" onclick="switchTab(event, 'tugas')">Tugas</button>
+                                <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900"
+                                    data-tab="ulasan" onclick="switchTab(event, 'ulasan')">Ulasan</button>
                                 @if($hasCourseAccess)
-                                    <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900" data-tab="diskusi"
-                                        onclick="switchTab(event, 'diskusi')">Diskusi</button>
+                                    <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900"
+                                        data-tab="diskusi" onclick="switchTab(event, 'diskusi')">Diskusi</button>
                                 @endif
                             </div>
                         </div>
@@ -384,7 +453,8 @@
                         <div id="tentang" class="tab-content active">
                             <div class="text-gray-700 leading-relaxed">
                                 <p class="text-gray-600 mb-4">
-                                    {{ $course->description ?: 'Deskripsi kelas belum tersedia.' }}</p>
+                                    {{ $course->description ?: 'Deskripsi kelas belum tersedia.' }}
+                                </p>
                                 <h3 class="text-lg font-semibold text-gray-900 mb-3">Apa yang akan Anda pelajari?</h3>
                                 <ul class="space-y-2 mb-6">
                                     @forelse($course->keypoints as $keypoint)
@@ -405,7 +475,8 @@
                         <div id="tugas" class="tab-content">
                             <div class="space-y-6">
                                 @if (session('success'))
-                                    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                                    <div
+                                        class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                                         {{ session('success') }}
                                     </div>
                                 @endif
@@ -417,21 +488,26 @@
                                 @endif
 
                                 @if ($taskSubmission)
-                                    <div class="rounded-lg border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-gray-700">
-                                        <p class="font-semibold text-gray-900 mb-1">Status Tugas: {{ $taskSubmission->isReviewed() ? 'Selesai Direview' : 'Menunggu Review' }}</p>
-                                        @if ($taskSubmission->isReviewed() && ! is_null($taskSubmission->score))
+                                    <div
+                                        class="rounded-lg border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-gray-700">
+                                        <p class="font-semibold text-gray-900 mb-1">Status Tugas:
+                                            {{ $taskSubmission->isReviewed() ? 'Selesai Direview' : 'Menunggu Review' }}</p>
+                                        @if ($taskSubmission->isReviewed() && !is_null($taskSubmission->score))
                                             <p class="text-sky-700 font-semibold">Nilai: {{ $taskSubmission->score }}/100</p>
                                         @endif
-                                        <p class="text-xs text-gray-500 mt-1">Submit terakhir: {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">Submit terakhir:
+                                            {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}</p>
                                     </div>
                                 @endif
 
-                                @if (! $hasCourseAccess)
-                                    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                                @if (!$hasCourseAccess)
+                                    <div
+                                        class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
                                         Daftar kelas ini terlebih dahulu untuk bisa mengirim tugas.
                                     </div>
                                 @elseif ($watchedVideosCount < $totalVideosCount || $totalVideosCount === 0)
-                                    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                                    <div
+                                        class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
                                         Tugas bisa dikirim setelah semua video selesai ditonton.
                                     </div>
                                 @elseif ($taskSubmission && $taskSubmission->isReviewed())
@@ -439,11 +515,14 @@
                                         Tugas sudah direview. Saat ini submit ulang belum tersedia.
                                     </div>
                                 @else
-                                    <form method="POST" action="{{ route('course.task-submission.store', ['slug' => $course->slug]) }}" class="space-y-6">
+                                    <form method="POST"
+                                        action="{{ route('course.task-submission.store', ['slug' => $course->slug]) }}"
+                                        class="space-y-6">
                                         @csrf
 
                                         <div>
-                                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subjek Tugas</label>
+                                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subjek
+                                                Tugas</label>
                                             <input id="subject" name="subject" type="text"
                                                 value="{{ old('subject', $taskSubmission?->subject) }}"
                                                 placeholder="Masukkan subjek tugas..."
@@ -454,7 +533,9 @@
                                         </div>
 
                                         <div>
-                                            <label for="google_drive_url" class="block text-sm font-medium text-gray-700 mb-2">Link Google Drive</label>
+                                            <label for="google_drive_url"
+                                                class="block text-sm font-medium text-gray-700 mb-2">Link Google
+                                                Drive</label>
                                             <input id="google_drive_url" name="google_drive_url" type="url"
                                                 value="{{ old('google_drive_url', $taskSubmission?->google_drive_url) }}"
                                                 placeholder="https://drive.google.com/..."
@@ -482,7 +563,8 @@
                                                 alt="Avatar" class="w-10 h-10 rounded-full">
                                             <div class="flex-1">
                                                 <h4 class="font-semibold text-gray-900">
-                                                    {{ $review->student?->name ?? 'Student' }}</h4>
+                                                    {{ $review->student?->name ?? 'Student' }}
+                                                </h4>
                                                 <div class="flex gap-1 mb-2">
                                                     @for($star = 1; $star <= 5; $star++)
                                                         <svg class="w-4 h-4 {{ $star <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}"
@@ -494,7 +576,8 @@
                                                     @endfor
                                                 </div>
                                                 <p class="text-gray-700">
-                                                    {{ $review->review ?: 'Siswa memberikan rating tanpa komentar.' }}</p>
+                                                    {{ $review->review ?: 'Siswa memberikan rating tanpa komentar.' }}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -528,9 +611,11 @@
                                                     <div class="flex justify-between items-start gap-3">
                                                         <div>
                                                             <h4 class="font-semibold text-gray-900">
-                                                                {{ $discussion->student?->name ?? 'Student' }}</h4>
+                                                                {{ $discussion->student?->name ?? 'Student' }}
+                                                            </h4>
                                                             <p class="text-sm text-gray-500">
-                                                                {{ $discussion->created_at?->diffForHumans() }}</p>
+                                                                {{ $discussion->created_at?->diffForHumans() }}
+                                                            </p>
                                                         </div>
                                                         @if($discussion->student && $discussion->student->id === $course->user_id)
                                                             <span
@@ -611,8 +696,7 @@
                                         </svg>
                                     </button>
 
-                                    <div
-                                        class="dropdown-content {{ $section->has_current_video ? 'active' : '' }}">
+                                    <div class="dropdown-content {{ $section->has_current_video ? 'active' : '' }}">
                                         @foreach($section->videos as $video)
                                             @if($video->is_locked)
                                                 <div class="video-item locked">
@@ -664,7 +748,105 @@
 
     <x-footer />
 
+    @if($hasCourseAccess && $currentVideo && $hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
+        <div id="quizModal" class="quiz-modal-backdrop" onclick="handleQuizBackdropClick(event)">
+            <div class="quiz-modal-card">
+                <div class="px-5 py-4 border-b border-pink-100 flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base md:text-lg font-semibold text-gray-900">{{ $currentVideoQuiz->title }}</h3>
+                        <p class="text-xs text-gray-500">Lengkapi semua pertanyaan untuk membuka video berikutnya.</p>
+                    </div>
+                    <button type="button" onclick="closeQuizModal()"
+                        class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('course.quiz.submit', ['slug' => $course->slug]) }}"
+                    class="px-5 py-4 space-y-5">
+                    @csrf
+                    <input type="hidden" name="video_id" value="{{ $currentVideo->id }}">
+
+                    @foreach ($currentVideoQuiz->questions as $questionIndex => $question)
+                        <div class="rounded-lg border border-pink-100 p-4">
+                            <p class="font-medium text-gray-900 mb-3">{{ $questionIndex + 1 }}. {{ $question->question }}</p>
+
+                            <div class="space-y-2">
+                                @foreach ($question->options as $option)
+                                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                                        <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option->id }}" required
+                                            class="mt-0.5">
+                                        <span>{{ $option->option_text }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-pink-100">
+                        <button type="button" onclick="closeQuizModal()"
+                            class="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">Tutup</button>
+                        <button type="submit"
+                            class="px-4 py-2 rounded-lg bg-primary hover-primary text-white font-medium">Kirim Quiz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
     <script>
+        const sessionSuccessMessage = @json(session('success'));
+        const sessionErrorMessage = @json(session('error'));
+        const quizSuccessGifUrl = @json(asset('assets/congratulations.gif'));
+        const tryAgainGifUrl = @json(asset('assets/tryagain.gif'));
+
+        function showCourseAlert(type, message) {
+            if (!message) return;
+
+            const isQuizSuccess = type === 'success' && message.toLowerCase().includes('quiz');
+            const options = {
+                title: type === 'success' ? 'Berhasil' : 'Perhatian',
+                text: message,
+                confirmButtonColor: '#ec4899',
+                background: '#fff',
+                imageWidth: 220,
+            };
+
+            if (type === 'error') {
+                options.title = 'Coba lagi';
+                options.imageUrl = tryAgainGifUrl;
+                options.imageAlt = 'Try again gif';
+            } else if (isQuizSuccess) {
+                options.title = 'Quiz selesai';
+                options.imageUrl = quizSuccessGifUrl;
+                options.imageAlt = 'Quiz success gif';
+                options.confirmButtonText = 'Lanjut belajar';
+            } else {
+                options.imageUrl = quizSuccessGifUrl;
+                options.imageAlt = 'Success gif';
+            }
+
+            Swal.fire(options);
+        }
+
+        function openQuizModal() {
+            const modal = document.getElementById('quizModal');
+            if (!modal) return;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeQuizModal() {
+            const modal = document.getElementById('quizModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleQuizBackdropClick(event) {
+            if (event.target.id === 'quizModal') {
+                closeQuizModal();
+            }
+        }
+
         function activateTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.remove('active');
@@ -704,6 +886,9 @@
         }
 
         window.addEventListener('load', () => {
+            showCourseAlert('success', sessionSuccessMessage);
+            showCourseAlert('error', sessionErrorMessage);
+
             const hasTaskFormError = {{ $errors->has('subject') || $errors->has('google_drive_url') ? 'true' : 'false' }};
             const hashTab = window.location.hash.replace('#', '');
 

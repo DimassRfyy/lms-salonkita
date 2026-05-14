@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\CourseTaskSubmission;
+use App\Models\CourseVideoQuizCompletion;
 use App\Models\CourseVideoWatch;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -122,6 +123,11 @@ class User extends Authenticatable implements FilamentUser
     public function courseVideoWatches(): HasMany
     {
         return $this->hasMany(CourseVideoWatch::class);
+    }
+
+    public function courseVideoQuizCompletions(): HasMany
+    {
+        return $this->hasMany(CourseVideoQuizCompletion::class);
     }
 
     public function canAccessPanel(Panel $panel): bool

@@ -13,6 +13,9 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 
 Route::get('/course/{slug?}', [HomeController::class, 'course'])->name('course');
+Route::post('/course/{slug}/quiz/submit', [HomeController::class, 'storeCourseVideoQuiz'])
+    ->name('course.quiz.submit')
+    ->middleware('auth');
 Route::post('/course/{slug}/task-submission', [HomeController::class, 'storeCourseTaskSubmission'])
     ->name('course.task-submission.store')
     ->middleware('auth');

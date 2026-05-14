@@ -22,6 +22,7 @@
 </head>
 
 <body class="bg-gray-50 pt-16">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{ $slot }}
     @include('sweetalert2::index')
 </body>

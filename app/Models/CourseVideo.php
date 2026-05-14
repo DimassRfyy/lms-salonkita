@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Models\CourseSection;
 use App\Models\CourseVideoWatch;
+use App\Models\CourseVideoQuiz;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CourseVideo extends Model
@@ -28,6 +30,11 @@ class CourseVideo extends Model
     public function watches(): HasMany
     {
         return $this->hasMany(CourseVideoWatch::class, 'course_video_id');
+    }
+
+    public function quiz(): HasOne
+    {
+        return $this->hasOne(CourseVideoQuiz::class, 'course_video_id');
     }
 
     public function getDurationLabelAttribute(): string
