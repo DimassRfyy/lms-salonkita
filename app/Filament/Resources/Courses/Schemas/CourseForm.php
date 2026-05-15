@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Courses\Schemas;
 
 use App\Support\Youtube;
+use App\Support\GoogleSlides;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -28,8 +29,7 @@ class CourseForm
                                 ->directory('course-thumbnails'),
                             TextInput::make('name')
                                 ->required(),
-                            Textarea::make('description')
-                                ->columnSpanFull(),
+                            Textarea::make('description'),
                             Select::make('category_id')
                                 ->relationship('category', 'name')
                                 ->createOptionForm([
@@ -53,12 +53,27 @@ class CourseForm
                             TextInput::make('introduction_video_url')
                                 ->label('Introduction Video (YouTube URL / ID)')
                                 ->placeholder('https://www.youtube.com/watch?v=XXXXXXXXXXX atau XXXXXXX')
-                                ->helperText('Admin boleh isi URL YouTube lengkap atau langsung ID. Sistem akan simpan ID unik.')
+                                ->helperText('Isi URL YouTube atau langsung ID.')
                                 ->rule('regex:/^(?:[A-Za-z0-9_-]{11}|(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&?][^\s]*)?)$/i')
                                 ->validationMessages([
                                     'regex' => 'Masukkan URL YouTube valid atau ID video YouTube (11 karakter).',
                                 ])
                                 ->dehydrateStateUsing(fn (?string $state): ?string => Youtube::extractId($state)),
+                            TextInput::make('presentation_url')
+                                ->label('Google Slides Presentation URL')
+                                ->placeholder('https://docs.google.com/presentation/d/1wApLWXSb311GvxjNivsxgbaAyAHYvI5p/edit?usp=sharing')
+                                ->nullable()
+                                ->rule(function () {
+                                    return function ($attribute, $value, $fail) {
+                                        if (empty($value)) {
+                                            return; // nullable
+                                        }
+                                        if (!GoogleSlides::isValid($value)) {
+                                            $fail('Format URL Google Slides tidak valid. Gunakan: link edit, share, atau ID langsung.');
+                                        }
+                                    };
+                                })
+                                ->helperText('Masukkan URL Google Slides.'),
                         ])
                         ->columns(2),
 

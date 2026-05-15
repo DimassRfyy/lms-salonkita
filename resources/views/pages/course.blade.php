@@ -48,6 +48,10 @@
             background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
         }
 
+        .presentation-placeholder {
+            background: linear-gradient(135deg, #ffffff 0%, #fff7fb 100%);
+        }
+
         .video-item {
             display: flex;
             align-items: center;
@@ -112,6 +116,23 @@
         }
 
         .video-item.now-playing .video-duration {
+            color: #be185d;
+            background: #fbcfe8;
+        }
+
+        .video-item.presentation-item {
+            background: linear-gradient(90deg, #fdf2f8 0%, #fce7f3 100%);
+            border: 1px solid #f9a8d4;
+            box-shadow: 0 6px 14px rgba(236, 72, 153, 0.12);
+            color: #be185d;
+            font-weight: 600;
+        }
+
+        .video-item.presentation-item .video-icon {
+            color: #ec4899;
+        }
+
+        .video-item.presentation-item .video-duration {
             color: #be185d;
             background: #fbcfe8;
         }
@@ -204,53 +225,24 @@
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
+                    @php
+                        $showPresentation = $hasCourseAccess && filled($presentationEmbedUrl) && request()->boolean('presentation');
+                    @endphp
+
                     <div class="mb-3 text-sm text-pink-700 bg-pink-50 border border-pink-100 rounded-lg px-4 py-2">
-                        Sedang diputar: <span class="font-semibold">{{ $activeVideoTitle }}</span>
+                        Sedang diputar: <span class="font-semibold">{{ $showPresentation ? 'Materi Presentasi' : $activeVideoTitle }}</span>
                     </div>
 
                     <div class="video-placeholder rounded-xl overflow-hidden mb-6">
                         <div class="relative w-full" style="padding-bottom: 56.25%;">
                             <iframe class="absolute inset-0 w-full h-full"
-                                src="{{ $embedUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ' }}"
-                                title="{{ $currentVideo?->title ?? $course->name }}" frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                src="{{ $showPresentation ? $presentationEmbedUrl : ($embedUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ') }}"
+                                title="{{ $showPresentation ? 'Materi Presentasi ' . $course->name : ($currentVideo?->title ?? $course->name) }}" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                             </iframe>
                         </div>
                     </div>
-
-                    @if($hasCourseAccess && $currentVideo)
-                        <div class="mb-6 bg-white rounded-xl p-4 border border-pink-100">
-                            <div class="flex flex-wrap items-center gap-3 justify-between">
-                                <div class="text-sm text-gray-600">
-                                    @if ($hasCurrentVideoQuiz)
-                                        Quiz tersedia untuk video ini.
-                                    @else
-                                        Video ini tidak memiliki quiz.
-                                    @endif
-                                </div>
-
-                                <div class="flex items-center gap-2">
-                                    @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
-                                        <button type="button" onclick="openQuizModal()"
-                                            class="bg-primary hover-primary text-white font-medium px-4 py-2 rounded-lg transition">
-                                            Isi Quiz
-                                        </button>
-                                    @elseif ($nextVideoUrl)
-                                        <a href="{{ $nextVideoUrl }}"
-                                            class="bg-primary hover-primary text-white font-medium px-4 py-2 rounded-lg transition">
-                                            Next Video
-                                        </a>
-                                    @else
-                                        <span
-                                            class="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full">
-                                            Ini video terakhir
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
 
                     @if($hasCourseAccess)
                         <div class="bg-white rounded-xl p-4 md:p-6 mb-6">
@@ -677,6 +669,30 @@
                         @endif
 
                         <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                            @if($presentationEmbedUrl)
+                                @if($hasCourseAccess)
+                                    <a href="{{ route('course', ['slug' => $course->slug, 'presentation' => 1]) }}"
+                                        class="video-item presentation-item {{ $showPresentation ? 'now-playing' : '' }}">
+                                        <svg class="video-icon w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H9l-5 4V5zm5 3a1 1 0 000 2h6a1 1 0 100-2H9zm0 4a1 1 0 000 2h6a1 1 0 100-2H9z"></path>
+                                        </svg>
+                                        <span class="video-title">Materi Presentasi</span>
+                                        <span class="video-duration">PPT</span>
+                                    </a>
+                                @else
+                                    <div class="video-item locked">
+                                        <svg class="video-icon w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                            </path>
+                                        </svg>
+                                        <span class="video-title">Materi Presentasi</span>
+                                        <span class="video-duration">Terkunci</span>
+                                    </div>
+                                @endif
+                            @endif
+
                             @forelse($courseSections as $section)
 
                                 <div
@@ -732,6 +748,25 @@
                             @empty
                                 <div class="text-sm text-gray-500">Belum ada section di kelas ini.</div>
                             @endforelse
+                            
+                            @if($hasCourseAccess && $currentVideo && ! $showPresentation)
+                                <div class="mt-4 mb-4">
+                                    @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
+                                        <button type="button" onclick="openQuizModal()"
+                                            class="w-full bg-primary hover-primary text-white font-bold py-3 rounded-lg">
+                                            Isi Quiz
+                                        </button>
+                                    @elseif ($nextVideoUrl)
+                                        <a href="{{ $nextVideoUrl }}" class="w-full inline-block text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg">
+                                            Next Video
+                                        </a>
+                                    @else
+                                        <button type="button" disabled class="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-lg">
+                                            Video Terakhir
+                                        </button>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
                         @if(!$hasCourseAccess)
@@ -797,11 +832,13 @@
         const sessionErrorMessage = @json(session('error'));
         const quizSuccessGifUrl = @json(asset('assets/congratulations.gif'));
         const tryAgainGifUrl = @json(asset('assets/tryagain.gif'));
+        const nextVideoUrl = @json($nextVideoUrl ?? null);
 
         function showCourseAlert(type, message) {
             if (!message) return;
 
             const isQuizSuccess = type === 'success' && message.toLowerCase().includes('quiz');
+            const shouldGoNext = isQuizSuccess && !!nextVideoUrl;
             const options = {
                 title: type === 'success' ? 'Berhasil' : 'Perhatian',
                 text: message,
@@ -824,7 +861,11 @@
                 options.imageAlt = 'Success gif';
             }
 
-            Swal.fire(options);
+            Swal.fire(options).then((result) => {
+                if (result.isConfirmed && shouldGoNext) {
+                    window.location.href = nextVideoUrl;
+                }
+            });
         }
 
         function openQuizModal() {

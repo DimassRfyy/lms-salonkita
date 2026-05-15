@@ -204,6 +204,8 @@ class HomeController extends Controller
                 ?? Youtube::embedUrl($videos->first()?->video_url))
             : Youtube::embedUrl($course->introduction_video_url);
 
+        $presentationEmbedUrl = $hasCourseAccess ? $course->presentation_url : null;
+
         $averageRating = $course->reviews->count() > 0
             ? number_format((float) $course->reviews->avg('rating'), 1)
             : $course->rating_label;
@@ -301,6 +303,7 @@ class HomeController extends Controller
             'totalVideosCount',
             'watchedVideosCount',
             'progressPercentage',
+            'presentationEmbedUrl',
             'courseSections',
             'activeVideoTitle',
             'currentVideoQuiz',

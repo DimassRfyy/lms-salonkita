@@ -39,6 +39,7 @@
                             $avatarUrl = auth()->user()->avatar_url;
                             $isApproved = (bool) auth()->user()->is_approved;
                             $role = auth()->user()->role;
+                            $isAdmin = $role === 'admin';
                             $adminLabel = match ($role) {
                                 'mentor' => 'Ruang Mentor',
                                 'coach' => 'Ruang Coach',
@@ -75,7 +76,7 @@
                                     </svg>
                                     Profil
                                 </a>
-                                @if($isApproved)
+                                @if($isAdmin || $isApproved)
                                     <a href="{{ url('/admin') }}"
                                         class="flex items-center gap-3 px-4 py-3 text-pink-500 hover:bg-gray-50 border-b">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

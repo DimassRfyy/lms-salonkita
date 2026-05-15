@@ -8,6 +8,7 @@ use App\Models\CourseReview;
 use App\Models\CourseSection;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoWatch;
+use App\Support\GoogleSlides;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,7 @@ class Course extends Model
         'rating',
         'is_published',
         'introduction_video_url',
+        'presentation_url',
     ];
 
     protected function casts(): array
@@ -45,6 +47,12 @@ class Course extends Model
     {
         $this->attributes['name'] = $value;
         $this->attributes['slug'] = Str::slug($value);
+    }
+
+    public function setPresentationUrlAttribute($value)
+    {
+        // Transform dari berbagai format URL menjadi embed URL yang siap pakai
+        $this->attributes['presentation_url'] = GoogleSlides::transformToEmbedUrl($value);
     }
 
     public function category(): BelongsTo
