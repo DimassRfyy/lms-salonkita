@@ -18,6 +18,7 @@
             font-family: 'Nunito', sans-serif;
         }
     </style>
+    @livewireStyles
     @stack('styles')
 </head>
 
@@ -25,6 +26,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{ $slot }}
     @include('sweetalert2::index')
+    @livewireScripts
 </body>
 
 </html>

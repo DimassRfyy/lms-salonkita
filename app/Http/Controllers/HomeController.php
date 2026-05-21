@@ -443,10 +443,10 @@ class HomeController extends Controller
         return view('pages.profile');
     }
 
-    public function savedCourses()
+    public function savedCourses(Request $request)
     {
         /** @var User $user */
-        $user = request()->user();
+        $user = $request->user();
 
         $savedCourses = $user->savedCourses()
             ->with('category')
@@ -497,17 +497,20 @@ class HomeController extends Controller
         return back();
     }
 
-    public function allCourses()
+    public function allCourses(Request $request)
     {
+        $search = trim((string) $request->query('search', ''));
+
         $courses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
             ->where('is_published', true)
+            ->when($search !== '', fn($query) => $query->where('name', 'like', '%' . $search . '%'))
             ->latest()
             ->paginate(8)
             ->withQueryString();
 
-        return view('pages.all_courses', compact('courses'));
+        return view('pages.all_courses', compact('courses', 'search'));
     }
 
     public function claimCertificate(Request $request, string $slug)
