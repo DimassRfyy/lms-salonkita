@@ -51,7 +51,7 @@
                         </div>
                     </div>
 
-                    <button
+                    <button type="button" onclick="window.location.href='{{ route('dashboard') }}'"
                         class="px-8 py-4 bg-pink-500 text-white font-bold rounded-lg hover:bg-pink-600 transition shadow-lg">
                         Mulai Belajar Sekarang
                     </button>

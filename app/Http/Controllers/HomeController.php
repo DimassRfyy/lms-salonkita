@@ -69,7 +69,6 @@ class HomeController extends Controller
             ->withCount('videos')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
             ->orderByPivot('created_at', 'desc')
-            ->take(8)
             ->get();
 
         $ownedCourseIds = $ownedCourses->modelKeys();
@@ -100,8 +99,8 @@ class HomeController extends Controller
             ->where('is_published', true)
             ->when(! empty($ownedCourseIds), fn($query) => $query->whereNotIn('id', $ownedCourseIds, 'and'))
             ->latest()
-            ->take(4)
-            ->get();
+            ->paginate(8)
+            ->withQueryString();
 
         $savedCourseIds = $user->savedCourses()
             ->pluck('courses.id');
@@ -500,7 +499,15 @@ class HomeController extends Controller
 
     public function allCourses()
     {
-        return view('pages.all_courses');
+        $courses = Course::query()
+            ->with('category')
+            ->withSum('videos as total_duration_seconds', 'duration_seconds')
+            ->where('is_published', true)
+            ->latest()
+            ->paginate(8)
+            ->withQueryString();
+
+        return view('pages.all_courses', compact('courses'));
     }
 
     public function claimCertificate(Request $request, string $slug)
@@ -642,7 +649,7 @@ class HomeController extends Controller
 
         $validated = $request->validate([
             'course_id' => ['required', 'integer', 'exists:courses,id'],
-            'payment_method' => ['required', 'in:bank_transfer,e_wallet'],
+            'payment_method' => ['required', 'in:bca,bri,ovo,dana,gopay'],
             'proof_of_payment' => ['nullable', 'image', 'max:5120'],
         ]);
 

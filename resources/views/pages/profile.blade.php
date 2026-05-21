@@ -290,11 +290,21 @@
                             Save Changes
                         </button>
 
+                        <button type="button" onclick="confirmDeleteAccount()"
+                            class="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-base font-semibold text-red-600 transition hover:bg-red-100 hover:border-red-300">
+                            Delete Account
+                        </button>
+
                         <p class="mt-4 text-sm text-gray-500">Upload a new avatar to replace the current one. Changes
                             will apply as soon as you save.</p>
                     </div>
                 </div>
             </div>
+        </form>
+
+        <form id="delete-account-form" method="POST" action="{{ route('profile.destroy') }}" class="hidden">
+            @csrf
+            @method('DELETE')
         </form>
 
         <!-- Stats Section -->
@@ -552,4 +562,23 @@
         </div>
     </div>
     <x-footer />
+
+    <script>
+        function confirmDeleteAccount() {
+            Swal.fire({
+                title: 'Hapus akun?',
+                text: 'Akun akan dihapus permanen dan tidak bisa dipulihkan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus akun',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-account-form').submit();
+                }
+            });
+        }
+    </script>
 </x-layout>

@@ -37,6 +37,49 @@
                 @endif
 
                 <!-- Step 1: Pilih Metode Pembayaran -->
+                @php
+                    $bankAccounts = [
+                        [
+                            'code' => 'bca',
+                            'label' => 'BCA',
+                            'logo' => 'bca.png',
+                            'name' => 'Admin Salonkita',
+                            'number' => '1234567890',
+                        ],
+                        [
+                            'code' => 'bri',
+                            'label' => 'BRI',
+                            'logo' => 'bri.png',
+                            'name' => 'Admin Salonkita',
+                            'number' => '0987654321',
+                        ],
+                    ];
+
+                    $ewalletAccounts = [
+                        [
+                            'code' => 'ovo',
+                            'label' => 'OVO',
+                            'logo' => 'ovo.png',
+                            'name' => 'Admin Salonkita',
+                            'number' => '081234567890',
+                        ],
+                        [
+                            'code' => 'dana',
+                            'label' => 'DANA',
+                            'logo' => 'dana.png',
+                            'name' => 'Admin Salonkita',
+                            'number' => '081234567890',
+                        ],
+                        [
+                            'code' => 'gopay',
+                            'label' => 'GoPay',
+                            'logo' => 'Gopay.png',
+                            'name' => 'Admin Salonkita',
+                            'number' => '081234567890',
+                        ],
+                    ];
+                @endphp
+
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
                     <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
                         <span
@@ -44,37 +87,80 @@
                         Pilih Metode Pembayaran
                     </h2>
 
-                    <div class="space-y-3">
-                        <label
-                            class="flex items-center gap-4 p-4 rounded-xl border-2 border-pink-400 bg-pink-50 cursor-pointer transition hover:border-pink-400">
-                            <input type="radio" name="payment_method" value="bank_transfer" class="accent-pink-500 w-4 h-4" checked>
-                            <div class="flex items-center gap-3 flex-1">
-                                <div
-                                    class="w-14 h-8 bg-blue-700 rounded-md flex items-center justify-center text-white text-xs font-extrabold tracking-wide">
-                                    BANK</div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">Bank Transfer</p>
-                                    <p class="text-xs text-gray-500">Transfer manual ke rekening admin</p>
-                                </div>
+                    <div class="space-y-5">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800 mb-3">Bank Transfer</p>
+                            <div class="space-y-3">
+                                @foreach ($bankAccounts as $index => $bank)
+                                    <label
+                                        class="flex items-center gap-4 p-4 rounded-xl border-2 {{ $index === 0 ? 'border-pink-400 bg-pink-50' : 'border-gray-200' }} cursor-pointer transition hover:border-pink-300">
+                                        <input type="radio" name="payment_method" value="{{ $bank['code'] }}"
+                                            class="accent-pink-500 w-4 h-4" {{ $index === 0 ? 'checked' : '' }}>
+                                        <div class="flex items-center gap-3 flex-1">
+                                            <div
+                                                class="w-14 h-8 rounded-md overflow-hidden bg-white border border-gray-100 flex items-center justify-center px-1">
+                                                <img src="{{ asset('assets/images/logos/' . $bank['logo']) }}"
+                                                    alt="Logo {{ $bank['label'] }}" class="w-full h-full object-contain">
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-gray-800 text-sm">{{ $bank['label'] }}</p>
+                                                <p class="text-xs text-gray-500">{{ $bank['number'] }} · a.n.
+                                                    {{ $bank['name'] }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                @endforeach
                             </div>
-                        </label>
+                        </div>
 
-                        <label
-                            class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
-                            <input type="radio" name="payment_method" value="e_wallet" class="accent-pink-500 w-4 h-4">
-                            <div class="flex items-center gap-3 flex-1">
-                                <div
-                                    class="w-14 h-8 bg-teal-500 rounded-md flex items-center justify-center text-white text-xs font-extrabold">
-                                    EWALLET</div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">E-Wallet</p>
-                                    <p class="text-xs text-gray-500">Bayar lewat dompet digital</p>
-                                </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800 mb-3">E-Wallet</p>
+                            <div class="space-y-3">
+                                @foreach ($ewalletAccounts as $ewallet)
+                                    <label
+                                        class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
+                                        <input type="radio" name="payment_method" value="{{ $ewallet['code'] }}"
+                                            class="accent-pink-500 w-4 h-4">
+                                        <div class="flex items-center gap-3 flex-1">
+                                            <div
+                                                class="w-14 h-8 rounded-md overflow-hidden bg-white flex items-center justify-center px-1">
+                                                <img src="{{ asset('assets/images/logos/' . $ewallet['logo']) }}"
+                                                    alt="Logo {{ $ewallet['label'] }}" class="w-full h-full object-contain">
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-gray-800 text-sm">{{ $ewallet['label'] }}</p>
+                                                <p class="text-xs text-gray-500">{{ $ewallet['number'] }} · a.n.
+                                                    {{ $ewallet['name'] }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                @endforeach
                             </div>
-                        </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 rounded-xl border border-pink-100 bg-pink-50 p-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-pink-500 mt-0.5 shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M12 18h.01M12 6a9 9 0 100 18 9 9 0 000-18z"></path>
+                            </svg>
+                            <div class="text-sm">
+                                <p class="font-semibold text-gray-800">Informasi rekening admin</p>
+                                <p class="text-gray-600 mt-1">Silakan transfer ke salah satu rekening admin di atas lalu
+                                    upload bukti pembayaran. Pastikan nama rekening sesuai sebelum mengirim.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+            </div>
+
+            <!-- ===== RIGHT: Ringkasan Pesanan + CTA ===== -->
+            <div class="lg:col-span-1 space-y-6">
                 <!-- Step 2: Upload Bukti Pembayaran -->
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
                     <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
@@ -82,7 +168,7 @@
                             class="w-7 h-7 rounded-full bg-pink-500 text-white text-sm font-bold flex items-center justify-center">2</span>
                         Upload Bukti Pembayaran
                     </h2>
-                    <p class="text-sm text-gray-400 mb-5 ml-9">Transfer ke rekening yang dipilih, lalu upload screenshot
+                    <p class="text-xs text-gray-400 mb-5 ml-9">Upload screenshot
                         bukti transfer kamu.</p>
 
                     <!-- Upload Area -->
@@ -125,26 +211,14 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Konfirmasi & Bayar -->
-                <button type="submit"
-                    class="w-full py-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-lg rounded-xl transition shadow-sm flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Konfirmasi Pembayaran
-                </button>
-            </div>
-
-            <!-- ===== RIGHT: Ringkasan Pesanan ===== -->
-            <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6 sticky top-24">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Ringkasan Pesanan</h2>
 
                     <!-- Course Item -->
                     <div class="flex gap-3 mb-5 pb-5 border-b border-gray-100">
                         <div class="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-pink-100">
-                            <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}" alt="Thumbnail Kelas"
+                            <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
+                                alt="Thumbnail Kelas"
                                 onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
                         </div>
@@ -176,7 +250,8 @@
                     <!-- Total -->
                     <div class="flex justify-between items-center mb-6">
                         <span class="font-bold text-gray-900">Total Pembayaran</span>
-                        <span class="text-xl font-extrabold text-pink-500">Rp {{ number_format((int) $course->price, 0, ',', '.') }}</span>
+                        <span class="text-xl font-extrabold text-pink-500">Rp
+                            {{ number_format((int) $course->price, 0, ',', '.') }}</span>
                     </div>
 
                     <!-- Security Note -->
@@ -190,6 +265,16 @@
                         <p class="text-xs text-gray-400">Pembayaran kamu aman & terenkripsi</p>
                     </div>
                 </div>
+
+                <!-- Step 3: Konfirmasi & Bayar -->
+                <button type="submit"
+                    class="w-full py-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-lg rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Konfirmasi Pembayaran
+                </button>
             </div>
 
         </form>

@@ -12,13 +12,11 @@
             </p>
         </section>
 
-        
+
         @if($continueWatching)
             <!-- CONTINUE WATCHING SECTION -->
             <section class="mb-12">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Lanjutkan Menonton</h2>
-
-
                 <div
                     class="bg-white rounded-xl overflow-hidden shadow-md border border-pink-100 hover:shadow-lg transition">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
@@ -176,11 +174,21 @@
                 </div>
                 @endforelse
             </div>
+
         </section>
 
         <!-- RECOMMENDATIONS SECTION -->
         <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Rekomendasi Untuk Anda</h2>
+            <div class="flex justify-between items-center mb-6 gap-4">
+                <h2 class="text-2xl font-bold text-gray-900">Rekomendasi Untuk Anda</h2>
+                <a href="{{ route('all-courses') }}"
+                    class="text-pink-500 font-medium hover:text-pink-600 transition flex items-center gap-2">
+                    Jelajahi Kelas
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @forelse($recommendedCourses as $course)
@@ -264,6 +272,10 @@
                     Belum ada rekomendasi kelas.
                 </div>
                 @endforelse
+            </div>
+
+            <div class="mt-8">
+                {{ $recommendedCourses->links() }}
             </div>
         </section>
     </main>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use SweetAlert2\Laravel\Swal;
@@ -120,5 +122,18 @@ class ProfileController extends Controller
 
             return back()->withInput();
         }
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        Auth::logout();
+        DB::table('users')->where('id', $user->id)->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
     }
 }

@@ -47,8 +47,11 @@ class TransactionResource extends Resource
                     ->required(),
                 Select::make('payment_method')
                     ->options([
-                        'bank_transfer' => 'Bank Transfer',
-                        'e_wallet' => 'E-Wallet',
+                        'bca' => 'BCA',
+                        'bri' => 'BRI',
+                        'ovo' => 'OVO',
+                        'dana' => 'DANA',
+                        'gopay' => 'GoPay',
                     ])
                     ->required(),
                 FileUpload::make('proof_of_payment')
@@ -77,6 +80,14 @@ class TransactionResource extends Resource
                 TextColumn::make('course.name')
                     ->searchable(),
                 TextColumn::make('payment_method')
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'bca' => 'BCA',
+                        'bri' => 'BRI',
+                        'ovo' => 'OVO',
+                        'dana' => 'DANA',
+                        'gopay' => 'GoPay',
+                        default => $state,
+                    })
                     ->searchable(),
                 IconColumn::make('is_paid')
                     ->label('Paid')
@@ -93,6 +104,7 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

@@ -1,4 +1,4 @@
-<div>
+<div class="mt-auto">
     <!-- FOOTER -->
     <footer class="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-12">
         <div class="max-w-7xl mx-auto">

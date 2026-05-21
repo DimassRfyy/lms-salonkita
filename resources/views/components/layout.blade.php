@@ -21,7 +21,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-gray-50 pt-16">
+<body class="min-h-screen bg-gray-50 pt-16 flex flex-col">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{ $slot }}
     @include('sweetalert2::index')
