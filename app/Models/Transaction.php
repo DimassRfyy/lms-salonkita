@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\PromoCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,9 +16,11 @@ class Transaction extends Model
         'trx_id',
         'user_id',
         'course_id',
+        'promo_code_id',
         'payment_method',
         'proof_of_payment',
         'is_paid',
+        'discount_amount',
         'price',
     ];
 
@@ -25,6 +28,7 @@ class Transaction extends Model
     {
         return [
             'price' => 'integer',
+            'discount_amount' => 'integer',
             'is_paid' => 'boolean',
         ];
     }
@@ -52,6 +56,11 @@ class Transaction extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function promoCode(): BelongsTo
+    {
+        return $this->belongsTo(PromoCode::class);
     }
 
     public function scopePaid($query)

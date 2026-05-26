@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoQuizCompletion;
 use App\Models\CourseVideoWatch;
+use App\Models\PromoCode;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Support\Youtube;
@@ -133,10 +134,19 @@ class HomeController extends Controller
             : (clone $query)->latest()->firstOrFail();
 
         $hasCourseAccess = false;
+        $hasPendingTransaction = false;
         if ($viewer) {
             $isCourseInstructor = $viewer->id === (int) $course->user_id;
             $hasCourseAccess = $isCourseInstructor
                 || $viewer->ownedCourses()->where('courses.id', $course->id)->exists();
+
+            if (! $hasCourseAccess) {
+                $hasPendingTransaction = $viewer->transactions()
+                    ->where('course_id', $course->id)
+                    ->latest('created_at')
+                    ->where('is_paid', false)
+                    ->exists();
+            }
         }
 
         $videos = $course->sections->flatMap->videos->values();
@@ -299,6 +309,7 @@ class HomeController extends Controller
             'averageRating',
             'studentsCount',
             'hasCourseAccess',
+            'hasPendingTransaction',
             'totalVideosCount',
             'watchedVideosCount',
             'progressPercentage',
@@ -653,7 +664,8 @@ class HomeController extends Controller
         $validated = $request->validate([
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'payment_method' => ['required', 'in:bca,bri,ovo,dana,gopay'],
-            'proof_of_payment' => ['nullable', 'image', 'max:5120'],
+            'proof_of_payment' => ['required', 'image', 'max:5120'],
+            'promo_code' => ['nullable', 'string', 'max:50'],
         ]);
 
         $course = Course::query()
@@ -671,19 +683,46 @@ class HomeController extends Controller
             $proofOfPaymentPath = $request->file('proof_of_payment')->store('proof-of-payments', 'public');
         }
 
+        $coursePrice = (int) $course->price;
+        $promoCode = null;
+        $discountAmount = 0;
+
+        $promoCodeInput = mb_strtoupper(trim((string) ($validated['promo_code'] ?? '')));
+
+        if ($promoCodeInput !== '') {
+            $promoCode = PromoCode::query()
+                ->whereRaw('UPPER(code) = ?', [$promoCodeInput], 'and')
+                ->where('is_active', true)
+                ->first();
+
+            if (! $promoCode) {
+                return back()
+                    ->withErrors(['promo_code' => 'Kode promo tidak valid atau sudah tidak aktif.'])
+                    ->withInput();
+            }
+
+            $discountAmount = $promoCode->type === 'percentage'
+                ? (int) round($coursePrice * ((int) $promoCode->value / 100))
+                : (int) $promoCode->value;
+
+            $discountAmount = min(max($discountAmount, 0), $coursePrice);
+        }
+
+        $finalPrice = max($coursePrice - $discountAmount, 0);
+
         Transaction::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
+            'promo_code_id' => $promoCode?->id,
             'payment_method' => $validated['payment_method'],
             'proof_of_payment' => $proofOfPaymentPath,
-            'price' => (int) $course->price,
-            'is_paid' => true,
+            'discount_amount' => $discountAmount,
+            'price' => $finalPrice,
+            'is_paid' => false,
         ]);
-
-        $user->ownedCourses()->syncWithoutDetaching([$course->id]);
 
         return redirect()
             ->route('course', ['slug' => $course->slug])
-            ->with('success', 'Pembayaran berhasil. Kelas sudah aktif di akun kamu.');
+            ->with('success', 'Pembelian kamu sedang diverifikasi oleh admin.');
     }
 }

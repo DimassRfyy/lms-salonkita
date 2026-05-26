@@ -230,14 +230,16 @@
                     @endphp
 
                     <div class="mb-3 text-sm text-pink-700 bg-pink-50 border border-pink-100 rounded-lg px-4 py-2">
-                        Sedang diputar: <span class="font-semibold">{{ $showPresentation ? 'Materi Presentasi' : $activeVideoTitle }}</span>
+                        Sedang diputar: <span
+                            class="font-semibold">{{ $showPresentation ? 'Materi Presentasi' : $activeVideoTitle }}</span>
                     </div>
 
                     <div class="video-placeholder rounded-xl overflow-hidden mb-6">
                         <div class="relative w-full" style="padding-bottom: 56.25%;">
                             <iframe class="absolute inset-0 w-full h-full"
                                 src="{{ $showPresentation ? $presentationEmbedUrl : ($embedUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ') }}"
-                                title="{{ $showPresentation ? 'Materi Presentasi ' . $course->name : ($currentVideo?->title ?? $course->name) }}" frameborder="0"
+                                title="{{ $showPresentation ? 'Materi Presentasi ' . $course->name : ($currentVideo?->title ?? $course->name) }}"
+                                frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                             </iframe>
@@ -331,7 +333,8 @@
                                             </div>
                                         @endif
                                         <p class="mt-1.5 text-center text-[11px] leading-tight {{ $labelClass }}">
-                                            {{ $step['label'] }}</p>
+                                            {{ $step['label'] }}
+                                        </p>
                                     </div>
                                 @endforeach
                             </div>
@@ -381,9 +384,11 @@
                                         @endif
 
                                         <p class="mt-1.5 text-center text-xs leading-tight {{ $labelClass }}">
-                                            {{ $step['label'] }}</p>
+                                            {{ $step['label'] }}
+                                        </p>
                                         <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">
-                                            {{ $step['sublabel'] }}</p>
+                                            {{ $step['sublabel'] }}
+                                        </p>
                                     </div>
 
                                     @if (!$isLast)
@@ -483,12 +488,14 @@
                                     <div
                                         class="rounded-lg border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-gray-700">
                                         <p class="font-semibold text-gray-900 mb-1">Status Tugas:
-                                            {{ $taskSubmission->isReviewed() ? 'Selesai Direview' : 'Menunggu Review' }}</p>
+                                            {{ $taskSubmission->isReviewed() ? 'Selesai Direview' : 'Menunggu Review' }}
+                                        </p>
                                         @if ($taskSubmission->isReviewed() && !is_null($taskSubmission->score))
                                             <p class="text-sky-700 font-semibold">Nilai: {{ $taskSubmission->score }}/100</p>
                                         @endif
                                         <p class="text-xs text-gray-500 mt-1">Submit terakhir:
-                                            {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}</p>
+                                            {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}
+                                        </p>
                                     </div>
                                 @endif
 
@@ -674,7 +681,9 @@
                                     <a href="{{ route('course', ['slug' => $course->slug, 'presentation' => 1]) }}"
                                         class="video-item presentation-item {{ $showPresentation ? 'now-playing' : '' }}">
                                         <svg class="video-icon w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H9l-5 4V5zm5 3a1 1 0 000 2h6a1 1 0 100-2H9zm0 4a1 1 0 000 2h6a1 1 0 100-2H9z"></path>
+                                            <path
+                                                d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H9l-5 4V5zm5 3a1 1 0 000 2h6a1 1 0 100-2H9zm0 4a1 1 0 000 2h6a1 1 0 100-2H9z">
+                                            </path>
                                         </svg>
                                         <span class="video-title">Materi Presentasi</span>
                                         <span class="video-duration">PPT</span>
@@ -748,8 +757,8 @@
                             @empty
                                 <div class="text-sm text-gray-500">Belum ada section di kelas ini.</div>
                             @endforelse
-                            
-                            @if($hasCourseAccess && $currentVideo && ! $showPresentation)
+
+                            @if($hasCourseAccess && $currentVideo && !$showPresentation)
                                 <div class="mt-4 mb-4">
                                     @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
                                         <button type="button" onclick="openQuizModal()"
@@ -757,11 +766,13 @@
                                             Isi Quiz
                                         </button>
                                     @elseif ($nextVideoUrl)
-                                        <a href="{{ $nextVideoUrl }}" class="w-full inline-block text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg">
+                                        <a href="{{ $nextVideoUrl }}"
+                                            class="w-full inline-block text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg">
                                             Next Video
                                         </a>
                                     @else
-                                        <button type="button" disabled class="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-lg">
+                                        <button type="button" disabled
+                                            class="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-lg">
                                             Video Terakhir
                                         </button>
                                     @endif
@@ -770,10 +781,17 @@
                         </div>
 
                         @if(!$hasCourseAccess)
-                            <a href="{{ route('transaction', ['course' => $course->slug]) }}"
-                                class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
-                                Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
-                            </a>
+                            @if($hasPendingTransaction)
+                                <div
+                                    class="block w-full text-center bg-gray-200 text-gray-600 font-bold py-3 rounded-lg mt-6 cursor-not-allowed">
+                                    Menunggu Konfirmasi Bayar
+                                </div>
+                            @else
+                                <a href="{{ route('transaction', ['course' => $course->slug]) }}"
+                                    class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
+                                    Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                                </a>
+                            @endif
                         @endif
                     </div>
                 </div>

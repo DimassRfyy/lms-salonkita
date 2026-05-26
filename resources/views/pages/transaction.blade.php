@@ -185,8 +185,8 @@
                             <p class="font-semibold text-gray-700 text-sm">Klik untuk upload atau drag & drop</p>
                             <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG — maks. 5 MB</p>
                         </div>
-                        <input id="bukti-upload" name="proof_of_payment" type="file" accept="image/*" class="hidden"
-                            onchange="previewFile(this)">
+                        <input id="bukti-upload" name="proof_of_payment" type="file" accept="image/*" required
+                            class="hidden" onchange="previewFile(this)">
                     </label>
 
                     <!-- Preview -->
@@ -235,24 +235,8 @@
                         </div>
                     </div>
 
-                    <!-- Price Detail -->
-                    <div class="space-y-3 mb-5 pb-5 border-b border-gray-100 text-sm">
-                        <div class="flex justify-between text-gray-600">
-                            <span>Harga kelas</span>
-                            <span>Rp {{ number_format((int) $course->price, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="flex justify-between text-gray-600">
-                            <span>Biaya admin</span>
-                            <span>Rp 0</span>
-                        </div>
-                    </div>
-
-                    <!-- Total -->
-                    <div class="flex justify-between items-center mb-6">
-                        <span class="font-bold text-gray-900">Total Pembayaran</span>
-                        <span class="text-xl font-extrabold text-pink-500">Rp
-                            {{ number_format((int) $course->price, 0, ',', '.') }}</span>
-                    </div>
+                    <livewire:transaction-promo-code :course-price="(int) $course->price"
+                        :initial-promo-code="old('promo_code', '')" />
 
                     <!-- Security Note -->
                     <div class="flex items-center gap-2 mt-5 p-3 bg-gray-50 rounded-lg">

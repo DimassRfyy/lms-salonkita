@@ -6,6 +6,7 @@ use App\Filament\Resources\Transactions\Pages\ManageTransactions;
 use App\Models\Transaction;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ActionGroup;
@@ -26,6 +27,20 @@ use Illuminate\Database\Eloquent\Builder;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Transaksi menunggu approve';
+    }
+
+    protected static string | \UnitEnum | null $navigationGroup = 'Payment Management';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::query()
+            ->where('is_paid', false)
+            ->count();
+    }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Banknotes;
 
@@ -89,11 +104,16 @@ class TransactionResource extends Resource
                         default => $state,
                     })
                     ->searchable(),
+                TextColumn::make('promoCode.code')
+                    ->label('Promo')
+                    ->placeholder('-')
+                    ->description(fn (Transaction $record): ?string => $record->promoCode?->description)
+                    ->searchable(),
                 IconColumn::make('is_paid')
                     ->label('Paid')
                     ->boolean(),
                 TextColumn::make('price')
-                    ->money('IDR', locale: 'id')
+                    ->formatStateUsing(fn ($state): string => 'Rp ' . number_format((int) $state, 0, ',', '.'))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -113,6 +133,17 @@ class TransactionResource extends Resource
                     ActionGroup::make([
                         ViewAction::make(),
                         EditAction::make(),
+                        Action::make('approve')
+                            ->label('Approve')
+                            ->color('success')
+                            ->icon('heroicon-m-check')
+                            ->requiresConfirmation()
+                            ->visible(fn (Transaction $record): bool => ! $record->is_paid)
+                            ->action(function (Transaction $record): void {
+                                $record->update(['is_paid' => true]);
+
+                                $record->student?->ownedCourses()->syncWithoutDetaching([$record->course_id]);
+                            }),
                     ])
                         ->dropdown(false),
                     DeleteAction::make()
