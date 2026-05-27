@@ -21,6 +21,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\ViewAction;
+
 class CourseVideoQuizResource extends Resource
 {
     protected static ?string $model = CourseVideoQuiz::class;
@@ -28,6 +32,13 @@ class CourseVideoQuizResource extends Resource
     protected static string | \UnitEnum | null $navigationGroup = 'Course Management';
 
     protected static ?string $navigationLabel = 'Video Quizzes';
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && in_array($user->role, ['admin', 'coach'], true);
+    }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::QuestionMarkCircle;
 
@@ -135,8 +146,14 @@ class CourseVideoQuizResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    ActionGroup::make([
+                        ViewAction::make(),
+                        EditAction::make(),
+                    ])
+                        ->dropdown(false),
+                    DeleteAction::make()
+                ])->icon('heroicon-m-bars-3')
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

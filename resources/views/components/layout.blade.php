@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salonkita - Belajar Beauty Skill Profesional dari Rumah</title>
-    <link rel="icon" href="{{ asset('assets/images/logos/wmm-logo-noteks.png') }}">
+    <link rel="icon" href="{{ asset('assets/images/logos/logo_skid.webp') }}">
     <meta name="description"
         content="Salonkita adalah platform pembelajaran online yang menyediakan kelas-kelas kecantikan profesional untuk membantu Anda mengembangkan keterampilan di bidang kecantikan. Temukan berbagai kelas makeup, skincare, hair styling, dan banyak lagi yang diajarkan oleh para ahli di industri kecantikan. Belajar dengan mudah dari rumah dan tingkatkan keahlian Anda bersama Salonkita.">
     <script src="https://cdn.tailwindcss.com"></script>

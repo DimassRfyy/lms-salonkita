@@ -38,6 +38,7 @@ class CourseForm
                                 ])
                                 ->required(),
                             Select::make('user_id')
+                                ->label('Coach')
                                 ->relationship('instructor', 'name', fn ($query) => $query->where('role', 'coach'))
                                 ->required(),
                             TextInput::make('price')

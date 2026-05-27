@@ -64,8 +64,7 @@ class SectionsRelationManager extends RelationManager
                         TextInput::make('video_url')
                             ->label('YouTube URL / ID')
                             ->required()
-                            ->placeholder('https://www.youtube.com/watch?v=XXXXXXXXXXX atau XXXXXXX')
-                            ->helperText('Sistem akan simpan hanya ID video YouTube (11 karakter).')
+                            ->placeholder('https://www.youtube.com/watch?v=XXXXXXXXXXX')
                             ->rule('regex:/^(?:[A-Za-z0-9_-]{11}|(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&?][^\s]*)?)$/i')
                             ->validationMessages([
                                 'regex' => 'Masukkan URL YouTube valid atau ID video YouTube (11 karakter).',

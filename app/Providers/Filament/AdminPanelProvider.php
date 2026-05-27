@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => '#FF4D9E',
             ])
+            ->sidebarCollapsibleOnDesktop()
             ->navigationItems([
             NavigationItem::make('Back to Website')
                 ->url('/', shouldOpenInNewTab: false)

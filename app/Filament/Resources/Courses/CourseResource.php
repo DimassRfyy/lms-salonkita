@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class CourseResource extends Resource
@@ -22,6 +23,13 @@ class CourseResource extends Resource
 
     protected static string | UnitEnum | null $navigationGroup = 'Course Management';
 
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && in_array($user->role, ['admin', 'coach'], true);
+    }
+    
     protected static string|BackedEnum|null $navigationIcon = Heroicon::AcademicCap;
 
     public static function form(Schema $schema): Schema

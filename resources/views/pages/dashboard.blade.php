@@ -75,6 +75,7 @@
             </section>
         @endif
 
+        @if($ownedCourses->isNotEmpty())
         <!-- OWNED CLASSES SECTION -->
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
@@ -89,7 +90,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @forelse($ownedCourses as $course)
+                @foreach($ownedCourses as $course)
                 @php($isSaved = $savedCourseIds->contains($course->id))
                 <!-- Course Card -->
                 <div
@@ -168,14 +169,10 @@
                         </div>
                     </div>
                 </div>
-                @empty
-                <div class="md:col-span-2 lg:col-span-4 text-center py-8 text-gray-500">
-                    Kamu belum punya kelas aktif. Beli kelas terlebih dahulu agar muncul di halaman ini.
-                </div>
-                @endforelse
+                @endforeach
             </div>
-
         </section>
+        @endif
 
         <!-- RECOMMENDATIONS SECTION -->
         <section>

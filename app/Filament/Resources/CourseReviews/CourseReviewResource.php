@@ -10,13 +10,14 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class CourseReviewResource extends Resource
@@ -27,6 +28,13 @@ class CourseReviewResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Star;
 
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && in_array($user->role, ['admin', 'coach'], true);
+    }
+    
     public static function form(Schema $schema): Schema
     {
         return $schema

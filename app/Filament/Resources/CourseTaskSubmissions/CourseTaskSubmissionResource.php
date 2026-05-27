@@ -17,6 +17,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class CourseTaskSubmissionResource extends Resource
 {
@@ -25,6 +26,13 @@ class CourseTaskSubmissionResource extends Resource
     protected static string | \UnitEnum | null $navigationGroup = 'Course Management';
 
     protected static ?string $navigationLabel = 'Task Submissions';
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && in_array($user->role, ['admin', 'coach'], true);
+    }
 
     public static function getNavigationBadgeTooltip(): ?string
     {
