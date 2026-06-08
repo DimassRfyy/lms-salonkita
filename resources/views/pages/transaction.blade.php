@@ -90,10 +90,10 @@
                     <div class="space-y-5">
                         <div>
                             <p class="text-sm font-semibold text-gray-800 mb-3">Bank Transfer</p>
-                            <div class="space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @foreach ($bankAccounts as $index => $bank)
                                     <label
-                                        class="flex items-center gap-4 p-4 rounded-xl border-2 {{ $index === 0 ? 'border-pink-400 bg-pink-50' : 'border-gray-200' }} cursor-pointer transition hover:border-pink-300">
+                                        class="flex items-center gap-4 p-4 rounded-xl border-2 {{ $index === 0 ? 'border-pink-400 bg-pink-50' : 'border-gray-200' }} cursor-pointer transition hover:border-pink-300 min-h-[88px]">
                                         <input type="radio" name="payment_method" value="{{ $bank['code'] }}"
                                             class="accent-pink-500 w-4 h-4" {{ $index === 0 ? 'checked' : '' }}>
                                         <div class="flex items-center gap-3 flex-1">
@@ -116,10 +116,10 @@
 
                         <div>
                             <p class="text-sm font-semibold text-gray-800 mb-3">E-Wallet</p>
-                            <div class="space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @foreach ($ewalletAccounts as $ewallet)
                                     <label
-                                        class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300">
+                                        class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300 min-h-[88px]">
                                         <input type="radio" name="payment_method" value="{{ $ewallet['code'] }}"
                                             class="accent-pink-500 w-4 h-4">
                                         <div class="flex items-center gap-3 flex-1">
@@ -137,6 +137,56 @@
                                         </div>
                                     </label>
                                 @endforeach
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
+                            <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+                                <span
+                                    class="w-7 h-7 rounded-full bg-pink-500 text-white text-sm font-bold flex items-center justify-center">2</span>
+                                Upload Bukti Pembayaran
+                            </h2>
+                            <p class="text-xs text-gray-400 mb-5 ml-9">Upload screenshot bukti transfer kamu.</p>
+
+                            <!-- Upload Area -->
+                            <label for="bukti-upload"
+                                class="group flex flex-col items-center justify-center gap-3 border-2 border-dashed border-pink-300 rounded-xl p-8 cursor-pointer hover:bg-pink-50 hover:border-pink-400 transition">
+                                <div
+                                    class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center group-hover:bg-pink-200 transition">
+                                    <svg class="w-7 h-7 text-pink-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-center">
+                                    <p class="font-semibold text-gray-700 text-sm">Klik untuk upload atau drag & drop</p>
+                                    <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG — maks. 5 MB</p>
+                                </div>
+                                <input id="bukti-upload" name="proof_of_payment" type="file" accept="image/*"
+                                    required class="hidden" onchange="previewFile(this)">
+                            </label>
+
+                            <!-- Preview -->
+                            <div id="file-preview"
+                                class="hidden mt-4 items-center gap-3 p-3 bg-pink-50 border border-pink-200 rounded-xl">
+                                <svg class="w-8 h-8 text-pink-400 shrink-0" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <div class="flex-1 min-w-0">
+                                    <p id="file-name" class="text-sm font-semibold text-gray-700 truncate">nama-file.png</p>
+                                    <p id="file-size" class="text-xs text-gray-400">2.1 MB</p>
+                                </div>
+                                <button onclick="clearFile()" class="text-gray-400 hover:text-red-500 transition"
+                                    type="button">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -161,57 +211,7 @@
 
             <!-- ===== RIGHT: Ringkasan Pesanan + CTA ===== -->
             <div class="lg:col-span-1 space-y-6">
-                <!-- Step 2: Upload Bukti Pembayaran -->
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                        <span
-                            class="w-7 h-7 rounded-full bg-pink-500 text-white text-sm font-bold flex items-center justify-center">2</span>
-                        Upload Bukti Pembayaran
-                    </h2>
-                    <p class="text-xs text-gray-400 mb-5 ml-9">Upload screenshot
-                        bukti transfer kamu.</p>
-
-                    <!-- Upload Area -->
-                    <label for="bukti-upload"
-                        class="group flex flex-col items-center justify-center gap-3 border-2 border-dashed border-pink-300 rounded-xl p-8 cursor-pointer hover:bg-pink-50 hover:border-pink-400 transition">
-                        <div
-                            class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center group-hover:bg-pink-200 transition">
-                            <svg class="w-7 h-7 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                            </svg>
-                        </div>
-                        <div class="text-center">
-                            <p class="font-semibold text-gray-700 text-sm">Klik untuk upload atau drag & drop</p>
-                            <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG — maks. 5 MB</p>
-                        </div>
-                        <input id="bukti-upload" name="proof_of_payment" type="file" accept="image/*" required
-                            class="hidden" onchange="previewFile(this)">
-                    </label>
-
-                    <!-- Preview -->
-                    <div id="file-preview"
-                        class="hidden mt-4 items-center gap-3 p-3 bg-pink-50 border border-pink-200 rounded-xl">
-                        <svg class="w-8 h-8 text-pink-400 shrink-0" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        <div class="flex-1 min-w-0">
-                            <p id="file-name" class="text-sm font-semibold text-gray-700 truncate">nama-file.png</p>
-                            <p id="file-size" class="text-xs text-gray-400">2.1 MB</p>
-                        </div>
-                        <button onclick="clearFile()" class="text-gray-400 hover:text-red-500 transition" type="button">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6 sticky top-24">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Ringkasan Pesanan</h2>
 
                     <!-- Course Item -->
