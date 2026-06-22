@@ -6,20 +6,15 @@ use App\Filament\Resources\Transactions\Pages\ManageTransactions;
 use App\Models\Transaction;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,7 +25,7 @@ class TransactionResource extends Resource
 
     public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'Transaksi menunggu approve';
+        return 'Transaksi menunggu pembayaran';
     }
 
     protected static string | \UnitEnum | null $navigationGroup = 'Payment Management';
@@ -38,7 +33,7 @@ class TransactionResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return (string) static::getModel()::query()
-            ->where('is_paid', false)
+            ->where('status', Transaction::STATUS_PENDING)
             ->count();
     }
 
@@ -62,19 +57,32 @@ class TransactionResource extends Resource
                     ->required(),
                 Select::make('payment_method')
                     ->options([
+                        'midtrans' => 'Midtrans (Snap)',
+                        'free' => 'Gratis / Promo 100%',
                         'bca' => 'BCA',
                         'bri' => 'BRI',
                         'ovo' => 'OVO',
                         'dana' => 'DANA',
                         'gopay' => 'GoPay',
+                        'qris' => 'QRIS',
+                        'bank_transfer' => 'Bank Transfer',
+                        'echannel' => 'eChannel',
                     ])
                     ->required(),
-                FileUpload::make('proof_of_payment')
-                    ->disk('public')
-                    ->image()
-                    ->directory('proof-of-payments'),
-                Toggle::make('is_paid')
-                    ->default(true)
+                Select::make('status')
+                    ->options([
+                        Transaction::STATUS_PENDING => 'Menunggu Pembayaran',
+                        Transaction::STATUS_SETTLEMENT => 'Berhasil Dibayar',
+                        Transaction::STATUS_CAPTURE => 'Capture',
+                        Transaction::STATUS_EXPIRE => 'Kedaluwarsa',
+                        Transaction::STATUS_CANCEL => 'Dibatalkan',
+                        Transaction::STATUS_DENY => 'Ditolak',
+                        Transaction::STATUS_FAILURE => 'Gagal',
+                        Transaction::STATUS_REFUND => 'Refund',
+                        Transaction::STATUS_PARTIAL_REFUND => 'Partial Refund',
+                        Transaction::STATUS_CHARGEBACK => 'Chargeback',
+                    ])
+                    ->default(Transaction::STATUS_PENDING)
                     ->required(),
                 TextInput::make('price')
                     ->required()
@@ -96,25 +104,42 @@ class TransactionResource extends Resource
                     ->searchable(),
                 TextColumn::make('payment_method')
                     ->formatStateUsing(fn (string $state) => match ($state) {
+                        'midtrans' => 'Midtrans (Snap)',
+                        'free' => 'Gratis / Promo 100%',
                         'bca' => 'BCA',
                         'bri' => 'BRI',
                         'ovo' => 'OVO',
                         'dana' => 'DANA',
                         'gopay' => 'GoPay',
+                        'qris' => 'QRIS',
+                        'bank_transfer' => 'Bank Transfer',
+                        'echannel' => 'eChannel',
                         default => $state,
                     })
                     ->searchable(),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state, Transaction $record): string => $record->status_label)
+                    ->color(fn (string $state): string => match ($state) {
+                        Transaction::STATUS_PENDING => 'warning',
+                        Transaction::STATUS_SETTLEMENT, Transaction::STATUS_CAPTURE => 'success',
+                        Transaction::STATUS_EXPIRE, Transaction::STATUS_CANCEL, Transaction::STATUS_DENY, Transaction::STATUS_FAILURE => 'danger',
+                        Transaction::STATUS_REFUND, Transaction::STATUS_PARTIAL_REFUND, Transaction::STATUS_CHARGEBACK => 'info',
+                        default => 'gray',
+                    }),
                 TextColumn::make('promoCode.code')
                     ->label('Promo')
                     ->placeholder('-')
                     ->description(fn (Transaction $record): ?string => $record->promoCode?->description)
                     ->searchable(),
-                IconColumn::make('is_paid')
-                    ->label('Paid')
-                    ->boolean(),
                 TextColumn::make('price')
                     ->formatStateUsing(fn ($state): string => 'Rp ' . number_format((int) $state, 0, ',', '.'))
                     ->sortable(),
+                TextColumn::make('paid_at')
+                    ->dateTime()
+                    ->placeholder('-')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -125,27 +150,12 @@ class TransactionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
                 ActionGroup::make([
                     ActionGroup::make([
                         ViewAction::make(),
-                        EditAction::make(),
-                        Action::make('approve')
-                            ->label('Approve')
-                            ->color('success')
-                            ->icon('heroicon-m-check')
-                            ->requiresConfirmation()
-                            ->visible(fn (Transaction $record): bool => ! $record->is_paid)
-                            ->action(function (Transaction $record): void {
-                                $record->update(['is_paid' => true]);
-
-                                $record->student?->ownedCourses()->syncWithoutDetaching([$record->course_id]);
-                            }),
-                    ])
-                        ->dropdown(false),
+                    ])->dropdown(false),
                     DeleteAction::make()
                 ])->icon('heroicon-m-bars-3')
             ])

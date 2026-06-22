@@ -15,17 +15,14 @@
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-10">
-
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Pembayaran</h1>
 
-        <form method="POST" action="{{ url('/transaction') }}" enctype="multipart/form-data"
+        <form method="POST" action="{{ route('transaction.store') }}"
             class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             @csrf
             <input type="hidden" name="course_id" value="{{ $course->id }}">
 
-            <!-- ===== LEFT: Payment Form ===== -->
             <div class="lg:col-span-2 space-y-6">
-
                 @if ($errors->any())
                     <div class="bg-red-50 border border-red-100 text-red-600 rounded-xl p-4 text-sm">
                         <ul class="space-y-1">
@@ -36,159 +33,23 @@
                     </div>
                 @endif
 
-                <!-- Step 1: Pilih Metode Pembayaran -->
-                @php
-                    $bankAccounts = [
-                        [
-                            'code' => 'bca',
-                            'label' => 'BCA',
-                            'logo' => 'bca.png',
-                            'name' => 'Admin Salonkita',
-                            'number' => '1234567890',
-                        ],
-                        [
-                            'code' => 'bri',
-                            'label' => 'BRI',
-                            'logo' => 'bri.png',
-                            'name' => 'Admin Salonkita',
-                            'number' => '0987654321',
-                        ],
-                    ];
-
-                    $ewalletAccounts = [
-                        [
-                            'code' => 'ovo',
-                            'label' => 'OVO',
-                            'logo' => 'ovo.png',
-                            'name' => 'Admin Salonkita',
-                            'number' => '081234567890',
-                        ],
-                        [
-                            'code' => 'dana',
-                            'label' => 'DANA',
-                            'logo' => 'dana.png',
-                            'name' => 'Admin Salonkita',
-                            'number' => '081234567890',
-                        ],
-                        [
-                            'code' => 'gopay',
-                            'label' => 'GoPay',
-                            'logo' => 'Gopay.png',
-                            'name' => 'Admin Salonkita',
-                            'number' => '081234567890',
-                        ],
-                    ];
-                @endphp
-
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
                     <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
                         <span
                             class="w-7 h-7 rounded-full bg-pink-500 text-white text-sm font-bold flex items-center justify-center">1</span>
-                        Pilih Metode Pembayaran
+                        Checkout via Midtrans
                     </h2>
 
-                    <div class="space-y-5">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800 mb-3">Bank Transfer</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                @foreach ($bankAccounts as $index => $bank)
-                                    <label
-                                        class="flex items-center gap-4 p-4 rounded-xl border-2 {{ $index === 0 ? 'border-pink-400 bg-pink-50' : 'border-gray-200' }} cursor-pointer transition hover:border-pink-300 min-h-[88px]">
-                                        <input type="radio" name="payment_method" value="{{ $bank['code'] }}"
-                                            class="accent-pink-500 w-4 h-4" {{ $index === 0 ? 'checked' : '' }}>
-                                        <div class="flex items-center gap-3 flex-1">
-                                            <div
-                                                class="w-14 h-8 rounded-md overflow-hidden bg-white border border-gray-100 flex items-center justify-center px-1">
-                                                <img src="{{ asset('assets/images/logos/' . $bank['logo']) }}"
-                                                    alt="Logo {{ $bank['label'] }}" class="w-full h-full object-contain">
-                                            </div>
-                                            <div>
-                                                <p class="font-semibold text-gray-800 text-sm">{{ $bank['label'] }}</p>
-                                                <p class="text-xs text-gray-500">{{ $bank['number'] }} · a.n.
-                                                    {{ $bank['name'] }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800 mb-3">E-Wallet</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                @foreach ($ewalletAccounts as $ewallet)
-                                    <label
-                                        class="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition hover:border-pink-300 min-h-[88px]">
-                                        <input type="radio" name="payment_method" value="{{ $ewallet['code'] }}"
-                                            class="accent-pink-500 w-4 h-4">
-                                        <div class="flex items-center gap-3 flex-1">
-                                            <div
-                                                class="w-14 h-8 rounded-md overflow-hidden bg-white flex items-center justify-center px-1">
-                                                <img src="{{ asset('assets/images/logos/' . $ewallet['logo']) }}"
-                                                    alt="Logo {{ $ewallet['label'] }}" class="w-full h-full object-contain">
-                                            </div>
-                                            <div>
-                                                <p class="font-semibold text-gray-800 text-sm">{{ $ewallet['label'] }}</p>
-                                                <p class="text-xs text-gray-500">{{ $ewallet['number'] }} · a.n.
-                                                    {{ $ewallet['name'] }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
-                            <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                                <span
-                                    class="w-7 h-7 rounded-full bg-pink-500 text-white text-sm font-bold flex items-center justify-center">2</span>
-                                Upload Bukti Pembayaran
-                            </h2>
-                            <p class="text-xs text-gray-400 mb-5 ml-9">Upload screenshot bukti transfer kamu.</p>
-
-                            <!-- Upload Area -->
-                            <label for="bukti-upload"
-                                class="group flex flex-col items-center justify-center gap-3 border-2 border-dashed border-pink-300 rounded-xl p-8 cursor-pointer hover:bg-pink-50 hover:border-pink-400 transition">
-                                <div
-                                    class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center group-hover:bg-pink-200 transition">
-                                    <svg class="w-7 h-7 text-pink-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-center">
-                                    <p class="font-semibold text-gray-700 text-sm">Klik untuk upload atau drag & drop</p>
-                                    <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG — maks. 5 MB</p>
-                                </div>
-                                <input id="bukti-upload" name="proof_of_payment" type="file" accept="image/*"
-                                    required class="hidden" onchange="previewFile(this)">
-                            </label>
-
-                            <!-- Preview -->
-                            <div id="file-preview"
-                                class="hidden mt-4 items-center gap-3 p-3 bg-pink-50 border border-pink-200 rounded-xl">
-                                <svg class="w-8 h-8 text-pink-400 shrink-0" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                <div class="flex-1 min-w-0">
-                                    <p id="file-name" class="text-sm font-semibold text-gray-700 truncate">nama-file.png</p>
-                                    <p id="file-size" class="text-xs text-gray-400">2.1 MB</p>
-                                </div>
-                                <button onclick="clearFile()" class="text-gray-400 hover:text-red-500 transition"
-                                    type="button">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+                    <div class="space-y-4 text-sm text-gray-700">
+                        <p class="rounded-xl bg-pink-50 border border-pink-100 p-4">
+                            Kamu akan diarahkan ke halaman pembayaran Midtrans (Snap) untuk memilih metode pembayaran
+                            seperti VA, e-wallet, QRIS, dan metode lain yang aktif di akun Midtrans kamu.
+                        </p>
+                        <ul class="space-y-2 list-disc pl-5 text-gray-600">
+                            <li>Pembayaran diproses otomatis tanpa upload bukti transfer manual.</li>
+                            <li>Status transaksi akan diupdate melalui webhook Midtrans.</li>
+                            <li>Akses kelas aktif otomatis setelah status pembayaran settlement/capture.</li>
+                        </ul>
                     </div>
 
                     <div class="mt-5 rounded-xl border border-pink-100 bg-pink-50 p-4">
@@ -199,17 +60,16 @@
                                     d="M13 16h-1v-4h-1m1-4h.01M12 18h.01M12 6a9 9 0 100 18 9 9 0 000-18z"></path>
                             </svg>
                             <div class="text-sm">
-                                <p class="font-semibold text-gray-800">Informasi rekening admin</p>
-                                <p class="text-gray-600 mt-1">Silakan transfer ke salah satu rekening admin di atas lalu
-                                    upload bukti pembayaran. Pastikan nama rekening sesuai sebelum mengirim.</p>
+                                <p class="font-semibold text-gray-800">Informasi pembayaran</p>
+                                <p class="text-gray-600 mt-1">Setelah klik tombol konfirmasi, popup Midtrans akan
+                                    terbuka.
+                                    Selesaikan pembayaran sesuai instruksi yang muncul.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <!-- ===== RIGHT: Ringkasan Pesanan + CTA ===== -->
             <div class="lg:col-span-1 space-y-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Ringkasan Pesanan</h2>
@@ -250,54 +110,46 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Konfirmasi & Bayar -->
                 <button type="submit"
                     class="w-full py-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-lg rounded-xl transition shadow-sm flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    Konfirmasi Pembayaran
+                    Lanjut ke Midtrans
                 </button>
             </div>
-
         </form>
     </main>
 
     <x-footer />
 
-    <script>
-        function previewFile(input) {
-            const preview = document.getElementById('file-preview');
-            const fileName = document.getElementById('file-name');
-            const fileSize = document.getElementById('file-size');
+    @if (session('snap_token'))
+        <script
+            src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+            data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const snapToken = @json(session('snap_token'));
+                if (!snapToken || typeof window.snap === 'undefined') {
+                    return;
+                }
 
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                fileName.textContent = file.name;
-                fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                preview.classList.remove('hidden');
-                preview.classList.add('flex');
-            }
-        }
-
-        function clearFile() {
-            document.getElementById('bukti-upload').value = '';
-            const preview = document.getElementById('file-preview');
-            preview.classList.add('hidden');
-            preview.classList.remove('flex');
-        }
-
-        // Highlight selected payment method border
-        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-            radio.addEventListener('change', function () {
-                document.querySelectorAll('input[name="payment_method"]').forEach(r => {
-                    r.closest('label').classList.remove('border-pink-400', 'bg-pink-50');
-                    r.closest('label').classList.add('border-gray-200');
+                window.snap.pay(snapToken, {
+                    onSuccess: function () {
+                        window.location.href = @json(route('payments.midtrans.finish', ['order_id' => (string) session('trx_id')]));
+                    },
+                    onPending: function () {
+                        window.location.href = @json(route('payments.midtrans.unfinish', ['order_id' => (string) session('trx_id')]));
+                    },
+                    onError: function () {
+                        window.location.href = @json(route('payments.midtrans.error', ['order_id' => (string) session('trx_id')]));
+                    },
+                    onClose: function () {
+                        window.location.href = @json(route('payments.midtrans.unfinish', ['order_id' => (string) session('trx_id')]));
+                    }
                 });
-                this.closest('label').classList.add('border-pink-400', 'bg-pink-50');
-                this.closest('label').classList.remove('border-gray-200');
             });
-        });
-    </script>
+        </script>
+    @endif
 </x-layout>

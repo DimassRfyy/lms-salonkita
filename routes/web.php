@@ -3,8 +3,10 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -70,5 +72,18 @@ Route::post('/logout', function () {
     return redirect()->route('home');
 })->name('logout')->middleware('auth');
 
-Route::get('/transaction', [HomeController::class, 'transaction'])->name('transaction')->middleware('auth');
-Route::post('/transaction', [HomeController::class, 'storeTransaction'])->name('transaction.store')->middleware('auth');
+Route::get('/transaction', [PaymentController::class, 'transaction'])->name('transaction')->middleware('auth');
+Route::post('/transaction', [PaymentController::class, 'storeTransaction'])->name('transaction.store')->middleware('auth');
+
+Route::post('/payments/midtrans/notification', [PaymentController::class, 'notification'])
+    ->name('payments.midtrans.notification')
+    ->withoutMiddleware([VerifyCsrfToken::class]);
+
+Route::get('/payments/midtrans/finish', [PaymentController::class, 'finish'])
+    ->name('payments.midtrans.finish');
+
+Route::get('/payments/midtrans/unfinish', [PaymentController::class, 'unfinish'])
+    ->name('payments.midtrans.unfinish');
+
+Route::get('/payments/midtrans/error', [PaymentController::class, 'error'])
+    ->name('payments.midtrans.error');

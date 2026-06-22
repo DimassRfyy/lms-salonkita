@@ -13,17 +13,17 @@ class StatsOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $totalCourses = Course::query()->count();
-        $activeCourses = Course::query()->where('is_published', true)->count();
+        $totalCourses = Course::query()->count('*');
+        $activeCourses = Course::query()->where('is_published', true)->count('*');
 
-        $totalStudents = User::query()->where('role', 'student')->count();
+        $totalStudents = User::query()->where('role', 'student')->count('*');
 
         $totalEnrollments = DB::table('course_user')->count();
         $newEnrollmentsThisMonth = DB::table('course_user')
             ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->count();
 
-        $paidTransactions = Transaction::query()->paid()->count();
+        $paidTransactions = Transaction::query()->paid()->count('*');
         $revenue = (int) Transaction::query()->paid()->sum('price');
 
         return [
