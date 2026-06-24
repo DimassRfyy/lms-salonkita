@@ -23,6 +23,8 @@ class PaymentController extends Controller
 
         $course = Course::query()
             ->with('category')
+            ->withCount('videos')
+            ->withSum('videos as total_duration_seconds', 'duration_seconds')
             ->where('is_published', true)
             ->where('slug', $courseSlug)
             ->firstOrFail();
