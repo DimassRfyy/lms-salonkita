@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\MentoringController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -31,6 +32,19 @@ Route::post('/savedCourses/{course}', [HomeController::class, 'storeSavedCourse'
 Route::delete('/savedCourses/{course}', [HomeController::class, 'destroySavedCourse'])->name('saved-courses.destroy')->middleware('auth');
 
 Route::get('/all-courses', [HomeController::class, 'allCourses'])->name('all-courses');
+
+Route::get('/mentoring', [MentoringController::class, 'index'])
+    ->name('mentoring.index')
+    ->middleware('auth');
+Route::get('/mentoring/mentors', [MentoringController::class, 'mentors'])
+    ->name('mentoring.mentors')
+    ->middleware('auth');
+Route::get('/mentoring/{entitlement}/book', [MentoringController::class, 'book'])
+    ->name('mentoring.book')
+    ->middleware('auth');
+Route::post('/mentoring/{entitlement}/book', [MentoringController::class, 'store'])
+    ->name('mentoring.store')
+    ->middleware('auth');
 
 Route::get('/task', [HomeController::class, 'task'])->name('task')->middleware('auth');
 

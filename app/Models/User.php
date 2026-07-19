@@ -6,6 +6,11 @@ namespace App\Models;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoQuizCompletion;
 use App\Models\CourseVideoWatch;
+use App\Models\MentorAvailabilitySlot;
+use App\Models\MentorAvailabilityTemplate;
+use App\Models\MentorUnavailabilityException;
+use App\Models\MentoringBooking;
+use App\Models\MentoringEntitlement;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -128,6 +133,43 @@ class User extends Authenticatable implements FilamentUser
     public function courseVideoQuizCompletions(): HasMany
     {
         return $this->hasMany(CourseVideoQuizCompletion::class);
+    }
+
+    public function mentoringEntitlements(): HasMany
+    {
+        return $this->hasMany(MentoringEntitlement::class, 'student_id');
+    }
+
+    public function availableMentoringEntitlements(): HasMany
+    {
+        return $this->mentoringEntitlements()
+            ->where('status', 'active')
+            ->whereColumn('used_quota', '<', 'total_quota');
+    }
+
+    public function mentorAvailabilityTemplates(): HasMany
+    {
+        return $this->hasMany(MentorAvailabilityTemplate::class, 'mentor_id');
+    }
+
+    public function mentorAvailabilitySlots(): HasMany
+    {
+        return $this->hasMany(MentorAvailabilitySlot::class, 'mentor_id');
+    }
+
+    public function mentoringBookingsAsMentor(): HasMany
+    {
+        return $this->hasMany(MentoringBooking::class, 'mentor_id');
+    }
+
+    public function mentoringBookingsAsStudent(): HasMany
+    {
+        return $this->hasMany(MentoringBooking::class, 'student_id');
+    }
+
+    public function mentorUnavailabilityExceptions(): HasMany
+    {
+        return $this->hasMany(MentorUnavailabilityException::class, 'mentor_id');
     }
 
     public function canAccessPanel(Panel $panel): bool

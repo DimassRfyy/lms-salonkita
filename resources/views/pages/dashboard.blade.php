@@ -12,6 +12,36 @@
             </p>
         </section>
 
+        @if(($hasMentoringAccess ?? false) || isset($availableMentoringEntitlement) || isset($latestMentoringBooking))
+            <section class="mb-12">
+                <div
+                    class="overflow-hidden rounded-3xl border border-pink-100 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-6 text-white shadow-lg md:p-8">
+                    <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                        <div class="max-w-2xl space-y-3">
+                            <span
+                                class="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]">Mentoring
+                                Access</span>
+                            <h2 class="text-2xl font-bold md:text-3xl">Lihat halaman mentoring kamu.</h2>
+                            <p class="text-sm text-white/90 md:text-base">
+                                Detail jadwal, platform meeting, link, catatan mentor, dan riwayat sesi sekarang dipusatkan
+                                di halaman mentoring.
+                            </p>
+                        </div>
+                        <div class="flex flex-col gap-3 md:min-w-64">
+                            <a href="{{ route('mentoring.index') }}"
+                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-pink-600 shadow-sm transition hover:bg-pink-50">
+                                Lihat Mentoring
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
+
 
         @if($continueWatching)
             <!-- CONTINUE WATCHING SECTION -->
@@ -26,7 +56,7 @@
                                 alt="{{ $continueWatching->course->name }}"
                                 onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <a href="{{ $continueWatching->url }}"
                                     class="w-16 h-16 bg-white rounded-full flex items-center justify-center hover:scale-110 transition shadow-lg"

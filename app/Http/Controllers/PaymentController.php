@@ -239,6 +239,7 @@ class PaymentController extends Controller
         }
 
         $transaction->student?->ownedCourses()->syncWithoutDetaching([$transaction->course_id]);
+        $this->grantMentoringEntitlement($transaction);
 
         if ($transaction->promo_code_id && $transaction->discount_amount > 0) {
             PromoCodeRedemption::query()->updateOrCreate(
@@ -250,6 +251,26 @@ class PaymentController extends Controller
                 ]
             );
         }
+    }
+
+    private function grantMentoringEntitlement(Transaction $transaction): void
+    {
+        if (! $transaction->student || ! $transaction->course_id) {
+            return;
+        }
+
+        $transaction->mentoringEntitlement()->updateOrCreate(
+            ['transaction_id' => $transaction->id],
+            [
+                'student_id' => $transaction->user_id,
+                'course_id' => $transaction->course_id,
+                'total_quota' => 1,
+                'used_quota' => 0,
+                'status' => 'active',
+                'granted_at' => now(),
+                'expires_at' => null,
+            ]
+        );
     }
 
     private function redirectByOrderId(string $orderId, string $message): RedirectResponse

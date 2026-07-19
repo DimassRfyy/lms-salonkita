@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\PromoCode;
+use App\Models\MentoringEntitlement;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Transaction extends Model
@@ -83,6 +85,11 @@ class Transaction extends Model
     public function promoCode(): BelongsTo
     {
         return $this->belongsTo(PromoCode::class);
+    }
+
+    public function mentoringEntitlement(): HasOne
+    {
+        return $this->hasOne(MentoringEntitlement::class);
     }
 
     public function isPaid(): bool

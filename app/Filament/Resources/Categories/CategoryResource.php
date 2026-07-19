@@ -20,12 +20,20 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use UnitEnum;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
     protected static string | UnitEnum | null $navigationGroup = 'Course Management';
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && $user->role === 'admin';
+    }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

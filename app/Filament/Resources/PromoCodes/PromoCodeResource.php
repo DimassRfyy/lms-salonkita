@@ -19,12 +19,20 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class PromoCodeResource extends Resource
 {
     protected static ?string $model = PromoCode::class;
 
     protected static string | \UnitEnum | null $navigationGroup = 'Payment Management';
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && $user->role === 'admin';
+    }
 
     protected static ?string $navigationLabel = 'Promo Codes';
 

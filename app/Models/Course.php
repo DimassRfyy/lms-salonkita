@@ -8,6 +8,8 @@ use App\Models\CourseReview;
 use App\Models\CourseSection;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoWatch;
+use App\Models\MentoringBooking;
+use App\Models\MentoringEntitlement;
 use App\Support\GoogleSlides;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -122,6 +124,16 @@ class Course extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function mentoringEntitlements(): HasMany
+    {
+        return $this->hasMany(MentoringEntitlement::class);
+    }
+
+    public function mentoringBookings(): HasMany
+    {
+        return $this->hasMany(MentoringBooking::class);
     }
 
     public function students(): BelongsToMany

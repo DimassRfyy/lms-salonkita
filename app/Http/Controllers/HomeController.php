@@ -105,7 +105,34 @@ class HomeController extends Controller
         $savedCourseIds = $user->savedCourses()
             ->pluck('courses.id');
 
-        return view('pages.dashboard', compact('ownedCourses', 'recommendedCourses', 'continueWatching', 'savedCourseIds'));
+        $availableMentoringEntitlement = $user->availableMentoringEntitlements()
+            ->with(['course', 'booking.mentor', 'booking.slot'])
+            ->latest('granted_at')
+            ->first();
+
+        $latestMentoringBooking = $user->mentoringBookingsAsStudent()
+            ->with(['course', 'mentor', 'slot'])
+            ->latest('starts_at')
+            ->first();
+
+        $mentoringHistory = $user->mentoringBookingsAsStudent()
+            ->with(['course', 'mentor', 'slot'])
+            ->latest('starts_at')
+            ->take(5)
+            ->get();
+
+        $hasMentoringAccess = $availableMentoringEntitlement !== null || $latestMentoringBooking !== null;
+
+        return view('pages.dashboard', compact(
+            'ownedCourses',
+            'recommendedCourses',
+            'continueWatching',
+            'savedCourseIds',
+            'availableMentoringEntitlement',
+            'latestMentoringBooking',
+            'mentoringHistory',
+            'hasMentoringAccess'
+        ));
     }
 
     public function course(?string $slug = null, Request $request)

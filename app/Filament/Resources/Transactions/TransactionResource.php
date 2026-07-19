@@ -18,6 +18,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionResource extends Resource
 {
@@ -26,6 +27,13 @@ class TransactionResource extends Resource
     public static function getNavigationBadgeTooltip(): ?string
     {
         return 'Transaksi menunggu pembayaran';
+    }
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && $user->role === 'admin';
     }
 
     protected static string | \UnitEnum | null $navigationGroup = 'Payment Management';

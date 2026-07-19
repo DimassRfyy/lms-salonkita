@@ -5,12 +5,18 @@ namespace App\Filament\Widgets;
 use App\Models\Course;
 use App\Models\Transaction;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 
 class StatsOverview extends StatsOverviewWidget
 {
+    public static function canView(): bool
+    {
+        return Filament::auth()->user()?->role === 'admin';
+    }
+
     protected function getStats(): array
     {
         $totalCourses = Course::query()->count('*');
