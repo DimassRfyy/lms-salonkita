@@ -194,8 +194,6 @@ class MentoringController extends Controller
                 'starts_at' => $slot->starts_at,
                 'ends_at' => $slot->ends_at,
                 'status' => MentoringBooking::STATUS_CONFIRMED,
-                'meeting_platform' => $slot->meeting_platform,
-                'meeting_url' => $slot->meeting_url,
                 'booked_at' => now(),
             ]);
 

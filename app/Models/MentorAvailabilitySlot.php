@@ -23,8 +23,6 @@ class MentorAvailabilitySlot extends Model
         'starts_at',
         'ends_at',
         'status',
-        'meeting_platform',
-        'meeting_url',
     ];
 
     protected function casts(): array

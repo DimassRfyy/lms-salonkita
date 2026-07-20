@@ -20,8 +20,6 @@ return new class extends Migration
             $table->dateTime('starts_at');
             $table->dateTime('ends_at');
             $table->string('status')->default('available');
-            $table->string('meeting_platform')->nullable();
-            $table->string('meeting_url')->nullable();
             $table->timestamps();
 
             $table->unique(['mentor_id', 'starts_at', 'ends_at'], 'mentor_slot_unique');

@@ -85,7 +85,6 @@
                                     <div>
                                         <p class="text-lg font-bold text-gray-900">{{ $slot->starts_at?->format('H:i') }} - {{ $slot->ends_at?->format('H:i') }}</p>
                                         <p class="mt-1 text-sm text-gray-600">{{ $slot->mentor->name ?? 'Mentor' }}</p>
-                                        <p class="mt-1 text-xs text-gray-500">{{ $slot->meeting_platform ? ucfirst(str_replace('_', ' ', $slot->meeting_platform)) : 'Platform ditentukan mentor' }}</p>
                                     </div>
                                     <button type="submit"
                                         class="rounded-2xl bg-pink-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-pink-600">

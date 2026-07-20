@@ -14,7 +14,6 @@ return new class extends Migration
             $table->unsignedTinyInteger('day_of_week');
             $table->time('start_time');
             $table->time('end_time');
-            $table->unsignedSmallInteger('slot_duration_minutes')->default(60);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 

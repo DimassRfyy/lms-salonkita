@@ -23,8 +23,7 @@
                                 Access</span>
                             <h2 class="text-2xl font-bold md:text-3xl">Lihat halaman mentoring kamu.</h2>
                             <p class="text-sm text-white/90 md:text-base">
-                                Detail jadwal, platform meeting, link, catatan mentor, dan riwayat sesi sekarang dipusatkan
-                                di halaman mentoring.
+                                Lihat detail jadwal, platform meeting, link, catatan mentor, dan riwayat sesi.
                             </p>
                         </div>
                         <div class="flex flex-col gap-3 md:min-w-64">

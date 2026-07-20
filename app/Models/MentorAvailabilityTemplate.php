@@ -17,7 +17,6 @@ class MentorAvailabilityTemplate extends Model
         'day_of_week',
         'start_time',
         'end_time',
-        'slot_duration_minutes',
         'is_active',
     ];
 
@@ -25,7 +24,6 @@ class MentorAvailabilityTemplate extends Model
     {
         return [
             'day_of_week' => 'integer',
-            'slot_duration_minutes' => 'integer',
             'is_active' => 'boolean',
         ];
     }

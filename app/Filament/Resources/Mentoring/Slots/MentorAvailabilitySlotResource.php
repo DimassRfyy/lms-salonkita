@@ -12,7 +12,6 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -62,16 +61,6 @@ class MentorAvailabilitySlotResource extends Resource
                     ])
                     ->default(MentorAvailabilitySlot::STATUS_AVAILABLE)
                     ->required(),
-                Select::make('meeting_platform')
-                    ->options([
-                        'zoom' => 'Zoom',
-                        'google_meet' => 'Google Meet',
-                    ])
-                    ->default('zoom')
-                    ->nullable(),
-                TextInput::make('meeting_url')
-                    ->url()
-                    ->nullable(),
             ]);
     }
 
@@ -88,8 +77,6 @@ class MentorAvailabilitySlotResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->sortable(),
-                TextColumn::make('meeting_platform')
-                    ->placeholder('-'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

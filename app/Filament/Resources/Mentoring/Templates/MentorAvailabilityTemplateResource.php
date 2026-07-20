@@ -66,10 +66,6 @@ class MentorAvailabilityTemplateResource extends Resource
                 TimePicker::make('end_time')
                     ->label('End Time')
                     ->required(),
-                TextInput::make('slot_duration_minutes')
-                    ->numeric()
-                    ->default(60)
-                    ->required(),
                 Toggle::make('is_active')
                     ->default(true)
                     ->required(),
@@ -97,9 +93,6 @@ class MentorAvailabilityTemplateResource extends Resource
                 TextColumn::make('end_time')
                     ->label('End')
                     ->sortable(),
-                TextColumn::make('slot_duration_minutes')
-                    ->badge()
-                    ->label('Duration'),
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),
