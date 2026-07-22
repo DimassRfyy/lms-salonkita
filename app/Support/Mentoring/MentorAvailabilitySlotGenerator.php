@@ -36,29 +36,20 @@ class MentorAvailabilitySlotGenerator
                 continue;
             }
 
-            $durationMinutes = max(1, (int) $template->slot_duration_minutes);
-            $cursor = $windowStart->copy();
+            $slot = MentorAvailabilitySlot::firstOrCreate(
+                [
+                    'mentor_id' => $template->mentor_id,
+                    'starts_at' => $windowStart->toDateTimeString(),
+                    'ends_at' => $windowEnd->toDateTimeString(),
+                ],
+                [
+                    'mentor_availability_template_id' => $template->id,
+                    'status' => MentorAvailabilitySlot::STATUS_AVAILABLE,
+                ]
+            );
 
-            while ($cursor->copy()->addMinutes($durationMinutes)->lte($windowEnd)) {
-                $slotEnd = $cursor->copy()->addMinutes($durationMinutes);
-
-                $slot = MentorAvailabilitySlot::firstOrCreate(
-                    [
-                        'mentor_id' => $template->mentor_id,
-                        'starts_at' => $cursor->toDateTimeString(),
-                        'ends_at' => $slotEnd->toDateTimeString(),
-                    ],
-                    [
-                        'mentor_availability_template_id' => $template->id,
-                        'status' => MentorAvailabilitySlot::STATUS_AVAILABLE,
-                    ]
-                );
-
-                if ($slot->wasRecentlyCreated) {
-                    $createdCount++;
-                }
-
-                $cursor = $slotEnd;
+            if ($slot->wasRecentlyCreated) {
+                $createdCount++;
             }
         }
 
