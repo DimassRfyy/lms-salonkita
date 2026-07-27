@@ -89,15 +89,16 @@ Route::post('/logout', function () {
 Route::get('/transaction', [PaymentController::class, 'transaction'])->name('transaction')->middleware('auth');
 Route::post('/transaction', [PaymentController::class, 'storeTransaction'])->name('transaction.store')->middleware('auth');
 
-Route::post('/payments/midtrans/notification', [PaymentController::class, 'notification'])
-    ->name('payments.midtrans.notification')
+Route::post('/payments/xendit/webhook', [PaymentController::class, 'notification'])
+    ->name('payments.xendit.webhook')
     ->withoutMiddleware([VerifyCsrfToken::class]);
 
-Route::get('/payments/midtrans/finish', [PaymentController::class, 'finish'])
-    ->name('payments.midtrans.finish');
+Route::get('/payments/xendit/finish', [PaymentController::class, 'finish'])
+    ->name('payments.xendit.finish');
 
-Route::get('/payments/midtrans/unfinish', [PaymentController::class, 'unfinish'])
-    ->name('payments.midtrans.unfinish');
+Route::get('/payments/xendit/unfinish', [PaymentController::class, 'unfinish'])
+    ->name('payments.xendit.unfinish');
 
-Route::get('/payments/midtrans/error', [PaymentController::class, 'error'])
-    ->name('payments.midtrans.error');
+Route::get('/payments/xendit/error', [PaymentController::class, 'error'])
+    ->name('payments.xendit.error');
+

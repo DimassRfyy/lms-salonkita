@@ -10,8 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
-use Midtrans\Config;
-use Midtrans\Snap;
+use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
 {
@@ -66,7 +65,7 @@ class PaymentController extends Controller
             'user_id' => $user->id,
             'course_id' => $course->id,
             'promo_code_id' => $promoCode?->id,
-            'payment_method' => $finalPrice <= 0 ? 'free' : 'midtrans',
+            'payment_method' => $finalPrice <= 0 ? 'free' : 'xendit',
             'discount_amount' => $discountAmount,
             'price' => $finalPrice,
             'status' => Transaction::STATUS_PENDING,
@@ -80,95 +79,98 @@ class PaymentController extends Controller
                 ->with('success', 'Pembelian berhasil diproses. Kelas langsung aktif.');
         }
 
-        $this->configureMidtrans();
+        $secretKey = (string) config('services.xendit.secret_key');
 
-        $snapPayload = [
-            'transaction_details' => [
-                'order_id' => $transaction->trx_id,
-                'gross_amount' => $finalPrice,
-            ],
-            'item_details' => [[
-                'id' => (string) $course->id,
-                'price' => $finalPrice,
-                'quantity' => 1,
-                'name' => mb_substr($course->name, 0, 50),
-            ]],
-            'customer_details' => [
-                'first_name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->whatsapp_number,
-            ],
-            'callbacks' => [
-                'finish' => route('payments.midtrans.finish', ['order_id' => $transaction->trx_id]),
-                'unfinish' => route('payments.midtrans.unfinish', ['order_id' => $transaction->trx_id]),
-                'error' => route('payments.midtrans.error', ['order_id' => $transaction->trx_id]),
-            ],
-            'custom_field1' => (string) $transaction->id,
+        if ($secretKey === '') {
+            return redirect()
+                ->route('transaction', ['course' => $course->slug])
+                ->withErrors(['payment' => 'Konfigurasi Xendit belum diatur di server (XENDIT_SECRET_KEY).'])
+                ->withInput();
+        }
+
+        $invoicePayload = [
+            'external_id' => $transaction->trx_id,
+            'amount' => $finalPrice,
+            'payer_email' => $user->email,
+            'description' => 'Pembelian kelas: ' . mb_substr($course->name, 0, 100),
+            'success_redirect_url' => route('payments.xendit.finish', ['order_id' => $transaction->trx_id]),
+            'failure_redirect_url' => route('payments.xendit.error', ['order_id' => $transaction->trx_id]),
+            'currency' => 'IDR',
         ];
 
         try {
-            $snapResponse = Snap::createTransaction($snapPayload);
+            $response = Http::withBasicAuth($secretKey, '')
+                ->post('https://api.xendit.co/v2/invoices', $invoicePayload);
+
+            if (! $response->successful()) {
+                logger()->error('Xendit Invoice Creation Failed', ['response' => $response->json()]);
+
+                return redirect()
+                    ->route('transaction', ['course' => $course->slug])
+                    ->withErrors(['payment' => 'Gagal membuat tagihan pembayaran Xendit. Silakan coba beberapa saat lagi.'])
+                    ->withInput();
+            }
+
+            $invoiceData = $response->json();
         } catch (\Throwable $exception) {
             report($exception);
 
             return redirect()
                 ->route('transaction', ['course' => $course->slug])
-                ->withErrors(['payment' => 'Gagal membuat sesi pembayaran Midtrans. Pastikan konfigurasi Midtrans sudah benar.'])
+                ->withErrors(['payment' => 'Terjadi kesalahan sistem saat menghubungkan ke Xendit.'])
                 ->withInput();
         }
 
         $transaction->update([
-            'snap_token' => (string) ($snapResponse->token ?? ''),
-            'snap_redirect_url' => (string) ($snapResponse->redirect_url ?? ''),
+            'xendit_id' => (string) ($invoiceData['id'] ?? ''),
+            'invoice_url' => (string) ($invoiceData['invoice_url'] ?? ''),
+            'xendit_raw_response' => $invoiceData,
         ]);
+
+        if (! empty($invoiceData['invoice_url'])) {
+            return redirect()->away($invoiceData['invoice_url']);
+        }
 
         return redirect()
             ->route('transaction', ['course' => $course->slug])
-            ->with('snap_token', $transaction->snap_token)
-            ->with('trx_id', $transaction->trx_id)
-            ->with('success', 'Lanjutkan pembayaran di Midtrans.');
+            ->with('success', 'Tagihan pembayaran berhasil dibuat.');
     }
 
     public function notification(Request $request): JsonResponse
     {
-        $payload = $request->json()->all();
+        $webhookToken = (string) config('services.xendit.webhook_token');
+        $callbackToken = (string) $request->header('x-callback-token', '');
 
-        if (! is_array($payload) || ! isset($payload['order_id'], $payload['status_code'], $payload['gross_amount'], $payload['signature_key'])) {
-            return response()->json(['message' => 'Invalid payload'], 400);
+        if ($webhookToken !== '' && ! hash_equals($webhookToken, $callbackToken)) {
+            return response()->json(['message' => 'Invalid callback token'], 403);
         }
 
-        $serverKey = (string) config('services.midtrans.server_key');
+        $payload = $request->json()->all();
 
-        $expectedSignature = hash(
-            'sha512',
-            (string) $payload['order_id'] . (string) $payload['status_code'] . (string) $payload['gross_amount'] . $serverKey
-        );
-
-        if (! hash_equals($expectedSignature, (string) $payload['signature_key'])) {
-            return response()->json(['message' => 'Invalid signature'], 403);
+        if (! is_array($payload) || ! isset($payload['external_id'])) {
+            return response()->json(['message' => 'Invalid payload'], 400);
         }
 
         /** @var Transaction|null $transaction */
         $transaction = Transaction::query()
-            ->where('trx_id', (string) $payload['order_id'])
+            ->where('trx_id', (string) $payload['external_id'])
             ->first();
 
         if (! $transaction) {
             return response()->json(['message' => 'Transaction not found'], 404);
         }
 
-        $transactionStatus = (string) ($payload['transaction_status'] ?? 'pending');
-        $fraudStatus = (string) ($payload['fraud_status'] ?? '');
+        $rawStatus = (string) ($payload['status'] ?? 'PENDING');
+        $statusUpper = mb_strtoupper($rawStatus);
 
         $transaction->update([
-            'payment_method' => (string) ($payload['payment_type'] ?? $transaction->payment_method ?? 'midtrans'),
-            'midtrans_transaction_id' => (string) ($payload['transaction_id'] ?? ''),
-            'status' => $transactionStatus,
-            'midtrans_fraud_status' => $fraudStatus,
-            'midtrans_raw_response' => $payload,
+            'payment_method' => (string) ($payload['payment_method'] ?? $payload['payment_channel'] ?? $transaction->payment_method ?? 'xendit'),
+            'xendit_id' => (string) ($payload['id'] ?? $transaction->xendit_id ?? ''),
+            'status' => $statusUpper,
+            'xendit_raw_response' => $payload,
         ]);
 
-        if ($transactionStatus === Transaction::STATUS_SETTLEMENT || ($transactionStatus === Transaction::STATUS_CAPTURE && $fraudStatus === 'accept')) {
+        if (in_array($statusUpper, ['PAID', 'SETTLED'], true)) {
             $this->markTransactionAsPaid($transaction->fresh());
         }
 
@@ -188,15 +190,6 @@ class PaymentController extends Controller
     public function error(Request $request): RedirectResponse
     {
         return $this->redirectByOrderId((string) $request->query('order_id'), 'Terjadi kendala saat pembayaran. Silakan coba lagi.');
-    }
-
-    private function configureMidtrans(): void
-    {
-        Config::$serverKey = (string) config('services.midtrans.server_key');
-        Config::$clientKey = (string) config('services.midtrans.client_key');
-        Config::$isProduction = (bool) config('services.midtrans.is_production', false);
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
     }
 
     private function resolvePromoCode(string $promoCodeInput, int $coursePrice): array
@@ -231,7 +224,7 @@ class PaymentController extends Controller
         }
 
         if ($transaction->status === Transaction::STATUS_PENDING) {
-            $updates['status'] = Transaction::STATUS_SETTLEMENT;
+            $updates['status'] = Transaction::STATUS_SETTLED;
         }
 
         if ($updates !== []) {

@@ -20,10 +20,10 @@ class TransactionPromoCode extends Component
 
     public ?string $promoMessage = null;
 
-    public function mount(int $coursePrice, string $initialPromoCode = ''): void
+    public function mount(int $coursePrice, ?string $initialPromoCode = ''): void
     {
         $this->coursePrice = max(0, $coursePrice);
-        $this->promoCode = trim($initialPromoCode);
+        $this->promoCode = trim((string) $initialPromoCode);
         $this->finalPrice = $this->coursePrice;
 
         $this->recalculate();

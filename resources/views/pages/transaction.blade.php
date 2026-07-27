@@ -155,11 +155,10 @@
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Ringkasan Pembayaran</h2>
 
                     <livewire:transaction-promo-code :course-price="(int) $course->price"
-                        :initial-promo-code="old('promo_code', '')" />
+                        :initial-promo-code="(string) (old('promo_code') ?? '')" />
 
                     <div class="mt-5 rounded-xl border border-pink-100 bg-pink-50 p-4 text-sm text-gray-700">
-                        Setelah kamu klik bayar, popup akan muncul untuk
-                        memilih metode pembayaran.
+                        Setelah kamu klik bayar, kamu akan diarahkan ke halaman pembayaran aman Xendit untuk memilih metode pembayaran (Bank, QRIS, E-Wallet, dll).
                     </div>
 
                     <button type="submit"
@@ -176,33 +175,4 @@
     </main>
 
     <x-footer />
-
-    @if (session('snap_token'))
-        <script
-            src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
-            data-client-key="{{ config('services.midtrans.client_key') }}"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const snapToken = @json(session('snap_token'));
-                if (!snapToken || typeof window.snap === 'undefined') {
-                    return;
-                }
-
-                window.snap.pay(snapToken, {
-                    onSuccess: function () {
-                        window.location.href = @json(route('payments.midtrans.finish', ['order_id' => (string) session('trx_id')]));
-                    },
-                    onPending: function () {
-                        window.location.href = @json(route('payments.midtrans.unfinish', ['order_id' => (string) session('trx_id')]));
-                    },
-                    onError: function () {
-                        window.location.href = @json(route('payments.midtrans.error', ['order_id' => (string) session('trx_id')]));
-                    },
-                    onClose: function () {
-                        window.location.href = @json(route('payments.midtrans.unfinish', ['order_id' => (string) session('trx_id')]));
-                    }
-                });
-            });
-        </script>
-    @endif
 </x-layout>

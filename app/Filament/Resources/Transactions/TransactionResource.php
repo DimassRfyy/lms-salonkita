@@ -65,7 +65,7 @@ class TransactionResource extends Resource
                     ->required(),
                 Select::make('payment_method')
                     ->options([
-                        'midtrans' => 'Midtrans (Snap)',
+                        'xendit' => 'Xendit Invoice',
                         'free' => 'Gratis / Promo 100%',
                         'bca' => 'BCA',
                         'bri' => 'BRI',
@@ -80,15 +80,9 @@ class TransactionResource extends Resource
                 Select::make('status')
                     ->options([
                         Transaction::STATUS_PENDING => 'Menunggu Pembayaran',
-                        Transaction::STATUS_SETTLEMENT => 'Berhasil Dibayar',
-                        Transaction::STATUS_CAPTURE => 'Capture',
-                        Transaction::STATUS_EXPIRE => 'Kedaluwarsa',
-                        Transaction::STATUS_CANCEL => 'Dibatalkan',
-                        Transaction::STATUS_DENY => 'Ditolak',
-                        Transaction::STATUS_FAILURE => 'Gagal',
-                        Transaction::STATUS_REFUND => 'Refund',
-                        Transaction::STATUS_PARTIAL_REFUND => 'Partial Refund',
-                        Transaction::STATUS_CHARGEBACK => 'Chargeback',
+                        Transaction::STATUS_PAID => 'Berhasil Dibayar (PAID)',
+                        Transaction::STATUS_SETTLED => 'Berhasil Dibayar (SETTLED)',
+                        Transaction::STATUS_EXPIRED => 'Kedaluwarsa',
                     ])
                     ->default(Transaction::STATUS_PENDING)
                     ->required(),
@@ -112,7 +106,7 @@ class TransactionResource extends Resource
                     ->searchable(),
                 TextColumn::make('payment_method')
                     ->formatStateUsing(fn (string $state) => match ($state) {
-                        'midtrans' => 'Midtrans (Snap)',
+                        'xendit' => 'Xendit Invoice',
                         'free' => 'Gratis / Promo 100%',
                         'bca' => 'BCA',
                         'bri' => 'BRI',
@@ -129,11 +123,10 @@ class TransactionResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (string $state, Transaction $record): string => $record->status_label)
-                    ->color(fn (string $state): string => match ($state) {
-                        Transaction::STATUS_PENDING => 'warning',
-                        Transaction::STATUS_SETTLEMENT, Transaction::STATUS_CAPTURE => 'success',
-                        Transaction::STATUS_EXPIRE, Transaction::STATUS_CANCEL, Transaction::STATUS_DENY, Transaction::STATUS_FAILURE => 'danger',
-                        Transaction::STATUS_REFUND, Transaction::STATUS_PARTIAL_REFUND, Transaction::STATUS_CHARGEBACK => 'info',
+                    ->color(fn (string $state): string => match (mb_strtoupper($state)) {
+                        'PENDING' => 'warning',
+                        'PAID', 'SETTLED', 'SETTLEMENT', 'CAPTURE' => 'success',
+                        'EXPIRED', 'EXPIRE', 'CANCEL', 'CANCELLED', 'DENY', 'FAILURE' => 'danger',
                         default => 'gray',
                     }),
                 TextColumn::make('promoCode.code')
