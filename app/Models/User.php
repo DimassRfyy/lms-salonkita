@@ -48,6 +48,7 @@ class User extends Authenticatable implements FilamentUser
         'provider',
         'provider_id',
         'password',
+        'points_balance',
     ];
 
     /**
@@ -170,6 +171,16 @@ class User extends Authenticatable implements FilamentUser
     public function mentorUnavailabilityExceptions(): HasMany
     {
         return $this->hasMany(MentorUnavailabilityException::class, 'mentor_id');
+    }
+
+    public function pointTransactions(): HasMany
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
+
+    public function rewardRedemptions(): HasMany
+    {
+        return $this->hasMany(RewardRedemption::class);
     }
 
     public function canAccessPanel(Panel $panel): bool

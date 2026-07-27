@@ -7,6 +7,7 @@ use App\Models\PromoCode;
 use App\Models\PromoCodeRedemption;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\PointService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
@@ -242,6 +243,16 @@ class PaymentController extends Controller
                     'user_id' => $transaction->user_id,
                     'discount_amount' => (int) $transaction->discount_amount,
                 ]
+            );
+        }
+
+        if ($transaction->student) {
+            $courseName = $transaction->course->name ?? 'Kelas';
+            app(PointService::class)->awardPoints(
+                user: $transaction->student,
+                amount: 50,
+                source: $transaction,
+                description: "Bonus +50 Poin dari pembelian {$courseName}"
             );
         }
     }

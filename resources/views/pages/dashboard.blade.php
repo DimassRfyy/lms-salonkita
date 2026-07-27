@@ -12,34 +12,73 @@
             </p>
         </section>
 
-        @if(($hasMentoringAccess ?? false) || isset($availableMentoringEntitlement) || isset($latestMentoringBooking))
-            <section class="mb-12">
-                <div
-                    class="overflow-hidden rounded-3xl border border-pink-100 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-6 text-white shadow-lg md:p-8">
-                    <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                        <div class="max-w-2xl space-y-3">
-                            <span
-                                class="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]">Mentoring
-                                Access</span>
-                            <h2 class="text-2xl font-bold md:text-3xl">Lihat halaman mentoring kamu.</h2>
-                            <p class="text-sm text-white/90 md:text-base">
-                                Lihat detail jadwal, platform meeting, link, catatan mentor, dan riwayat sesi.
+        @php
+            $showMentoring = ($hasMentoringAccess ?? false) || isset($availableMentoringEntitlement) || isset($latestMentoringBooking);
+        @endphp
+
+        <!-- TOP WIDGETS GRID (POINTS & MENTORING - COMPACT) -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 {{ $showMentoring ? 'lg:grid-cols-2' : '' }} gap-4 sm:gap-5">
+                <!-- POINTS BANNER / WIDGET -->
+                <a href="{{ route('points.index') }}" class="group block h-full">
+                    <div class="h-full overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-4 sm:p-5 text-white shadow-sm hover:shadow-md transition-all duration-300 relative flex flex-col justify-between">
+                        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-lg pointer-events-none"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <span class="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-100">
+                                    Redeem Point
+                                </span>
+                                <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-sm shadow-inner border border-white/20 shrink-0">
+                                    🪙
+                                </div>
+                            </div>
+                            <h2 class="text-lg sm:text-xl font-black">
+                                {{ number_format(auth()->user()->points_balance ?? 0) }} Poin Saya
+                            </h2>
+                            <p class="text-xs text-amber-100 mt-0.5 leading-snug">
+                                Dapatkan +50 Poin tiap beli kelas. Tukarkan poin dengan hadiah!
                             </p>
                         </div>
-                        <div class="flex flex-col gap-3 md:min-w-64">
+
+                        <div class="mt-3 pt-2.5 border-t border-white/15 relative z-10 flex justify-end">
+                            <span class="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 font-bold text-amber-600 shadow-sm group-hover:bg-amber-50 group-hover:scale-105 transition-all text-xs">
+                                Tukar Poin
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                @if($showMentoring)
+                    <!-- MENTORING WIDGET -->
+                    <div class="h-full overflow-hidden rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-4 sm:p-5 text-white shadow-sm relative flex flex-col justify-between">
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <span class="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                                    Mentoring Access
+                                </span>
+                            </div>
+                            <h2 class="text-lg sm:text-xl font-bold">Halaman Mentoring</h2>
+                            <p class="text-xs text-white/90 mt-0.5 leading-snug">
+                                lihat jadwal, platform meeting, link & catatan mentor.
+                            </p>
+                        </div>
+
+                        <div class="mt-3 pt-2.5 border-t border-white/15 relative z-10 flex justify-end">
                             <a href="{{ route('mentoring.index') }}"
-                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-pink-600 shadow-sm transition hover:bg-pink-50">
+                                class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 font-bold text-pink-600 shadow-sm transition hover:bg-pink-50 text-xs">
                                 Lihat Mentoring
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
                         </div>
                     </div>
-                </div>
-            </section>
-        @endif
+                @endif
+            </div>
+        </section>
 
 
         @if($continueWatching)

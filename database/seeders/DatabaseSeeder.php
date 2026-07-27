@@ -177,5 +177,42 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        // Seed Sample Reward Items for Gamification Point System
+        \App\Models\RewardItem::updateOrCreate(
+            ['slug' => 'voucher-diskon-20rb'],
+            [
+                'name' => 'Voucher Diskon Rp 20.000',
+                'description' => 'Gunakan voucher diskon ini untuk potongan harga saat membeli kelas Salonkita berikutnya.',
+                'points_required' => 50,
+                'stock' => 100,
+                'type' => 'VOUCHER',
+                'is_active' => true,
+            ]
+        );
+
+        \App\Models\RewardItem::updateOrCreate(
+            ['slug' => 'ebook-guide-beauty-salon'],
+            [
+                'name' => 'E-Book Kit Panduan Sukses Salon Beauty',
+                'description' => 'Panduan komprehensif PDF tips dan trik memulai bisnis Salon Beauty dari nol.',
+                'points_required' => 100,
+                'stock' => null, // unlimited
+                'type' => 'DIGITAL_ITEM',
+                'is_active' => true,
+            ]
+        );
+
+        \App\Models\RewardItem::updateOrCreate(
+            ['slug' => 'merchandise-beauty-pouch-exclusive'],
+            [
+                'name' => 'Exclusive Salonkita Beauty Pouch',
+                'description' => 'Pouch makeup eksklusif edisi terbatas dari Salonkita dengan bahan premium.',
+                'points_required' => 200,
+                'stock' => 15,
+                'type' => 'PHYSICAL',
+                'is_active' => true,
+            ]
+        );
     }
 }

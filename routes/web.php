@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MentoringController;
+use App\Http\Controllers\PointController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -26,6 +27,9 @@ Route::post('/course/{slug}/task-submission', [HomeController::class, 'storeCour
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile')->middleware('auth');
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy')->middleware('auth');
+
+Route::get('/points', [PointController::class, 'index'])->name('points.index')->middleware('auth');
+Route::post('/points/redeem/{rewardItem}', [PointController::class, 'redeem'])->name('points.redeem')->middleware('auth');
 
 Route::get('/savedCourses', [HomeController::class, 'savedCourses'])->name('saved-courses')->middleware('auth');
 Route::post('/savedCourses/{course}', [HomeController::class, 'storeSavedCourse'])->name('saved-courses.store')->middleware('auth');
