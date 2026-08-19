@@ -57,12 +57,15 @@
                             </a>
                         @endif
 
+                        {{-- FITUR REDEEM POINT DI-DISABLE SEMENTARA --}}
+                        {{--
                         <!-- Points Badge -->
                         <a href="{{ route('points.index') }}"
                             class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1.5 text-xs font-black text-amber-700 hover:bg-amber-100 transition shadow-sm">
                             <span class="text-sm">🪙</span>
                             <span>{{ number_format(auth()->user()->points_balance ?? 0) }} Poin</span>
                         </a>
+                        --}}
 
                         <!-- Profile Dropdown -->
                         <div class="relative group">
@@ -133,11 +136,14 @@
                                         {{ $mentoringButtonLabel }}
                                     </a>
                                 @endif
+                                {{-- FITUR REDEEM POINT DI-DISABLE SEMENTARA --}}
+                                {{--
                                 <a href="{{ route('points.index') }}"
                                     class="flex items-center gap-3 px-4 py-3 text-amber-600 font-semibold hover:bg-amber-50 border-b">
                                     <span class="text-base">🪙</span>
                                     Redem Poin
                                 </a>
+                                --}}
                                 <a href="{{ route('saved-courses') }}"
                                     class="flex items-center gap-3 px-4 py-3 text-gray-900 hover:bg-gray-50 border-b">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

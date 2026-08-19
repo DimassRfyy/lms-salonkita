@@ -16,6 +16,8 @@
             $showMentoring = ($hasMentoringAccess ?? false) || isset($availableMentoringEntitlement) || isset($latestMentoringBooking);
         @endphp
 
+        {{-- FITUR REDEEM POINT DI-DISABLE SEMENTARA --}}
+        {{--
         <!-- TOP WIDGETS GRID (POINTS & MENTORING - COMPACT) -->
         <section class="mb-8">
             <div class="grid grid-cols-1 {{ $showMentoring ? 'lg:grid-cols-2' : '' }} gap-4 sm:gap-5">
@@ -79,6 +81,38 @@
                 @endif
             </div>
         </section>
+        --}}
+
+        @if($showMentoring)
+            <!-- MENTORING WIDGET (COMPACT) -->
+            <section class="mb-8">
+                <div class="grid grid-cols-1 gap-4 sm:gap-5">
+                    <div class="h-full overflow-hidden rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-4 sm:p-5 text-white shadow-sm relative flex flex-col justify-between">
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <span class="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                                    Mentoring Access
+                                </span>
+                            </div>
+                            <h2 class="text-lg sm:text-xl font-bold">Halaman Mentoring</h2>
+                            <p class="text-xs text-white/90 mt-0.5 leading-snug">
+                                lihat jadwal, platform meeting, link & catatan mentor.
+                            </p>
+                        </div>
+
+                        <div class="mt-3 pt-2.5 border-t border-white/15 relative z-10 flex justify-end">
+                            <a href="{{ route('mentoring.index') }}"
+                                class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 font-bold text-pink-600 shadow-sm transition hover:bg-pink-50 text-xs">
+                                Lihat Mentoring
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
 
 
         @if($continueWatching)

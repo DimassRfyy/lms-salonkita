@@ -17,6 +17,9 @@ class RewardRedemptionResource extends Resource
 {
     protected static ?string $model = RewardRedemption::class;
 
+    // FITUR REDEEM POINT DI-DISABLE SEMENTARA
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string | \UnitEnum | null $navigationGroup = 'Gamifikasi & Poin';
 
     public static function canAccess(): bool
