@@ -1,11 +1,12 @@
 <x-layout>
     <x-navbar />
+    <x-breadcrumb />
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8">
         <!-- GREETING SECTION -->
         <section class="mb-12">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                Tugas Saya
+                Tugas & Kelas Saya
             </h1>
             <p class="text-lg text-gray-600">
                 Kelola dan pantau semua tugas kelas Anda!

@@ -59,6 +59,7 @@
         }
     </style>
     <x-navbar />
+    <x-breadcrumb />
     <!-- Profile Cover Section -->
     <div class="profile-cover"></div>
 

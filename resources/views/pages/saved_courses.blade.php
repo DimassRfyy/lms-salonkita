@@ -1,5 +1,6 @@
 <x-layout>
     <x-navbar />
+    <x-breadcrumb />
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8">
         <!-- GREETING SECTION -->

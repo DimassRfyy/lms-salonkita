@@ -1,5 +1,6 @@
 <x-layout>
     <x-navbar />
+    <x-breadcrumb :url="route('mentoring.mentors')" label="Kembali ke Daftar Mentor" />
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10">
         <section class="mb-8 rounded-3xl border border-pink-100 bg-white p-6 md:p-8 shadow-sm">

@@ -13,24 +13,46 @@ class ProfileController extends Controller
 {
     public function mentorCoachProfile(Request $request)
     {
-        if (! in_array($request->user()->role, ['mentor', 'coach'], true)) {
+        $user = $request->user();
+
+        if (! in_array($user->role, ['mentor', 'coach'], true)) {
             abort(403);
         }
 
+        $hasCompleteMentorProfile = filled($user->whatsapp_number)
+            && filled($user->job_title)
+            && filled($user->instagram_url)
+            && filled($user->city)
+            && filled($user->country);
+
+        if ($hasCompleteMentorProfile) {
+            if ($user->is_approved) {
+                return redirect()->route('filament.admin.pages.dashboard');
+            }
+
+            return redirect()->route('mentor-coach.waiting');
+        }
+
         return view('pages.register_mentor_coach', [
-            'role' => $request->user()->role === 'coach' ? 'coach' : 'mentor',
-            'user' => $request->user(),
+            'role' => $user->role === 'coach' ? 'coach' : 'mentor',
+            'user' => $user,
         ]);
     }
 
     public function mentorCoachWaiting(Request $request)
     {
-        if (! in_array($request->user()->role, ['mentor', 'coach'], true)) {
+        $user = $request->user();
+
+        if (! in_array($user->role, ['mentor', 'coach'], true)) {
             abort(403);
         }
 
+        if ($user->is_approved) {
+            return redirect()->route('filament.admin.pages.dashboard');
+        }
+
         return view('pages.mentor_coach_waiting', [
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 

@@ -32,7 +32,10 @@ class CourseTaskSubmission extends Model
     protected static function booted(): void
     {
         static::saving(function (self $submission) {
-            if ($submission->status !== self::STATUS_REVIEWED) {
+            if ($submission->score !== null && $submission->score !== '') {
+                $submission->status = self::STATUS_REVIEWED;
+            } else {
+                $submission->status = self::STATUS_PENDING;
                 $submission->score = null;
             }
         });

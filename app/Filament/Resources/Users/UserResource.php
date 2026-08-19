@@ -5,13 +5,14 @@ namespace App\Filament\Resources\Users;
 use App\Filament\Resources\Users\Pages\ManageUsers;
 use App\Models\User;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -24,8 +25,11 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
@@ -37,6 +41,26 @@ class UserResource extends Resource
         $user = Auth::user();
 
         return $user !== null && $user->role === 'admin';
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::query()
+            ->whereIn('role', ['mentor', 'coach'])
+            ->where('is_approved', false)
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Mentor & Coach menunggu persetujuan';
     }
 
     public static function form(Schema $schema): Schema
@@ -119,9 +143,22 @@ class UserResource extends Resource
                     ->searchable(),
                 TextColumn::make('role')
                     ->badge()
-                    ->searchable(),
+                    ->formatStateUsing(fn (string $state): string => strtoupper($state))
+                    ->color(fn (string $state): string => match (strtolower($state)) {
+                        'admin' => 'danger',
+                        'coach' => 'info',
+                        'mentor' => 'warning',
+                        default => 'gray',
+                    })
+                    ->searchable()
+                    ->sortable(),
                 IconColumn::make('is_approved')
-                    ->label('Approved')
+                    ->label('Status Approval')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-clock')
+                    ->trueColor('success')
+                    ->falseColor('warning')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -134,7 +171,20 @@ class UserResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                SelectFilter::make('role')
+                    ->label('Filter Role')
+                    ->options([
+                        'student' => 'Student',
+                        'mentor' => 'Mentor',
+                        'coach' => 'Coach',
+                        'admin' => 'Admin',
+                    ]),
+                SelectFilter::make('is_approved')
+                    ->label('Status Approval')
+                    ->options([
+                        '1' => 'Approved (Disetujui)',
+                        '0' => 'Pending (Menunggu Persetujuan)',
+                    ]),
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -142,12 +192,12 @@ class UserResource extends Resource
                         ViewAction::make(),
                         EditAction::make(),
                         Action::make('approve')
-                        ->label('Approve')
-                        ->color('success')
-                        ->icon('heroicon-m-check')
-                        ->action(fn ($record) => $record->update(['is_approved' => true]))
-                        ->requiresConfirmation()
-                        ->visible(fn ($record) => ! $record->is_approved),
+                            ->label('Approve')
+                            ->color('success')
+                            ->icon('heroicon-m-check')
+                            ->action(fn ($record) => $record->update(['is_approved' => true]))
+                            ->requiresConfirmation()
+                            ->visible(fn ($record) => ! $record->is_approved && in_array($record->role, ['mentor', 'coach'], true)),
                     ])
                         ->dropdown(false),
                     DeleteAction::make()
@@ -155,6 +205,13 @@ class UserResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('approve_selected')
+                        ->label('Approve Terpilih')
+                        ->icon('heroicon-o-check')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records) => $records->each(fn ($record) => $record->update(['is_approved' => true])))
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

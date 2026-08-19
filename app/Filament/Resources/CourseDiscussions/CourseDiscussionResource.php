@@ -16,7 +16,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
@@ -31,6 +33,18 @@ class CourseDiscussionResource extends Resource
         return $user !== null && in_array($user->role, ['admin', 'coach'], true);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = Auth::user();
+
+        if ($user?->role === 'coach') {
+            $query->whereHas('course', fn ($q) => $q->where('user_id', $user->id));
+        }
+
+        return $query;
+    }
+
     protected static string | UnitEnum | null $navigationGroup = 'Course Management';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ChatBubbleLeftRight;
@@ -40,7 +54,12 @@ class CourseDiscussionResource extends Resource
         return $schema
             ->components([
                 Select::make('course_id')
-                    ->relationship('course', 'name')
+                    ->relationship('course', 'name', function (Builder $query) {
+                        $user = Auth::user();
+                        if ($user?->role === 'coach') {
+                            $query->where('user_id', $user->id);
+                        }
+                    })
                     ->required(),
                 Select::make('user_id')
                     ->relationship('student', 'name')
@@ -78,7 +97,14 @@ class CourseDiscussionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('course_id')
+                    ->label('Kelas')
+                    ->relationship('course', 'name', function (Builder $query) {
+                        $user = Auth::user();
+                        if ($user?->role === 'coach') {
+                            $query->where('user_id', $user->id);
+                        }
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),

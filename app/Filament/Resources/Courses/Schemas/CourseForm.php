@@ -12,6 +12,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class CourseForm
 {
@@ -35,11 +36,14 @@ class CourseForm
                                 ->createOptionForm([
                                     TextInput::make('name')
                                         ->required(),
-                                ])
+                                 ])
                                 ->required(),
                             Select::make('user_id')
                                 ->label('Coach')
                                 ->relationship('instructor', 'name', fn ($query) => $query->where('role', 'coach'))
+                                ->default(fn () => Auth::user()?->role === 'coach' ? Auth::id() : null)
+                                ->disabled(fn () => Auth::user()?->role === 'coach')
+                                ->dehydrated()
                                 ->required(),
                             TextInput::make('price')
                                 ->required()

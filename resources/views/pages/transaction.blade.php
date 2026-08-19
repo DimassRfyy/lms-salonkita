@@ -1,17 +1,7 @@
 <x-layout>
     <x-navbar />
 
-    <div class="bg-white border-b border-pink-100 px-4 sm:px-6 lg:px-20 py-4">
-        <div class="max-w-7xl mx-auto">
-            <a href="javascript:history.back()"
-                class="text-pink-500 font-medium inline-flex items-center gap-2 hover:text-pink-700 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Kembali
-            </a>
-        </div>
-    </div>
+    <x-breadcrumb url="javascript:history.back()" label="Kembali" />
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Pembayaran</h1>
@@ -42,110 +32,71 @@
 
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6 sm:p-8">
-                    <div class="flex items-center gap-3 mb-5">
-                        <span
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-pink-50 text-pink-500">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </span>
-                        <div>
-                            <h2 class="text-lg font-bold text-gray-900">Detail Kelas</h2>
-                            <p class="text-sm text-gray-500">Ringkasan materi sebelum checkout.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 pb-5 border-b border-gray-100">
-                        <div class="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-pink-100">
+                    <!-- Detail Kelas -->
+                    <div class="flex flex-col sm:flex-row gap-4 pb-6 border-b border-gray-100">
+                        <div class="w-full sm:w-28 h-28 sm:h-20 rounded-xl overflow-hidden shrink-0 bg-pink-100 border border-pink-100 shadow-xs">
                             <img src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
                                 alt="Thumbnail Kelas"
                                 onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-gray-800 leading-snug">{{ $course->name }}</p>
-                            <p class="text-xs text-pink-500 font-medium mt-1">{{ $course->category->name }}</p>
-                            <div class="flex items-center gap-1 mt-2">
-                                <svg class="w-3 h-3 text-yellow-400 fill-yellow-400 shrink-0" viewBox="0 0 20 20" aria-hidden="true">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
-                                <p class="text-xs text-gray-500">{{ $course->rating_label }} · Kelas Premium</p>
+                        <div class="flex-1 min-w-0 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xs text-pink-500 font-semibold uppercase tracking-wider">{{ $course->category->name }}</span>
+                                <h2 class="text-base sm:text-lg font-bold text-gray-900 leading-snug mt-1">{{ $course->name }}</h2>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600 font-medium mt-3">
+                                <span class="inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 shrink-0" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    {{ $course->rating_label }}
+                                </span>
+                                <span>•</span>
+                                <span>{{ number_format((int) ($course->videos_count ?? 0)) }} Video</span>
+                                <span>•</span>
+                                <span>{{ $durationLabel }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-6 rounded-2xl border border-gray-100 bg-gray-50 p-5">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span
-                                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-pink-500 shadow-sm border border-pink-100">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 012-2z" />
+                    <!-- Benefit -->
+                    <div class="mt-6">
+                        <h3 class="text-sm font-bold text-gray-900 mb-3">Keuntungan yang Didapatkan</h3>
+                        <ul class="space-y-2.5 text-sm text-gray-600">
+                            <li class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-pink-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                            </span>
-                            <h3 class="text-sm font-bold text-gray-900">Course Content</h3>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                            <div class="rounded-xl bg-white border border-gray-100 p-4">
-                                <p class="text-xs uppercase tracking-wide text-gray-500">Video</p>
-                                <p class="mt-2 font-semibold text-gray-900">
-                                    {{ number_format((int) ($course->videos_count ?? 0)) }} video</p>
-                            </div>
-                            <div class="rounded-xl bg-white border border-gray-100 p-4">
-                                <p class="text-xs uppercase tracking-wide text-gray-500">Total Durasi</p>
-                                <p class="mt-2 font-semibold text-gray-900">{{ $durationLabel }}</p>
-                            </div>
-                            <div class="rounded-xl bg-white border border-gray-100 p-4">
-                                <p class="text-xs uppercase tracking-wide text-gray-500">Format</p>
-                                <p class="mt-2 font-semibold text-gray-900">Video + Quiz</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 rounded-2xl border border-pink-100 bg-pink-50 p-5">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span
-                                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-pink-500 shadow-sm border border-pink-100">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13.828 10.172a4 4 0 00-5.656 0l-1.415 1.414a4 4 0 105.657 5.657l.707-.707m2.828-2.828l1.414-1.414a4 4 0 10-5.657-5.657l-.707.707" />
+                                <span>Akses materi selamanya (Lifetime Access)</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-pink-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                            </span>
-                            <h3 class="text-sm font-bold text-gray-900">Special Benefits</h3>
-                        </div>
-                        <ul class="space-y-3 text-sm text-gray-700">
-                            <li class="flex items-start gap-3">
-                                <span
-                                    class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-pink-500 shadow-sm border border-pink-100 shrink-0">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </span>
-                                <span>Sertifikat kelulusan setelah kelas dan tugas selesai.</span>
+                                <span>Sertifikat kelulusan setelah menyelesaikan materi & tugas</span>
                             </li>
-                            <li class="flex items-start gap-3">
-                                <span
-                                    class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-pink-500 shadow-sm border border-pink-100 shrink-0">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </span>
-                                <span>Free 1x bimbingan mentor untuk konsultasi materi atau progres belajar.</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span
-                                    class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-pink-500 shadow-sm border border-pink-100 shrink-0">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </span>
-                                <span>+100 poin yang nanti bisa ditukar dengan benefit lain.</span>
+                            <li class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-pink-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Free 1x bimbingan mentor</span>
                             </li>
                         </ul>
+                    </div>
+
+                    <!-- Pemberitahuan Hak Cipta -->
+                    <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 flex items-start gap-3">
+                        <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <div>
+                            <p class="font-bold text-amber-900">Pemberitahuan Sebelum Membeli</p>
+                            <p class="mt-0.5 text-amber-800 text-xs sm:text-sm leading-relaxed">
+                                Dilarang menyebarluaskan, merekam, atau membagikan materi kelas ini kepada pihak lain karena melanggar hak cipta.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -158,7 +109,7 @@
                         :initial-promo-code="(string) (old('promo_code') ?? '')" />
 
                     <div class="mt-5 rounded-xl border border-pink-100 bg-pink-50 p-4 text-sm text-gray-700">
-                        Setelah kamu klik bayar, kamu akan diarahkan ke halaman pembayaran aman Xendit untuk memilih metode pembayaran (Bank, QRIS, E-Wallet, dll).
+                        Setelah kamu klik bayar, kamu akan diarahkan ke halaman pembayaran.
                     </div>
 
                     <button type="submit"

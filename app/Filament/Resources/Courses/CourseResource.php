@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
@@ -28,6 +29,18 @@ class CourseResource extends Resource
         $user = Auth::user();
 
         return $user !== null && in_array($user->role, ['admin', 'coach'], true);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = Auth::user();
+
+        if ($user?->role === 'coach') {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query;
     }
     
     protected static string|BackedEnum|null $navigationIcon = Heroicon::AcademicCap;

@@ -91,7 +91,9 @@ class HomeController extends Controller
             $course->setAttribute('progress_label', min(100, $progressPercentage) . '%');
 
             return $course;
-        });
+        })
+        ->sortBy(fn ($course) => $course->progress_percentage >= 100 ? 1 : 0)
+        ->values();
 
         $recommendedCourses = Course::query()
             ->with('category')

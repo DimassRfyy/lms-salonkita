@@ -182,9 +182,9 @@
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-900">Kelas Saya</h2>
-                <a href="{{ route('all-courses') }}"
+                <a href="{{ route('task') }}"
                     class="text-pink-500 font-medium hover:text-pink-600 transition flex items-center gap-2">
-                    Jelajahi Kelas
+                    Tugas & Kelas Saya
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -192,7 +192,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach($ownedCourses as $course)
+                @foreach($ownedCourses->take(4) as $course)
                 @php($isSaved = $savedCourseIds->contains($course->id))
                 <!-- Course Card -->
                 <div

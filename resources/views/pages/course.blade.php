@@ -209,17 +209,7 @@
 
     <x-navbar />
 
-    <div class="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
-        <div class="max-w-7xl mx-auto">
-            <a href="{{ route('dashboard') }}"
-                class="text-primary font-medium inline-flex items-center gap-2 hover:text-pink-700">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Kembali ke Dashboard
-            </a>
-        </div>
-    </div>
+    <x-breadcrumb />
 
     <div class="bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
@@ -671,7 +661,7 @@
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                     </path>
                                 </svg>
-                                <span>Daftar kelas ini untuk membuka semua materi kelas.</span>
+                                <span>Daftar kelas ini untuk membuka semua materi.</span>
                             </div>
                         @endif
 

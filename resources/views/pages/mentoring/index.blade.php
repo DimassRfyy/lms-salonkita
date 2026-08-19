@@ -1,5 +1,6 @@
 <x-layout>
     <x-navbar />
+    <x-breadcrumb />
 
     @php
         $activeEntitlementId = $availableEntitlements->first()?->id;
