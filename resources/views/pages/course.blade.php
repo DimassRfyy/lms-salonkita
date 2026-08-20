@@ -804,22 +804,46 @@
                             @endforelse
 
                             @if($hasCourseAccess && $currentVideo && !$showPresentation)
-                                <div class="mt-4 mb-4">
+                                <div class="mt-4 mb-4 space-y-2.5">
                                     @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
                                         <button type="button" onclick="openQuizModal()"
-                                            class="w-full bg-primary hover-primary text-white font-bold py-3 rounded-lg">
-                                            Isi Quiz
+                                            class="w-full bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                            </svg>
+                                            <span>Kerjakan Quiz</span>
                                         </button>
                                     @elseif ($nextVideoUrl)
                                         <a href="{{ $nextVideoUrl }}"
-                                            class="w-full inline-block text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg">
-                                            Next Video
+                                            class="w-full inline-flex items-center justify-center gap-2 bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm">
+                                            <span>Next Video</span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                            </svg>
                                         </a>
+                                        @if ($hasCurrentVideoQuiz)
+                                            <button type="button" onclick="openQuizModal()"
+                                                class="w-full py-2.5 px-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2">
+                                                <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                <span>Ulangi Quiz (Skor: {{ $currentVideoQuizCompletion?->score ?? 0 }}/100)</span>
+                                            </button>
+                                        @endif
                                     @else
                                         <button type="button" disabled
-                                            class="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-lg">
+                                            class="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-xl cursor-not-allowed">
                                             Video Terakhir
                                         </button>
+                                        @if ($hasCurrentVideoQuiz)
+                                            <button type="button" onclick="openQuizModal()"
+                                                class="w-full py-2.5 px-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2">
+                                                <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                <span>Ulangi Quiz (Skor: {{ $currentVideoQuizCompletion?->score ?? 0 }}/100)</span>
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             @endif
@@ -846,46 +870,149 @@
 
     <x-footer />
 
-    @if($hasCourseAccess && $currentVideo && $hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
+    @if($hasCourseAccess && $currentVideo && $hasCurrentVideoQuiz)
         <div id="quizModal" class="quiz-modal-backdrop" onclick="handleQuizBackdropClick(event)">
             <div class="quiz-modal-card">
-                <div class="px-5 py-4 border-b border-pink-100 flex items-center justify-between gap-3">
-                    <div>
-                        <h3 class="text-base md:text-lg font-semibold text-gray-900">{{ $currentVideoQuiz->title }}</h3>
-                        <p class="text-xs text-gray-500">Lengkapi semua pertanyaan untuk membuka video berikutnya.</p>
+                <!-- View 1: Pengerjaan Soal (Question Step View) -->
+                <div id="quizQuestionView">
+                    <div class="px-5 sm:px-6 py-4 border-b border-pink-100 flex items-center justify-between gap-3 bg-pink-50/50">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-pink-100 text-pink-600 text-[11px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Quiz Video</span>
+                                <span class="text-xs text-gray-500 font-medium">Soal <span id="quizStepCurrentText" class="font-bold text-gray-800">1</span> dari {{ $currentVideoQuiz->questions->count() }}</span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-bold text-gray-900 mt-1">{{ $currentVideoQuiz->title }}</h3>
+                        </div>
+                        <button type="button" onclick="closeQuizModal()"
+                            class="w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-600 flex items-center justify-center text-lg leading-none transition">&times;</button>
                     </div>
-                    <button type="button" onclick="closeQuizModal()"
-                        class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
-                </div>
 
-                <form method="POST" action="{{ route('course.quiz.submit', ['slug' => $course->slug]) }}"
-                    class="px-5 py-4 space-y-5">
-                    @csrf
-                    <input type="hidden" name="video_id" value="{{ $currentVideo->id }}">
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-100 h-1.5 overflow-hidden">
+                        <div id="quizProgressBar" class="bg-pink-500 h-full transition-all duration-300" style="width: {{ 100 / max($currentVideoQuiz->questions->count(), 1) }}%;"></div>
+                    </div>
 
-                    @foreach ($currentVideoQuiz->questions as $questionIndex => $question)
-                        <div class="rounded-lg border border-pink-100 p-4">
-                            <p class="font-medium text-gray-900 mb-3">{{ $questionIndex + 1 }}. {{ $question->question }}</p>
+                    <form id="quizForm" method="POST" action="{{ route('course.quiz.submit', ['slug' => $course->slug]) }}"
+                        onsubmit="submitQuizForm(event)" class="px-5 sm:px-6 py-5 space-y-6">
+                        @csrf
+                        <input type="hidden" name="video_id" value="{{ $currentVideo->id }}">
 
-                            <div class="space-y-2">
-                                @foreach ($question->options as $option)
-                                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
-                                        <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option->id }}" required
-                                            class="mt-0.5">
-                                        <span>{{ $option->option_text }}</span>
-                                    </label>
-                                @endforeach
+                        @foreach ($currentVideoQuiz->questions as $questionIndex => $question)
+                            <div class="quiz-question-step {{ $questionIndex === 0 ? 'block' : 'hidden' }}" data-step="{{ $questionIndex + 1 }}">
+                                <div class="mb-4">
+                                    <span class="text-xs font-bold text-pink-500 uppercase tracking-wider">Pertanyaan #{{ $questionIndex + 1 }}</span>
+                                    <p class="font-bold text-base sm:text-lg text-gray-900 mt-1 leading-snug">{{ $question->question }}</p>
+                                </div>
+
+                                <div class="space-y-2.5">
+                                    @foreach ($question->options as $optionIndex => $option)
+                                        @php
+                                            $optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+                                            $optionLabel = $optionLabels[$optionIndex] ?? ($optionIndex + 1);
+                                        @endphp
+                                        <label onclick="selectQuizOption(this)"
+                                            class="quiz-option-item flex items-center gap-3 p-3.5 sm:p-4 rounded-xl border border-gray-200 hover:border-pink-300 hover:bg-pink-50/40 cursor-pointer transition">
+                                            <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option->id }}" required
+                                                onchange="onQuizOptionSelected({{ $questionIndex + 1 }})"
+                                                class="sr-only">
+                                            <div class="option-indicator w-7 h-7 rounded-lg border border-gray-300 text-xs font-bold text-gray-600 flex items-center justify-center shrink-0 transition bg-white">
+                                                {{ $optionLabel }}
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-800 flex-1 leading-normal">{{ $option->option_text }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <div class="flex items-center justify-between pt-4 border-t border-pink-100">
+                            <button type="button" id="btnQuizPrev" onclick="prevQuizQuestion()"
+                                class="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition hidden">
+                                ← Sebelumnya
+                            </button>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <button type="button" id="btnQuizNext" onclick="nextQuizQuestion()"
+                                    class="px-6 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-sm transition shadow-sm flex items-center gap-1.5">
+                                    <span>Selanjutnya</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                                <button type="submit" id="btnQuizSubmit"
+                                    class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold text-sm transition shadow-sm hidden flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span>Kirim Jawaban</span>
+                                </button>
                             </div>
                         </div>
-                    @endforeach
+                    </form>
+                </div>
 
-                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-pink-100">
+                <!-- View 2: Hasil & Pembahasan (Result & Review View) -->
+                <div id="quizResultView" class="hidden">
+                    <div class="px-5 sm:px-6 py-4 border-b border-pink-100 flex items-center justify-between gap-3 bg-pink-50/50">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-pink-100 text-pink-600 text-[11px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Hasil Quiz</span>
+                            <h3 class="text-base sm:text-lg font-bold text-gray-900">{{ $currentVideoQuiz->title }}</h3>
+                        </div>
                         <button type="button" onclick="closeQuizModal()"
-                            class="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">Tutup</button>
-                        <button type="submit"
-                            class="px-4 py-2 rounded-lg bg-primary hover-primary text-white font-medium">Kirim Quiz</button>
+                            class="w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-600 flex items-center justify-center text-lg leading-none transition">&times;</button>
                     </div>
-                </form>
+
+                    <div class="px-5 sm:px-6 py-6 space-y-6 max-h-[65vh] overflow-y-auto">
+                        <!-- Score Header Card -->
+                        <div class="p-6 rounded-2xl bg-linear-to-br from-pink-50 via-white to-pink-50/40 border border-pink-100 text-center flex flex-col items-center shadow-xs">
+                            <div id="quizResultBadgeIcon" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2.5 shadow-inner bg-emerald-100 text-emerald-600">
+                                🏆
+                            </div>
+                            <div class="flex items-baseline justify-center gap-1">
+                                <span id="quizResultScoreText" class="text-4xl font-extrabold text-gray-900">100</span>
+                                <span class="text-lg font-bold text-gray-400">/ 100</span>
+                            </div>
+                            <p id="quizResultStatusText" class="font-bold text-base mt-2 text-emerald-600">Selamat! Kamu Lulus Quiz</p>
+                            <p id="quizResultSummaryText" class="text-xs sm:text-sm text-gray-500 mt-1">4 dari 5 pertanyaan dijawab dengan benar</p>
+                        </div>
+
+                        <!-- Review Detail Soal -->
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900 mb-3 flex items-center gap-2">
+                                <span>Pembahasan Soal</span>
+                                <span class="text-xs font-normal text-gray-500">(Review Benar / Salah)</span>
+                            </h4>
+
+                            <div id="quizReviewList" class="space-y-3.5">
+                                <!-- Generated by JS dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 sm:px-6 py-4 border-t border-pink-100 bg-gray-50 rounded-b-2xl">
+                        <button type="button" onclick="restartQuiz()"
+                            class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 font-semibold text-sm transition flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <span>Ulangi Quiz</span>
+                        </button>
+                        
+                        @if ($nextVideoUrl)
+                            <a href="{{ $nextVideoUrl }}"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm transition shadow-sm flex items-center justify-center gap-2">
+                                <span>Lanjut Video Berikutnya</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        @else
+                            <button type="button" onclick="closeQuizModal(); window.location.reload();"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm transition shadow-sm">
+                                Selesai
+                            </button>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     @endif
@@ -934,6 +1061,7 @@
         function openQuizModal() {
             const modal = document.getElementById('quizModal');
             if (!modal) return;
+            restartQuiz();
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -948,6 +1076,274 @@
         function handleQuizBackdropClick(event) {
             if (event.target.id === 'quizModal') {
                 closeQuizModal();
+            }
+        }
+
+        let currentQuizStep = 1;
+        const totalQuizQuestions = {{ $hasCurrentVideoQuiz ? $currentVideoQuiz->questions->count() : 0 }};
+
+        function updateQuizStepView() {
+            const steps = document.querySelectorAll('.quiz-question-step');
+            steps.forEach((step, idx) => {
+                if (idx + 1 === currentQuizStep) {
+                    step.classList.remove('hidden');
+                    step.classList.add('block');
+                } else {
+                    step.classList.remove('block');
+                    step.classList.add('hidden');
+                }
+            });
+
+            const currentText = document.getElementById('quizStepCurrentText');
+            if (currentText) currentText.innerText = currentQuizStep;
+
+            const progressBar = document.getElementById('quizProgressBar');
+            if (progressBar && totalQuizQuestions > 0) {
+                const percent = (currentQuizStep / totalQuizQuestions) * 100;
+                progressBar.style.width = percent + '%';
+            }
+
+            const btnPrev = document.getElementById('btnQuizPrev');
+            if (btnPrev) {
+                if (currentQuizStep > 1) {
+                    btnPrev.classList.remove('hidden');
+                } else {
+                    btnPrev.classList.add('hidden');
+                }
+            }
+
+            const btnNext = document.getElementById('btnQuizNext');
+            const btnSubmit = document.getElementById('btnQuizSubmit');
+
+            if (currentQuizStep === totalQuizQuestions) {
+                if (btnNext) btnNext.classList.add('hidden');
+                if (btnSubmit) btnSubmit.classList.remove('hidden');
+            } else {
+                if (btnNext) btnNext.classList.remove('hidden');
+                if (btnSubmit) btnSubmit.classList.add('hidden');
+            }
+        }
+
+        function selectQuizOption(labelElement) {
+            const stepContainer = labelElement.closest('.quiz-question-step');
+            if (!stepContainer) return;
+
+            stepContainer.querySelectorAll('.quiz-option-item').forEach(el => {
+                el.classList.remove('border-pink-500', 'bg-pink-50', 'ring-1', 'ring-pink-400');
+                el.classList.add('border-gray-200');
+                const indicator = el.querySelector('.option-indicator');
+                if (indicator) {
+                    indicator.classList.remove('bg-pink-500', 'border-pink-500', 'text-white');
+                    indicator.classList.add('border-gray-300', 'text-gray-600', 'bg-white');
+                }
+            });
+
+            labelElement.classList.remove('border-gray-200');
+            labelElement.classList.add('border-pink-500', 'bg-pink-50', 'ring-1', 'ring-pink-400');
+            const indicator = labelElement.querySelector('.option-indicator');
+            if (indicator) {
+                indicator.classList.remove('border-gray-300', 'text-gray-600', 'bg-white');
+                indicator.classList.add('bg-pink-500', 'border-pink-500', 'text-white');
+            }
+
+            const radio = labelElement.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        }
+
+        function onQuizOptionSelected(stepNumber) {
+            // Callback placeholder if needed
+        }
+
+        function isCurrentStepAnswered() {
+            const currentStepEl = document.querySelector(`.quiz-question-step[data-step="${currentQuizStep}"]`);
+            if (!currentStepEl) return true;
+            const checkedRadio = currentStepEl.querySelector('input[type="radio"]:checked');
+            return checkedRadio !== null;
+        }
+
+        function nextQuizQuestion() {
+            if (!isCurrentStepAnswered()) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Pilih Jawaban',
+                        text: 'Silakan pilih salah satu jawaban terlebih dahulu.',
+                        confirmButtonColor: '#ec4899',
+                        confirmButtonText: 'Mengerti',
+                        customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold' }
+                    });
+                } else {
+                    alert('Silakan pilih salah satu jawaban terlebih dahulu.');
+                }
+                return;
+            }
+
+            if (currentQuizStep < totalQuizQuestions) {
+                currentQuizStep++;
+                updateQuizStepView();
+            }
+        }
+
+        function prevQuizQuestion() {
+            if (currentQuizStep > 1) {
+                currentQuizStep--;
+                updateQuizStepView();
+            }
+        }
+
+        function restartQuiz() {
+            currentQuizStep = 1;
+            const form = document.getElementById('quizForm');
+            if (form) {
+                form.reset();
+                form.querySelectorAll('.quiz-option-item').forEach(el => {
+                    el.classList.remove('border-pink-500', 'bg-pink-50', 'ring-1', 'ring-pink-400');
+                    el.classList.add('border-gray-200');
+                    const indicator = el.querySelector('.option-indicator');
+                    if (indicator) {
+                        indicator.classList.remove('bg-pink-500', 'border-pink-500', 'text-white');
+                        indicator.classList.add('border-gray-300', 'text-gray-600', 'bg-white');
+                    }
+                });
+            }
+
+            document.getElementById('quizQuestionView')?.classList.remove('hidden');
+            document.getElementById('quizResultView')?.classList.add('hidden');
+            updateQuizStepView();
+        }
+
+        async function submitQuizForm(event) {
+            event.preventDefault();
+
+            if (!isCurrentStepAnswered()) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Pilih Jawaban',
+                        text: 'Silakan pilih jawaban untuk soal ini terlebih dahulu.',
+                        confirmButtonColor: '#ec4899',
+                        confirmButtonText: 'Mengerti'
+                    });
+                } else {
+                    alert('Silakan pilih jawaban untuk soal ini terlebih dahulu.');
+                }
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = document.getElementById('btnQuizSubmit');
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Kirim Jawaban';
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Memeriksa Jawaban...</span>';
+            }
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal mengirim jawaban.');
+                }
+
+                const data = await response.json();
+                renderQuizResult(data);
+            } catch (error) {
+                console.error(error);
+                form.submit();
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            }
+        }
+
+        function renderQuizResult(data) {
+            document.getElementById('quizQuestionView')?.classList.add('hidden');
+            const resultView = document.getElementById('quizResultView');
+            if (!resultView) return;
+
+            resultView.classList.remove('hidden');
+
+            const scoreText = document.getElementById('quizResultScoreText');
+            if (scoreText) scoreText.innerText = data.score;
+
+            const badgeIcon = document.getElementById('quizResultBadgeIcon');
+            const statusText = document.getElementById('quizResultStatusText');
+            const summaryText = document.getElementById('quizResultSummaryText');
+
+            if (data.is_passed) {
+                if (badgeIcon) {
+                    badgeIcon.className = 'w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2.5 shadow-inner bg-emerald-100 text-emerald-600';
+                    badgeIcon.innerText = '🏆';
+                }
+                if (statusText) {
+                    statusText.className = 'font-bold text-base mt-2 text-emerald-600';
+                    statusText.innerText = 'Selamat! Kamu Lulus Quiz';
+                }
+            } else {
+                if (badgeIcon) {
+                    badgeIcon.className = 'w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2.5 shadow-inner bg-amber-100 text-amber-600';
+                    badgeIcon.innerText = '📖';
+                }
+                if (statusText) {
+                    statusText.className = 'font-bold text-base mt-2 text-amber-600';
+                    statusText.innerText = `Nilai Belum Mencapai Target (Min. ${data.passing_score}%)`;
+                }
+            }
+
+            if (summaryText) {
+                summaryText.innerText = `${data.correct_count} dari ${data.total_questions} pertanyaan dijawab dengan benar`;
+            }
+
+            const reviewContainer = document.getElementById('quizReviewList');
+            if (reviewContainer && Array.isArray(data.results)) {
+                reviewContainer.innerHTML = '';
+
+                data.results.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = `p-4 rounded-xl border ${item.is_correct ? 'border-emerald-200 bg-emerald-50/40' : 'border-red-200 bg-red-50/40'}`;
+
+                    card.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${item.is_correct ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}">
+                                ${item.is_correct
+                                    ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'
+                                    : '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>'
+                                }
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-bold ${item.is_correct ? 'text-emerald-700' : 'text-red-700'}">Soal #${index + 1}</p>
+                                <p class="text-sm font-semibold text-gray-900 mt-0.5">${item.question_text}</p>
+                                
+                                <div class="mt-2.5 text-xs space-y-1">
+                                    <div class="flex items-start gap-1.5">
+                                        <span class="text-gray-500 shrink-0">Jawaban Kamu:</span>
+                                        <span class="font-medium ${item.is_correct ? 'text-emerald-700' : 'text-red-700 line-through'}">${item.selected_option_text}</span>
+                                    </div>
+                                    ${!item.is_correct ? `
+                                        <div class="flex items-start gap-1.5">
+                                            <span class="text-gray-500 shrink-0">Jawaban Benar:</span>
+                                            <span class="font-bold text-emerald-700">${item.correct_option_text}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    reviewContainer.appendChild(card);
+                });
             }
         }
 

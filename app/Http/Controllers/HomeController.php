@@ -307,6 +307,14 @@ class HomeController extends Controller
             && $currentVideo
             && $quizCompletionVideoIds->contains($currentVideo->id);
 
+        $currentVideoQuizCompletion = null;
+        if ($hasCourseAccess && $viewer && $currentVideo && $currentVideoQuiz) {
+            $currentVideoQuizCompletion = CourseVideoQuizCompletion::query()
+                ->where('user_id', $viewer->id)
+                ->where('course_video_quiz_id', $currentVideoQuiz->id)
+                ->first();
+        }
+
         $nextVideo = null;
         if ($hasCourseAccess && is_int($currentVideoIndex)) {
             $nextVideo = $videos->get($currentVideoIndex + 1);
@@ -348,6 +356,7 @@ class HomeController extends Controller
             'currentVideoQuiz',
             'hasCurrentVideoQuiz',
             'isCurrentVideoQuizCompleted',
+            'currentVideoQuizCompletion',
             'nextVideoUrl',
             'taskSubmission',
             'canSubmitTask'
@@ -384,22 +393,39 @@ class HomeController extends Controller
 
         $totalQuestions = $quiz->questions->count();
         $correctAnswers = 0;
+        $questionResults = [];
 
         foreach ($quiz->questions as $question) {
             $selectedOptionId = (int) ($validated['answers'][$question->id] ?? 0);
             abort_unless($selectedOptionId > 0, 422, 'Semua soal wajib dijawab.');
 
-            $option = $question->options->firstWhere('id', $selectedOptionId);
-            abort_unless($option, 422, 'Jawaban quiz tidak valid.');
+            $selectedOption = $question->options->firstWhere('id', $selectedOptionId);
+            abort_unless($selectedOption, 422, 'Jawaban quiz tidak valid.');
 
-            if ((bool) $option->is_correct) {
+            $correctOption = $question->options->firstWhere('is_correct', true);
+            $isCorrect = (bool) $selectedOption->is_correct;
+
+            if ($isCorrect) {
                 $correctAnswers++;
             }
+
+            $questionResults[] = [
+                'question_id' => $question->id,
+                'question_text' => $question->question,
+                'selected_option_id' => $selectedOption->id,
+                'selected_option_text' => $selectedOption->option_text,
+                'correct_option_id' => $correctOption?->id,
+                'correct_option_text' => $correctOption?->option_text ?? '',
+                'is_correct' => $isCorrect,
+            ];
         }
 
         $score = $totalQuestions > 0
             ? (int) round(($correctAnswers / $totalQuestions) * 100)
             : 0;
+
+        $passingScore = (int) ($quiz->passing_score ?? 70);
+        $isPassed = $score >= $passingScore;
 
         CourseVideoQuizCompletion::query()->updateOrCreate([
             'user_id' => $user->id,
@@ -408,13 +434,28 @@ class HomeController extends Controller
             'course_id' => $course->id,
             'course_video_id' => $video->id,
             'score' => $score,
-            'is_passed' => $score >= (int) $quiz->passing_score,
+            'is_passed' => $isPassed,
             'completed_at' => now(),
         ]);
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'score' => $score,
+                'passing_score' => $passingScore,
+                'is_passed' => $isPassed,
+                'total_questions' => $totalQuestions,
+                'correct_count' => $correctAnswers,
+                'results' => $questionResults,
+                'message' => $isPassed
+                    ? 'Selamat! Kamu berhasil menyelesaikan quiz.'
+                    : 'Kamu belum mencapai nilai minimum kelulusan. Silakan pelajari kembali materinya dan ulangi quiz.',
+            ]);
+        }
+
         return redirect()
             ->to(route('course', ['slug' => $course->slug, 'video' => $video->id]))
-            ->with('success', 'Quiz berhasil dikirim. Kamu bisa melanjutkan ke video berikutnya.');
+            ->with('success', 'Quiz berhasil dikerjakan.');
     }
 
     public function storeCourseTaskSubmission(Request $request, string $slug)
