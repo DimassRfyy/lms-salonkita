@@ -62,24 +62,32 @@ class PaymentController extends Controller
 
         $finalPrice = max((int) $course->price - $discountAmount, 0);
 
+        // Sementara: Payment Gateway sedang maintenance, hanya izinkan transaksi diskon 100%
+        if ($finalPrice > 0) {
+            return redirect()
+                ->route('transaction', ['course' => $course->slug])
+                ->withErrors(['payment' => 'Saat ini pembayaran kelas belum bisa dilakukan karena sistem payment gateway sedang dalam pemeliharaan (maintenance). Pembelian hanya dapat dilakukan jika memasukkan kode promo diskon 100%.'])
+                ->withInput();
+        }
+
         $transaction = Transaction::query()->create([
             'user_id' => $user->id,
             'course_id' => $course->id,
             'promo_code_id' => $promoCode?->id,
-            'payment_method' => $finalPrice <= 0 ? 'free' : 'xendit',
+            'payment_method' => 'free',
             'discount_amount' => $discountAmount,
-            'price' => $finalPrice,
+            'price' => 0,
             'status' => Transaction::STATUS_PENDING,
         ]);
 
-        if ($finalPrice <= 0) {
-            $this->markTransactionAsPaid($transaction);
+        $this->markTransactionAsPaid($transaction);
 
-            return redirect()
-                ->route('course', ['slug' => $course->slug])
-                ->with('success', 'Pembelian berhasil diproses. Kelas langsung aktif.');
-        }
+        return redirect()
+            ->route('course', ['slug' => $course->slug])
+            ->with('success', 'Pembelian berhasil diproses. Kelas langsung aktif.');
 
+        /*
+        // Kode Xendit dinonaktifkan sementara selama masa maintenance
         $secretKey = (string) config('services.xendit.secret_key');
 
         if ($secretKey === '') {
@@ -135,6 +143,7 @@ class PaymentController extends Controller
         return redirect()
             ->route('transaction', ['course' => $course->slug])
             ->with('success', 'Tagihan pembayaran berhasil dibuat.');
+        */
     }
 
     public function notification(Request $request): JsonResponse

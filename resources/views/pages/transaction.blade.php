@@ -15,16 +15,21 @@
                 : 'Durasi belum tersedia';
         @endphp
 
-        <form method="POST" action="{{ route('transaction.store') }}"
+        <form id="transaction-form" method="POST" action="{{ route('transaction.store') }}"
             class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             @csrf
             <input type="hidden" name="course_id" value="{{ $course->id }}">
 
             @if ($errors->any())
-                <div class="lg:col-span-3 bg-red-50 border border-red-100 text-red-600 rounded-xl p-4 text-sm">
+                <div class="lg:col-span-3 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">
                     <ul class="space-y-1">
                         @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ $error }}</span>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
@@ -107,19 +112,6 @@
 
                     <livewire:transaction-promo-code :course-price="(int) $course->price"
                         :initial-promo-code="(string) (old('promo_code') ?? '')" />
-
-                    <div class="mt-5 rounded-xl border border-pink-100 bg-pink-50 p-4 text-sm text-gray-700">
-                        Setelah kamu klik bayar, kamu akan diarahkan ke halaman pembayaran.
-                    </div>
-
-                    <button type="submit"
-                        class="mt-6 w-full py-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-lg rounded-xl transition shadow-sm flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Bayar Sekarang
-                    </button>
                 </div>
             </div>
         </form>

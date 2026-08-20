@@ -30,7 +30,9 @@ class CourseForm
                                 ->directory('course-thumbnails'),
                             TextInput::make('name')
                                 ->required(),
-                            Textarea::make('description'),
+                            Textarea::make('description')
+                                ->rows(6)
+                                ->columnSpanFull(),
                             Select::make('category_id')
                                 ->relationship('category', 'name')
                                 ->createOptionForm([
@@ -52,9 +54,6 @@ class CourseForm
                             TextInput::make('rating')
                                 ->required()
                                 ->numeric(),
-                            Toggle::make('is_published')
-                                ->default(false)
-                                ->required(),
                             TextInput::make('introduction_video_url')
                                 ->label('Introduction Video (YouTube URL / ID)')
                                 ->placeholder('https://www.youtube.com/watch?v=XXXXXXXXXXX atau XXXXXXX')
@@ -79,6 +78,9 @@ class CourseForm
                                      };
                                  })
                                  ->helperText('Mendukung Google Drive PDF dan Google Slides.'),
+                            Toggle::make('is_published')
+                                ->default(false)
+                                ->required(),
                         ])
                         ->columns(2),
 

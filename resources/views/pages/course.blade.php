@@ -443,9 +443,7 @@
 
                         <div id="tentang" class="tab-content active">
                             <div class="text-gray-700 leading-relaxed">
-                                <p class="text-gray-600 mb-4">
-                                    {{ $course->description ?: 'Deskripsi kelas belum tersedia.' }}
-                                </p>
+                                <p class="text-gray-600 mb-4 whitespace-pre-line">{{ trim($course->description ?? '') ?: 'Deskripsi kelas belum tersedia.' }}</p>
                                 <h3 class="text-lg font-semibold text-gray-900 mb-3">Apa yang akan Anda pelajari?</h3>
                                 <ul class="space-y-2 mb-6">
                                     @forelse($course->keypoints as $keypoint)
