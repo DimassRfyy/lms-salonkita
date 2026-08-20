@@ -65,20 +65,20 @@ class CourseForm
                                 ])
                                 ->dehydrateStateUsing(fn (?string $state): ?string => Youtube::extractId($state)),
                             TextInput::make('presentation_url')
-                                ->label('Google Slides Presentation URL')
-                                ->placeholder('https://docs.google.com/presentation/d/1wApLWXSb311GvxjNivsxgbaAyAHYvI5p/edit?usp=sharing')
+                                ->label('Materi Kelas (Google Drive PDF / Google Slides URL)')
+                                ->placeholder('https://drive.google.com/file/d/1wApLWXSb311GvxjNivsxgbaAyAHYvI5p/view atau Google Slides URL')
                                 ->nullable()
                                 ->rule(function () {
-                                    return function ($attribute, $value, $fail) {
-                                        if (empty($value)) {
-                                            return; // nullable
-                                        }
-                                        if (!GoogleSlides::isValid($value)) {
-                                            $fail('Format URL Google Slides tidak valid. Gunakan: link edit, share, atau ID langsung.');
-                                        }
-                                    };
-                                })
-                                ->helperText('Masukkan URL Google Slides.'),
+                                     return function ($attribute, $value, $fail) {
+                                         if (empty($value)) {
+                                             return; // nullable
+                                         }
+                                         if (!GoogleSlides::isValid($value)) {
+                                             $fail('Format URL materi tidak valid. Gunakan link Google Drive PDF (drive.google.com/file/d/...) atau Google Slides.');
+                                         }
+                                     };
+                                 })
+                                 ->helperText('Mendukung Google Drive PDF dan Google Slides.'),
                         ])
                         ->columns(2),
 

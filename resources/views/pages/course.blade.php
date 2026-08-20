@@ -221,18 +221,22 @@
 
                     <div class="mb-3 text-sm text-pink-700 bg-pink-50 border border-pink-100 rounded-lg px-4 py-2">
                         Sedang diputar: <span
-                            class="font-semibold">{{ $showPresentation ? 'Materi Presentasi' : $activeVideoTitle }}</span>
+                            class="font-semibold">{{ $showPresentation ? 'Materi Pembelajaran (PDF / Slide)' : $activeVideoTitle }}</span>
                     </div>
 
-                    <div class="video-placeholder rounded-xl overflow-hidden mb-6">
+                    <div class="video-placeholder rounded-xl overflow-hidden mb-6 select-none relative" oncontextmenu="return false;">
                         <div class="relative w-full" style="padding-bottom: 56.25%;">
                             <iframe class="absolute inset-0 w-full h-full"
                                 src="{{ $showPresentation ? $presentationEmbedUrl : ($embedUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ') }}"
-                                title="{{ $showPresentation ? 'Materi Presentasi ' . $course->name : ($currentVideo?->title ?? $course->name) }}"
+                                title="{{ $showPresentation ? 'Materi Pembelajaran ' . $course->name : ($currentVideo?->title ?? $course->name) }}"
                                 frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                             </iframe>
+                            @if($showPresentation)
+                                {{-- Overlay transparan untuk memblokir tombol 'Lepas / Pop-out' Google Drive di pojok kanan atas --}}
+                                <div class="absolute top-0 right-0 w-16 h-14 z-20 cursor-default bg-transparent" onclick="event.preventDefault(); event.stopPropagation();"></div>
+                            @endif
                         </div>
                     </div>
 
@@ -579,46 +583,99 @@
 
                         @if($hasCourseAccess)
                             <div id="diskusi" class="tab-content">
-                                <div class="space-y-4">
-                                    <div class="flex gap-3">
-                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Student" alt="Avatar"
-                                            class="w-10 h-10 rounded-full shrink-0">
-                                        <div class="flex-1">
-                                            <textarea placeholder="Tulis pertanyaan atau komentar..." rows="3"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-400"></textarea>
-                                            <button
-                                                class="mt-2 bg-primary hover-primary text-white font-medium px-6 py-2 rounded-lg">Kirim</button>
-                                        </div>
-                                    </div>
-
-                                    @forelse($course->discussions->take(6) as $discussion)
-                                        <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="space-y-6">
+                                    {{-- Form Buat Diskusi Baru --}}
+                                    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                                        <form method="POST" action="{{ route('course.discussion.store', $course->slug) }}">
+                                            @csrf
                                             <div class="flex gap-3">
-                                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ urlencode($discussion->student?->name ?? 'User') }}"
-                                                    alt="Avatar" class="w-10 h-10 rounded-full shrink-0">
+                                                <img src="{{ auth()->user()?->profile_photo_url ?? ('https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode(auth()->user()?->name ?? 'Student')) }}"
+                                                    alt="Avatar" class="w-10 h-10 rounded-full shrink-0 object-cover">
                                                 <div class="flex-1">
-                                                    <div class="flex justify-between items-start gap-3">
-                                                        <div>
-                                                            <h4 class="font-semibold text-gray-900">
-                                                                {{ $discussion->student?->name ?? 'Student' }}
-                                                            </h4>
-                                                            <p class="text-sm text-gray-500">
-                                                                {{ $discussion->created_at?->diffForHumans() }}
-                                                            </p>
-                                                        </div>
-                                                        @if($discussion->student && $discussion->student->id === $course->user_id)
-                                                            <span
-                                                                class="bg-primary text-white text-xs px-2 py-1 rounded">Mentor</span>
-                                                        @endif
+                                                    <textarea name="message" rows="3" required
+                                                        placeholder="Tulis pertanyaan atau komentar mengenai materi kelas..."
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400">{{ old('message') }}</textarea>
+                                                    
+                                                    @error('message')
+                                                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                                    @enderror
+
+                                                    <div class="mt-2 flex justify-end">
+                                                        <button type="submit"
+                                                            class="bg-primary hover-primary text-white font-medium px-5 py-2 rounded-lg text-sm transition-colors duration-200">
+                                                            Kirim Diskusi
+                                                        </button>
                                                     </div>
-                                                    <p class="text-gray-700 mt-2">{{ $discussion->message }}</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @empty
-                                        <div class="bg-gray-50 rounded-lg p-4 text-gray-500">Belum ada diskusi di kelas ini.
-                                        </div>
-                                    @endforelse
+                                        </form>
+                                    </div>
+
+                                    {{-- Daftar Thread Diskusi --}}
+                                    <div class="space-y-4">
+                                        @forelse($course->discussions as $discussion)
+                                            <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 sm:p-5">
+                                                <div class="flex gap-3">
+                                                    <img src="{{ $discussion->student?->profile_photo_url ?? ('https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($discussion->student?->name ?? 'User')) }}"
+                                                        alt="Avatar" class="w-10 h-10 rounded-full shrink-0 object-cover">
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="flex justify-between items-start gap-2">
+                                                            <div>
+                                                                <div class="flex items-center gap-2 flex-wrap">
+                                                                    <h4 class="font-semibold text-gray-900 text-sm">
+                                                                        {{ $discussion->student?->name ?? 'Student' }}
+                                                                    </h4>
+                                                                    @if($discussion->student && $discussion->student->id === $course->user_id)
+                                                                        <span class="bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">Mentor</span>
+                                                                    @endif
+                                                                </div>
+                                                                <p class="text-xs text-gray-500 mt-0.5">
+                                                                    {{ $discussion->created_at?->diffForHumans() }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <p class="text-gray-700 text-sm mt-2.5 whitespace-pre-line leading-relaxed">{{ $discussion->message }}</p>
+
+                                                        {{-- Daftar Balasan (Replies dari Coach/Admin) --}}
+                                                        @if($discussion->replies && $discussion->replies->isNotEmpty())
+                                                            <div class="mt-4 space-y-3 pl-3 sm:pl-4 border-l-2 border-pink-200">
+                                                                @foreach($discussion->replies as $reply)
+                                                                    <div class="bg-white border border-gray-100 rounded-lg p-3">
+                                                                        <div class="flex gap-2.5">
+                                                                            <img src="{{ $reply->student?->profile_photo_url ?? ('https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($reply->student?->name ?? 'User')) }}"
+                                                                                alt="Avatar" class="w-8 h-8 rounded-full shrink-0 object-cover">
+                                                                            <div class="flex-1 min-w-0">
+                                                                                <div class="flex items-center gap-2 flex-wrap">
+                                                                                    <h5 class="font-semibold text-gray-900 text-xs">
+                                                                                        {{ $reply->student?->name ?? 'Student' }}
+                                                                                    </h5>
+                                                                                    @if($reply->student && $reply->student->id === $course->user_id)
+                                                                                        <span class="bg-primary text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">Mentor</span>
+                                                                                    @endif
+                                                                                    <span class="text-[11px] text-gray-400">
+                                                                                        {{ $reply->created_at?->diffForHumans() }}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <p class="text-gray-700 text-xs mt-1.5 whitespace-pre-line leading-relaxed">{{ $reply->message }}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="bg-gray-50 rounded-xl p-6 text-center text-gray-500 text-sm">
+                                                <svg class="w-10 h-10 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                                </svg>
+                                                Belum ada diskusi di kelas ini. Jadilah yang pertama bertanya!
+                                            </div>
+                                        @endforelse
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -675,8 +732,8 @@
                                                 d="M4 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H9l-5 4V5zm5 3a1 1 0 000 2h6a1 1 0 100-2H9zm0 4a1 1 0 000 2h6a1 1 0 100-2H9z">
                                             </path>
                                         </svg>
-                                        <span class="video-title">Materi Presentasi</span>
-                                        <span class="video-duration">PPT</span>
+                                        <span class="video-title">Materi Pembelajaran</span>
+                                        <span class="video-duration">PDF / Slide</span>
                                     </a>
                                 @else
                                     <div class="video-item locked">
@@ -686,7 +743,7 @@
                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                             </path>
                                         </svg>
-                                        <span class="video-title">Materi Presentasi</span>
+                                        <span class="video-title">Materi Pembelajaran</span>
                                         <span class="video-duration">Terkunci</span>
                                     </div>
                                 @endif
@@ -939,10 +996,13 @@
             showCourseAlert('error', sessionErrorMessage);
 
             const hasTaskFormError = {{ $errors->has('subject') || $errors->has('google_drive_url') ? 'true' : 'false' }};
+            const hasDiscussionError = {{ $errors->has('message') ? 'true' : 'false' }};
             const hashTab = window.location.hash.replace('#', '');
 
             if (hasTaskFormError || hashTab === 'tugas') {
                 activateTab('tugas');
+            } else if (hasDiscussionError || hashTab === 'diskusi') {
+                activateTab('diskusi');
             }
 
             const activeDropdown = document.querySelector('.dropdown-content.active');

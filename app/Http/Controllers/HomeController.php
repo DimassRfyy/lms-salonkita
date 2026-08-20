@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseDiscussion;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoQuizCompletion;
 use App\Models\CourseVideoWatch;
@@ -475,6 +476,41 @@ class HomeController extends Controller
         return redirect()
             ->to(route('course', ['slug' => $course->slug]))
             ->with('success', 'Tugas berhasil dikirim. Status saat ini: menunggu review.');
+    }
+
+    public function storeCourseDiscussion(Request $request, string $slug)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $course = Course::query()
+            ->where('is_published', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $hasAccess = $user->id === (int) $course->user_id
+            || $user->ownedCourses()->where('courses.id', $course->id)->exists();
+        abort_unless($hasAccess, 403, 'Kamu belum memiliki akses ke kelas ini.');
+
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'min:3', 'max:2000'],
+        ], [
+            'message.required' => 'Pesan diskusi wajib diisi.',
+            'message.min' => 'Pesan diskusi minimal 3 karakter.',
+            'message.max' => 'Pesan diskusi maksimal 2000 karakter.',
+        ]);
+
+        CourseDiscussion::query()->create([
+            'course_id' => $course->id,
+            'user_id' => $user->id,
+            'parent_id' => null,
+            'subject' => 'Diskusi Kelas',
+            'message' => $validated['message'],
+        ]);
+
+        return redirect()
+            ->to(route('course', ['slug' => $course->slug]) . '#diskusi')
+            ->with('success', 'Diskusi berhasil dikirim.');
     }
 
     public function profile()
