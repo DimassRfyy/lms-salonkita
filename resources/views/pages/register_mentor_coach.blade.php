@@ -13,7 +13,7 @@
     @endphp
 
     <div
-        class="min-h-screen bg-linear-to-br from-pink-50 via-white to-rose-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="absolute top-6 left-6">
             <a href="/"
                 class="flex items-center gap-2 text-gray-500 hover:text-pink-500 transition text-sm font-medium">

@@ -52,4 +52,22 @@ class MentoringEntitlement extends Model
     {
         return $this->hasOne(MentoringBooking::class);
     }
+
+    public function mentoringRequests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MentoringRequest::class, 'mentoring_entitlement_id');
+    }
+
+    public function activeMentoringRequest(): HasOne
+    {
+        return $this->hasOne(MentoringRequest::class, 'mentoring_entitlement_id')
+            ->whereIn('status', [MentoringRequest::STATUS_PENDING, MentoringRequest::STATUS_APPROVED])
+            ->latestOfMany();
+    }
+
+    public function latestMentoringRequest(): HasOne
+    {
+        return $this->hasOne(MentoringRequest::class, 'mentoring_entitlement_id')
+            ->latestOfMany();
+    }
 }

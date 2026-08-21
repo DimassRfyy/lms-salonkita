@@ -34,7 +34,7 @@
     </style>
 
     <div
-        class="min-h-screen bg-linear-to-br from-pink-50 via-white to-rose-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="mx-auto w-full max-w-lg">
             <!-- Card -->
             <div class="bg-white rounded-3xl shadow-lg border border-pink-100 p-8 text-center">

@@ -5,7 +5,7 @@
         $passwordInputClass = 'w-full px-4 py-3 bg-gray-50 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-400 transition ' . ($errors->has('password') ? 'border-red-400' : 'border-gray-200');
     @endphp
     <div
-        class="min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
 
         <!-- Back to Home -->
         <div class="absolute top-6 left-6">

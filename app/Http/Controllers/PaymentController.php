@@ -84,7 +84,7 @@ class PaymentController extends Controller
 
         return redirect()
             ->route('course', ['slug' => $course->slug])
-            ->with('success', 'Pembelian berhasil diproses. Kelas langsung aktif.');
+            ->with('success', 'Yey, pembayaranmu berhasil! Kelasnya sudah bisa diakses, ya.');
 
         /*
         // Kode Xendit dinonaktifkan sementara selama masa maintenance

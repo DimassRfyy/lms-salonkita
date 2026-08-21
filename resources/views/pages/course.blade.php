@@ -894,7 +894,7 @@
 
                     <div class="px-5 sm:px-6 py-6 space-y-6 max-h-[65vh] overflow-y-auto">
                         <!-- Score Header Card -->
-                        <div class="p-6 rounded-2xl bg-linear-to-br from-pink-50 via-white to-pink-50/40 border border-pink-100 text-center flex flex-col items-center shadow-xs">
+                        <div class="p-6 rounded-2xl bg-gradient-to-br from-pink-50 via-white to-pink-50/40 border border-pink-100 text-center flex flex-col items-center shadow-xs">
                             <div id="quizResultBadgeIcon" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2.5 shadow-inner bg-emerald-100 text-emerald-600">
                                 🏆
                             </div>
