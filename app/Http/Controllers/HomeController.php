@@ -414,8 +414,6 @@ class HomeController extends Controller
                 'question_text' => $question->question,
                 'selected_option_id' => $selectedOption->id,
                 'selected_option_text' => $selectedOption->option_text,
-                'correct_option_id' => $correctOption?->id,
-                'correct_option_text' => $correctOption?->option_text ?? '',
                 'is_correct' => $isCorrect,
             ];
         }
@@ -516,7 +514,7 @@ class HomeController extends Controller
 
         return redirect()
             ->to(route('course', ['slug' => $course->slug]))
-            ->with('success', 'Tugas berhasil dikirim. Status saat ini: menunggu review.');
+            ->with('success', 'Yeay, tugasmu berhasil dikirim! Sekarang tinggal tunggu dicek dulu ya.');
     }
 
     public function storeCourseDiscussion(Request $request, string $slug)
@@ -687,7 +685,7 @@ class HomeController extends Controller
                     'label' => 'Selesai Direview',
                     'badge_class' => 'text-sky-700 bg-sky-100',
                     'progress_class' => 'bg-sky-500',
-                    'description' => 'Review tugas sudah selesai. Cek hasil penilaian dan skor Anda.',
+                    'description' => 'Mantap! Hasil review dan nilaimu udah ada nih, silakan dicek ya!',
                     'primary_action_label' => 'Lihat Hasil Review',
                     'primary_action_url' => $submission->google_drive_url,
                     'secondary_action_label' => 'Lanjut Kelas',
@@ -697,7 +695,7 @@ class HomeController extends Controller
                     'label' => 'Menunggu Review',
                     'badge_class' => 'text-amber-700 bg-amber-100',
                     'progress_class' => 'bg-amber-500',
-                    'description' => 'Tugas sudah dikirim dan sedang menunggu proses review dari mentor.',
+                    'description' => 'Tugasnya udah dikirim nih, tinggal tunggu dicek sama coach ya!',
                     'primary_action_label' => 'Lihat Tugas Terkirim',
                     'primary_action_url' => $submission->google_drive_url,
                     'secondary_action_label' => null,
@@ -707,7 +705,7 @@ class HomeController extends Controller
                     'label' => 'Siap Submit Tugas',
                     'badge_class' => 'text-emerald-700 bg-emerald-100',
                     'progress_class' => 'bg-emerald-500',
-                    'description' => 'Semua video sudah selesai. Student sudah bisa masuk ke tahap submit tugas.',
+                    'description' => 'Hore, semua video sudah selesai! Sekarang, kamu sudah bisa mulai kumpulin tugasnya, ya.',
                     'primary_action_label' => 'Buka Kelas untuk Submit',
                     'primary_action_url' => route('course', ['slug' => $course->slug]),
                     'secondary_action_label' => null,
@@ -717,7 +715,7 @@ class HomeController extends Controller
                     'label' => 'Sedang Menonton Video',
                     'badge_class' => 'text-pink-700 bg-pink-100',
                     'progress_class' => 'bg-pink-500',
-                    'description' => 'Progress belajar masih berjalan. Selesaikan semua video untuk membuka submit tugas.',
+                    'description' => 'Yuk, selesaikan video materinya dulu supaya kamu bisa lanjut submit tugas!',
                     'primary_action_label' => 'Lanjut Nonton',
                     'primary_action_url' => route('course', ['slug' => $course->slug]),
                     'secondary_action_label' => null,

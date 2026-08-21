@@ -1,211 +1,7 @@
 <x-layout>
-    <style>
-        .text-primary {
-            color: #ec4899;
-        }
-
-        .bg-primary {
-            background-color: #ec4899;
-        }
-
-        .border-primary {
-            border-color: #ec4899;
-        }
-
-        .hover-primary:hover {
-            background-color: #db2777;
-        }
-
-        .dropdown-content {
-            display: none;
-            padding: 0.55rem;
-            background: linear-gradient(180deg, #fff7fb 0%, #fff1f7 100%);
-            border-top: 1px solid #fbcfe8;
-        }
-
-        .dropdown-content.active {
-            display: block;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .btn-tab {
-            transition: all 0.3s ease;
-        }
-
-        .btn-tab.active {
-            border-bottom: 3px solid #ec4899;
-            color: #ec4899;
-        }
-
-        .video-placeholder {
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-        }
-
-        .presentation-placeholder {
-            background: linear-gradient(135deg, #ffffff 0%, #fff7fb 100%);
-        }
-
-        .video-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.65rem 0.85rem;
-            margin: 0.4rem;
-            border-radius: 0.75rem;
-            border: 1px solid transparent;
-            background: #ffffff;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .video-item:hover {
-            background-color: #fdf2f8;
-            border-color: #fbcfe8;
-            transform: translateY(-1px);
-        }
-
-        .video-item.watched {
-            color: #6b7280;
-        }
-
-        .video-item.watched .video-icon {
-            color: #10b981;
-        }
-
-        .video-item.unwatched {
-            color: #374151;
-        }
-
-        .video-item.unwatched .video-icon {
-            color: #f472b6;
-        }
-
-        .video-item.now-playing {
-            background: linear-gradient(90deg, #fdf2f8 0%, #fce7f3 100%);
-            border: 1px solid #f9a8d4;
-            box-shadow: 0 6px 14px rgba(236, 72, 153, 0.12);
-            color: #be185d;
-            font-weight: 600;
-        }
-
-        .video-item.now-playing .video-icon {
-            color: #ec4899;
-        }
-
-        .video-item .video-title {
-            flex: 1;
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-        }
-
-        .video-item .video-duration {
-            font-size: 0.75rem;
-            color: #9ca3af;
-            white-space: nowrap;
-            flex-shrink: 0;
-            padding: 0.15rem 0.45rem;
-            border-radius: 9999px;
-            background: #fdf2f8;
-        }
-
-        .video-item.now-playing .video-duration {
-            color: #be185d;
-            background: #fbcfe8;
-        }
-
-        .video-item.presentation-item {
-            background: linear-gradient(90deg, #fdf2f8 0%, #fce7f3 100%);
-            border: 1px solid #f9a8d4;
-            box-shadow: 0 6px 14px rgba(236, 72, 153, 0.12);
-            color: #be185d;
-            font-weight: 600;
-        }
-
-        .video-item.presentation-item .video-icon {
-            color: #ec4899;
-        }
-
-        .video-item.presentation-item .video-duration {
-            color: #be185d;
-            background: #fbcfe8;
-        }
-
-        .video-item.locked {
-            color: #9ca3af;
-            background-color: #fdf4f7;
-            border-color: #fce7f3;
-            cursor: not-allowed;
-        }
-
-        .video-item.locked .video-icon {
-            color: #9ca3af;
-        }
-
-        .section-header {
-            width: 100%;
-            padding: 0.9rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #ffffff 0%, #fff1f7 100%);
-            transition: all 0.2s ease;
-        }
-
-        .section-header:hover {
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-        }
-
-        .section-header .section-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.1rem;
-        }
-
-        .section-header .section-count {
-            font-size: 0.7rem;
-            color: #be185d;
-            font-weight: 600;
-            background: #fce7f3;
-            border: 1px solid #fbcfe8;
-            padding: 0.1rem 0.5rem;
-            border-radius: 9999px;
-            margin-top: 0.2rem;
-        }
-
-        .quiz-modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(17, 24, 39, 0.55);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 60;
-            padding: 1rem;
-        }
-
-        .quiz-modal-backdrop.active {
-            display: flex;
-        }
-
-        .quiz-modal-card {
-            width: 100%;
-            max-width: 42rem;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: #ffffff;
-            border-radius: 1rem;
-            border: 1px solid #fbcfe8;
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
-        }
-    </style>
+    @push('styles')
+        <link rel="stylesheet" href="{{ asset('css/course.css') }}">
+    @endpush
 
     <x-navbar />
 
@@ -224,18 +20,31 @@
                             class="font-semibold">{{ $showPresentation ? 'Materi Pembelajaran (PDF / Slide)' : $activeVideoTitle }}</span>
                     </div>
 
-                    <div class="video-placeholder rounded-xl overflow-hidden mb-6 select-none relative" oncontextmenu="return false;">
+                    <div id="video-container" class="video-placeholder rounded-xl overflow-hidden mb-6 select-none relative" oncontextmenu="return false;">
                         <div class="relative w-full" style="padding-bottom: 56.25%;">
-                            <iframe class="absolute inset-0 w-full h-full"
-                                src="{{ $showPresentation ? $presentationEmbedUrl : ($embedUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ') }}"
-                                title="{{ $showPresentation ? 'Materi Pembelajaran ' . $course->name : ($currentVideo?->title ?? $course->name) }}"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
-                            </iframe>
                             @if($showPresentation)
+                                <iframe class="absolute inset-0 w-full h-full"
+                                    src="{{ $presentationEmbedUrl }}"
+                                    title="Materi Pembelajaran {{ $course->name }}"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                </iframe>
                                 {{-- Overlay transparan untuk memblokir tombol 'Lepas / Pop-out' Google Drive di pojok kanan atas --}}
                                 <div class="absolute top-0 right-0 w-16 h-14 z-20 cursor-default bg-transparent" onclick="event.preventDefault(); event.stopPropagation();"></div>
+                            @elseif($embedUrl)
+                                <iframe class="absolute inset-0 w-full h-full"
+                                    src="{{ $embedUrl }}"
+                                    title="{{ $currentVideo?->title ?? $course->name }}"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                </iframe>
+                            @else
+                                <img class="absolute inset-0 w-full h-full object-cover"
+                                    src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"
+                                    alt="Thumbnail {{ $course->name }}"
+                                    onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';">
                             @endif
                         </div>
                     </div>
@@ -257,6 +66,7 @@
                                         'sublabel' => $allVideosWatched ? ($totalVideosCount . '/' . $totalVideosCount . ' video') : ($watchedVideosCount . '/' . $totalVideosCount . ' video'),
                                         'done' => $allVideosWatched,
                                         'active' => !$allVideosWatched,
+                                        'action' => 'scrollToVideo()',
                                         'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
                                         'icon_todo' => '<path d="M8 5v14l11-7z"/>',
                                     ],
@@ -265,6 +75,7 @@
                                         'sublabel' => $hasSubmission ? 'Tugas terkirim' : 'Belum di-submit',
                                         'done' => $hasSubmission,
                                         'active' => $allVideosWatched && !$hasSubmission,
+                                        'action' => 'goToTaskTab()',
                                         'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
                                         'icon_todo' => '<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>',
                                     ],
@@ -273,6 +84,7 @@
                                         'sublabel' => $isReviewed ? 'Review selesai' : ($isPending ? 'Sedang direview' : 'Menunggu submit'),
                                         'done' => $isReviewed,
                                         'active' => $isPending,
+                                        'action' => 'goToTaskTab()',
                                         'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
                                         'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
                                     ],
@@ -281,6 +93,7 @@
                                         'sublabel' => $isReviewed ? (is_null($taskSubmission->score) ? 'Sudah dinilai' : 'Nilai: ' . $taskSubmission->score . '/100') : 'Belum direview',
                                         'done' => $isReviewed,
                                         'active' => false,
+                                        'action' => 'goToTaskTab()',
                                         'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
                                         'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
                                     ],
@@ -290,6 +103,7 @@
                                         'done' => false,
                                         'active' => $isReviewed,
                                         'url' => $isReviewed ? route('claim-certificate', ['slug' => $course->slug]) : null,
+                                        'action' => !$isReviewed ? 'goToTaskTab()' : null,
                                         'icon_done' => '',
                                         'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
                                     ],
@@ -307,17 +121,37 @@
                                         $labelClass = $step['done']
                                             ? 'text-emerald-600 font-semibold'
                                             : ($step['active'] ? 'text-pink-600 font-semibold' : 'text-gray-400');
+                                        $hasUrl = !empty($step['url']);
+                                        $hasAction = !empty($step['action']);
                                     @endphp
-                                    <div class="flex flex-col items-center">
-                                        @if (isset($step['url']) && $step['url'])
-                                            <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
-                                                class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
+                                    @if ($hasUrl)
+                                        <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
+                                            class="flex flex-col items-center group cursor-pointer transition hover:opacity-90">
+                                            <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition group-hover:scale-110 {{ $circleClass }}">
                                                 <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
                                                     stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
                                                     {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
                                                 </svg>
-                                            </a>
-                                        @else
+                                            </div>
+                                            <p class="mt-1.5 text-center text-[11px] leading-tight group-hover:underline {{ $labelClass }}">
+                                                {{ $step['label'] }}
+                                            </p>
+                                        </a>
+                                    @elseif ($hasAction)
+                                        <button type="button" onclick="{{ $step['action'] }}" title="{{ $step['label'] }}"
+                                            class="flex flex-col items-center group cursor-pointer transition hover:opacity-90">
+                                            <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition group-hover:scale-110 {{ $circleClass }}">
+                                                <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                </svg>
+                                            </div>
+                                            <p class="mt-1.5 text-center text-[11px] leading-tight group-hover:underline {{ $labelClass }}">
+                                                {{ $step['label'] }}
+                                            </p>
+                                        </button>
+                                    @else
+                                        <div class="flex flex-col items-center">
                                             <div
                                                 class="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
                                                 <svg class="w-3.5 h-3.5" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
@@ -325,11 +159,11 @@
                                                     {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
                                                 </svg>
                                             </div>
-                                        @endif
-                                        <p class="mt-1.5 text-center text-[11px] leading-tight {{ $labelClass }}">
-                                            {{ $step['label'] }}
-                                        </p>
-                                    </div>
+                                            <p class="mt-1.5 text-center text-[11px] leading-tight {{ $labelClass }}">
+                                                {{ $step['label'] }}
+                                            </p>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
 
@@ -349,40 +183,60 @@
                                             ? 'text-emerald-500'
                                             : ($step['active'] ? 'text-pink-400' : 'text-gray-400');
                                         $lineClass = $step['done'] ? 'bg-emerald-400' : 'bg-gray-200';
+                                        $hasUrl = !empty($step['url']);
+                                        $hasAction = !empty($step['action']);
                                     @endphp
 
                                     <div class="flex flex-col items-center {{ $isLast ? '' : 'flex-1' }}">
-                                        @if (!$isLast && isset($step['url']) && $step['url'])
+                                        @if ($hasUrl)
                                             <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
-                                                class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
-                                                <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
-                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
-                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
-                                                </svg>
+                                                class="flex flex-col items-center group cursor-pointer transition hover:opacity-90 w-full">
+                                                <div class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition group-hover:scale-110 {{ $circleClass }}">
+                                                    <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                        stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                        {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                    </svg>
+                                                </div>
+                                                <p class="mt-1.5 text-center text-xs leading-tight group-hover:underline {{ $labelClass }}">
+                                                    {{ $step['label'] }}
+                                                </p>
+                                                <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">
+                                                    {{ $step['sublabel'] }}
+                                                </p>
                                             </a>
-                                        @elseif ($isLast && isset($step['url']) && $step['url'])
-                                            <a href="{{ $step['url'] }}" title="{{ $step['label'] }}"
-                                                class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition hover:scale-110 {{ $circleClass }}">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    {!! $step['icon_todo'] !!}
-                                                </svg>
-                                            </a>
+                                        @elseif ($hasAction)
+                                            <button type="button" onclick="{{ $step['action'] }}" title="{{ $step['label'] }}"
+                                                class="flex flex-col items-center group cursor-pointer transition hover:opacity-90 w-full">
+                                                <div class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 transition group-hover:scale-110 {{ $circleClass }}">
+                                                    <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                        stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                        {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                    </svg>
+                                                </div>
+                                                <p class="mt-1.5 text-center text-xs leading-tight group-hover:underline {{ $labelClass }}">
+                                                    {{ $step['label'] }}
+                                                </p>
+                                                <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">
+                                                    {{ $step['sublabel'] }}
+                                                </p>
+                                            </button>
                                         @else
-                                            <div
-                                                class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
-                                                <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
-                                                    stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
-                                                    {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
-                                                </svg>
+                                            <div class="flex flex-col items-center w-full">
+                                                <div
+                                                    class="w-9 h-9 rounded-full border-2 flex items-center justify-center shrink-0 {{ $circleClass }}">
+                                                    <svg class="w-4 h-4" fill="{{ $useFilledIcon ? 'currentColor' : 'none' }}"
+                                                        stroke="{{ $useFilledIcon ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
+                                                        {!! $useFilledIcon ? $step['icon_done'] : $step['icon_todo'] !!}
+                                                    </svg>
+                                                </div>
+                                                <p class="mt-1.5 text-center text-xs leading-tight {{ $labelClass }}">
+                                                    {{ $step['label'] }}
+                                                </p>
+                                                <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">
+                                                    {{ $step['sublabel'] }}
+                                                </p>
                                             </div>
                                         @endif
-
-                                        <p class="mt-1.5 text-center text-xs leading-tight {{ $labelClass }}">
-                                            {{ $step['label'] }}
-                                        </p>
-                                        <p class="text-center text-[10px] leading-tight mt-0.5 {{ $subClass }}">
-                                            {{ $step['sublabel'] }}
-                                        </p>
                                     </div>
 
                                     @if (!$isLast)
@@ -463,84 +317,158 @@
 
                         <div id="tugas" class="tab-content">
                             <div class="space-y-6">
-                                @if (session('success'))
-                                    <div
-                                        class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                                        {{ session('success') }}
-                                    </div>
-                                @endif
-
                                 @if (session('error'))
                                     <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                                         {{ session('error') }}
                                     </div>
                                 @endif
 
-                                @if ($taskSubmission)
-                                    <div
-                                        class="rounded-lg border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-gray-700">
-                                        <p class="font-semibold text-gray-900 mb-1">Status Tugas:
-                                            {{ $taskSubmission->isReviewed() ? 'Selesai Direview' : 'Menunggu Review' }}
-                                        </p>
-                                        @if ($taskSubmission->isReviewed() && !is_null($taskSubmission->score))
-                                            <p class="text-sky-700 font-semibold">Nilai: {{ $taskSubmission->score }}/100</p>
-                                        @endif
-                                        <p class="text-xs text-gray-500 mt-1">Submit terakhir:
-                                            {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}
-                                        </p>
-                                    </div>
-                                @endif
-
                                 @if (!$hasCourseAccess)
-                                    <div
-                                        class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                                        Daftar kelas ini terlebih dahulu untuk bisa mengirim tugas.
+                                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center sm:text-left">
+                                        <div class="flex flex-col sm:flex-row items-center gap-3.5">
+                                            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-gray-900 text-sm">Instruksi & Pengumpulan Tugas Terkunci</h4>
+                                                <p class="text-xs text-gray-600 mt-0.5">Daftar kelas ini terlebih dahulu untuk membuka instruksi tugas dan mengunggah hasil kerja Anda.</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                @elseif ($watchedVideosCount < $totalVideosCount || $totalVideosCount === 0)
-                                    <div
-                                        class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                                        Tugas bisa dikirim setelah semua video selesai ditonton.
-                                    </div>
-                                @elseif ($taskSubmission && $taskSubmission->isReviewed())
-                                    <div class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
-                                        Tugas sudah direview. Saat ini submit ulang belum tersedia.
+                                @elseif (($watchedVideosCount < $totalVideosCount || $totalVideosCount === 0) && !$taskSubmission)
+                                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center sm:text-left">
+                                        <div class="flex flex-col sm:flex-row items-center gap-3.5">
+                                            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-gray-900 text-sm">Selesaikan Semua Video Terlebih Dahulu</h4>
+                                                <p class="text-xs text-gray-600 mt-0.5">Instruksi dan form pengumpulan tugas akan terbuka setelah semua video materi kelas selesai ditonton (Progress saat ini: {{ $watchedVideosCount }}/{{ $totalVideosCount }} video selesai ditonton).</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 @else
-                                    <form method="POST"
-                                        action="{{ route('course.task-submission.store', ['slug' => $course->slug]) }}"
-                                        class="space-y-6">
-                                        @csrf
-
-                                        <div>
-                                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subjek
-                                                Tugas</label>
-                                            <input id="subject" name="subject" type="text"
-                                                value="{{ old('subject', $taskSubmission?->subject) }}"
-                                                placeholder="Masukkan subjek tugas..."
-                                                class="w-full px-4 py-2 border {{ $errors->has('subject') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
-                                            @error('subject')
-                                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                            @enderror
+                                    {{-- Petunjuk / Deskripsi Tugas --}}
+                                    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                        <div class="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
+                                            <div class="w-9 h-9 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shrink-0">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-bold text-gray-900 text-base">Instruksi Tugas</h3>
+                                                <p class="text-xs text-gray-500">Pahami panduan pengerjaan tugas berikut sebelum mengunggah hasil kerja Anda.</p>
+                                            </div>
                                         </div>
+                                        
+                                        @if (!empty(trim(strip_tags($course->task_description ?? ''))))
+                                            <div class="task-rich-text leading-relaxed bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                                {!! $course->task_description !!}
+                                            </div>
+                                        @else
+                                            <div class="rounded-lg bg-gray-50 p-4 text-sm text-gray-500 text-center">
+                                                Instruksi tugas khusus belum ditambahkan oleh instruktur. Silakan selesaikan proyek sesuai materi kelas.
+                                            </div>
+                                        @endif
+                                    </div>
 
-                                        <div>
-                                            <label for="google_drive_url"
-                                                class="block text-sm font-medium text-gray-700 mb-2">Link Google
-                                                Drive</label>
-                                            <input id="google_drive_url" name="google_drive_url" type="url"
-                                                value="{{ old('google_drive_url', $taskSubmission?->google_drive_url) }}"
-                                                placeholder="https://drive.google.com/..."
-                                                class="w-full px-4 py-2 border {{ $errors->has('google_drive_url') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
-                                            @error('google_drive_url')
-                                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                            @enderror
+                                    {{-- Status Pengumpulan & Umpan Balik --}}
+                                    @if ($taskSubmission)
+                                        <div
+                                            class="rounded-xl border {{ $taskSubmission->isReviewed() ? 'border-emerald-200 bg-emerald-50/40' : 'border-amber-200 bg-amber-50/40' }} p-5">
+                                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $taskSubmission->isReviewed() ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                                        <span class="w-2 h-2 rounded-full {{ $taskSubmission->isReviewed() ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
+                                                        {{ $taskSubmission->isReviewed() ? 'Tugas Selesai Direview' : 'Tugas Menunggu Review Coach' }}
+                                                    </span>
+                                                    @if ($taskSubmission->isReviewed() && !is_null($taskSubmission->score))
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800">
+                                                            Nilai: {{ $taskSubmission->score }}/100
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-xs text-gray-500">
+                                                    Disubmit: {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}
+                                                </span>
+                                            </div>
+
+                                            <div class="text-sm text-gray-800 space-y-1.5 mb-3 bg-white/90 rounded-lg p-3.5 border border-gray-100">
+                                                <p><strong class="font-medium text-gray-600">Subjek Tugas:</strong> {{ $taskSubmission->subject }}</p>
+                                                <p class="flex items-center gap-2">
+                                                    <strong class="font-medium text-gray-600">Link Jawaban:</strong>
+                                                    <a href="{{ $taskSubmission->google_drive_url }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline inline-flex items-center gap-1 text-xs font-semibold">
+                                                        Buka Google Drive
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                                    </a>
+                                                </p>
+                                            </div>
+
+                                            @if ($taskSubmission->isReviewed())
+                                                <div class="mt-4 pt-3 border-t border-emerald-200/70">
+                                                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1.5 flex items-center gap-1.5">
+                                                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                                        </svg>
+                                                        Umpan Balik & Catatan Evaluasi Coach:
+                                                    </h4>
+                                                    @if (!empty(trim($taskSubmission->feedback ?? '')))
+                                                        <div class="bg-white rounded-lg p-3.5 border border-emerald-200 text-sm text-gray-800 leading-relaxed whitespace-pre-line">
+                                                            {{ $taskSubmission->feedback }}
+                                                        </div>
+                                                    @else
+                                                        <p class="text-xs text-gray-500 italic">Coach memberikan penilaian tanpa catatan tertulis tambahan.</p>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
+                                    @endif
 
-                                        <button type="submit"
-                                            class="w-full bg-primary hover-primary text-white font-medium py-2.5 rounded-lg transition">
-                                            {{ $taskSubmission ? 'Perbarui Tugas' : 'Kirim Tugas' }}
-                                        </button>
-                                    </form>
+                                    @if (!$taskSubmission || !$taskSubmission->isReviewed())
+                                        <form id="taskSubmissionForm" method="POST"
+                                            action="{{ route('course.task-submission.store', ['slug' => $course->slug]) }}"
+                                            class="space-y-6"
+                                            onsubmit="return handleTaskSubmit(event, this);">
+                                            @csrf
+
+                                            <div>
+                                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subjek
+                                                    Tugas</label>
+                                                <input id="subject" name="subject" type="text"
+                                                    value="{{ old('subject', $taskSubmission?->subject) }}"
+                                                    placeholder="Masukkan subjek tugas..."
+                                                    required
+                                                    class="w-full px-4 py-2 border {{ $errors->has('subject') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
+                                                @error('subject')
+                                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <div>
+                                                <label for="google_drive_url"
+                                                    class="block text-sm font-medium text-gray-700 mb-2">Link Google
+                                                    Drive</label>
+                                                <input id="google_drive_url" name="google_drive_url" type="url"
+                                                    value="{{ old('google_drive_url', $taskSubmission?->google_drive_url) }}"
+                                                    placeholder="https://drive.google.com/..."
+                                                    required
+                                                    class="w-full px-4 py-2 border {{ $errors->has('google_drive_url') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
+                                                @error('google_drive_url')
+                                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <button type="submit" id="btnTaskSubmit"
+                                                class="w-full bg-primary hover-primary text-white font-medium py-2.5 rounded-lg transition shadow-sm hover:shadow">
+                                                {{ $taskSubmission ? 'Perbarui Tugas' : 'Kirim Tugas' }}
+                                            </button>
+                                        </form>
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -831,9 +759,12 @@
                                             </button>
                                         @endif
                                     @else
-                                        <button type="button" disabled
-                                            class="w-full bg-gray-200 text-gray-500 font-bold py-3 rounded-xl cursor-not-allowed">
-                                            Video Terakhir
+                                        <button type="button" onclick="goToTaskTab()"
+                                            class="w-full inline-flex items-center justify-center gap-2 bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <span>Kerjakan Tugas</span>
                                         </button>
                                         @if ($hasCurrentVideoQuiz)
                                             <button type="button" onclick="openQuizModal()"
@@ -1326,17 +1257,11 @@
                                 <p class="text-xs font-bold ${item.is_correct ? 'text-emerald-700' : 'text-red-700'}">Soal #${index + 1}</p>
                                 <p class="text-sm font-semibold text-gray-900 mt-0.5">${item.question_text}</p>
                                 
-                                <div class="mt-2.5 text-xs space-y-1">
+                                <div class="mt-2 text-xs">
                                     <div class="flex items-start gap-1.5">
                                         <span class="text-gray-500 shrink-0">Jawaban Kamu:</span>
-                                        <span class="font-medium ${item.is_correct ? 'text-emerald-700' : 'text-red-700 line-through'}">${item.selected_option_text}</span>
+                                        <span class="font-medium ${item.is_correct ? 'text-emerald-700' : 'text-red-700'}">${item.selected_option_text}</span>
                                     </div>
-                                    ${!item.is_correct ? `
-                                        <div class="flex items-start gap-1.5">
-                                            <span class="text-gray-500 shrink-0">Jawaban Benar:</span>
-                                            <span class="font-bold text-emerald-700">${item.correct_option_text}</span>
-                                        </div>
-                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -1383,6 +1308,101 @@
         function switchTab(event, tabName) {
             event.preventDefault();
             activateTab(tabName);
+        }
+
+        function scrollToVideo() {
+            const videoEl = document.getElementById('video-container') || document.querySelector('.video-placeholder');
+            if (videoEl) {
+                videoEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function goToTaskTab() {
+            activateTab('tugas');
+            const taskTabEl = document.getElementById('tugas');
+            if (taskTabEl) {
+                taskTabEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function handleTaskSubmit(event, form) {
+            event.preventDefault();
+
+            const subjectInput = form.querySelector('#subject');
+            const driveUrlInput = form.querySelector('#google_drive_url');
+
+            const subject = subjectInput ? subjectInput.value.trim() : '';
+            const driveUrl = driveUrlInput ? driveUrlInput.value.trim() : '';
+
+            if (!subject) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Subjek Tugas Kosong',
+                        text: 'Silakan isi subjek tugas terlebih dahulu.',
+                        confirmButtonColor: '#ec4899',
+                        confirmButtonText: 'Mengerti',
+                        customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold px-5 py-2' }
+                    });
+                } else {
+                    alert('Silakan isi subjek tugas terlebih dahulu.');
+                }
+                subjectInput?.focus();
+                return false;
+            }
+
+            if (!driveUrl) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Link Drive Kosong',
+                        text: 'Silakan masukkan URL link Google Drive tugas Anda.',
+                        confirmButtonColor: '#ec4899',
+                        confirmButtonText: 'Mengerti',
+                        customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold px-5 py-2' }
+                    });
+                } else {
+                    alert('Silakan masukkan link Google Drive tugas Anda.');
+                }
+                driveUrlInput?.focus();
+                return false;
+            }
+
+            const isUpdate = {{ $taskSubmission ? 'true' : 'false' }};
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: isUpdate ? 'Perbarui Tugas?' : 'Kirim Tugas?',
+                    text: 'Pastikan link Google Drive sudah benar dan dapat diakses publik.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ec4899',
+                    cancelButtonColor: '#9ca3af',
+                    confirmButtonText: isUpdate ? 'Ya, Perbarui' : 'Ya, Kirim',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl font-bold px-5 py-2.5 text-sm',
+                        cancelButton: 'rounded-xl font-semibold px-5 py-2.5 text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const submitBtn = form.querySelector('#btnTaskSubmit') || form.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...</span>';
+                        }
+                        form.submit();
+                    }
+                });
+            } else {
+                if (confirm(isUpdate ? 'Perbarui tugas ini?' : 'Kirim tugas ini?')) {
+                    form.submit();
+                }
+            }
+
+            return false;
         }
 
         window.addEventListener('load', () => {

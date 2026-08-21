@@ -10,8 +10,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -25,7 +27,7 @@ class CourseTaskSubmissionResource extends Resource
 {
     protected static ?string $model = CourseTaskSubmission::class;
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Course Management';
+    protected static string|\UnitEnum|null $navigationGroup = 'Course Management';
 
     protected static ?string $navigationLabel = 'Task Submissions';
 
@@ -47,7 +49,7 @@ class CourseTaskSubmissionResource extends Resource
         $user = Auth::user();
 
         if ($user?->role === 'coach') {
-            $query->whereHas('course', fn ($q) => $q->where('user_id', $user->id));
+            $query->whereHas('course', fn($q) => $q->where('user_id', $user->id));
         }
 
         return $query;
@@ -64,7 +66,7 @@ class CourseTaskSubmissionResource extends Resource
         $query = static::getModel()::query()->where('status', CourseTaskSubmission::STATUS_PENDING);
 
         if ($user?->role === 'coach') {
-            $query->whereHas('course', fn ($q) => $q->where('user_id', $user->id));
+            $query->whereHas('course', fn($q) => $q->where('user_id', $user->id));
         }
 
         return (string) $query->count();
@@ -99,17 +101,23 @@ class CourseTaskSubmissionResource extends Resource
                         Action::make('openDrive')
                             ->label('Buka Link Drive')
                             ->icon('heroicon-m-arrow-top-right-on-square')
-                            ->url(fn (?CourseTaskSubmission $record) => $record?->google_drive_url)
+                            ->url(fn(?CourseTaskSubmission $record) => $record?->google_drive_url)
                             ->openUrlInNewTab()
-                            ->visible(fn (?CourseTaskSubmission $record) => filled($record?->google_drive_url))
+                            ->visible(fn(?CourseTaskSubmission $record) => filled($record?->google_drive_url))
                     )
                     ->columnSpanFull(),
                 TextInput::make('score')
                     ->label('Nilai Tugas (0 - 100)')
-                    ->helperText('Beri nilai 0 - 100. Status akan otomatis menjadi "Reviewed" saat nilai disimpan.')
                     ->numeric()
                     ->minValue(0)
                     ->maxValue(100)
+                    ->nullable()
+                    ->columnSpanFull(),
+                Textarea::make('feedback')
+                    ->label('Umpan Balik / Catatan Review')
+                    ->placeholder('Tuliskan catatan evaluasi, saran, atau masukan untuk siswa mengenai tugas ini...')
+                    ->rows(4)
+                    ->helperText('Umpan balik ini akan ditampilkan kepada siswa di halaman kelas.')
                     ->nullable()
                     ->columnSpanFull(),
             ]);
@@ -162,19 +170,24 @@ class CourseTaskSubmissionResource extends Resource
                     }),
             ])
             ->recordActions([
-                Action::make('open_drive')
-                    ->label('Buka Drive')
-                    ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn (CourseTaskSubmission $record): ?string => $record->google_drive_url)
-                    ->openUrlInNewTab()
-                    ->visible(fn (CourseTaskSubmission $record): bool => filled($record->google_drive_url)),
-                EditAction::make()
-                    ->label('Beri Nilai')
-                    ->modalHeading('Review & Beri Nilai Tugas Siswa')
-                    ->modalDescription('Periksa link Google Drive tugas siswa lalu tentukan nilainya.')
-                    ->modalSubmitActionLabel('Simpan Nilai'),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    ActionGroup::make([
+                        Action::make('open_drive')
+                            ->label('Buka Drive')
+                            ->icon('heroicon-m-arrow-top-right-on-square')
+                            ->color('gray')
+                            ->url(fn(CourseTaskSubmission $record): ?string => $record->google_drive_url)
+                            ->openUrlInNewTab()
+                            ->visible(fn(CourseTaskSubmission $record): bool => filled($record->google_drive_url)),
+                        EditAction::make()
+                            ->label('Review & Nilai')
+                            ->modalHeading('Review & Beri Nilai Tugas Siswa')
+                            ->modalDescription('Periksa link Google Drive tugas siswa, lalu berikan nilai dan catatan umpan balik.')
+                            ->modalSubmitActionLabel('Simpan Hasil Review'),
+                    ])
+                        ->dropdown(false),
+                    DeleteAction::make()
+                ])->icon('heroicon-m-bars-3')
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

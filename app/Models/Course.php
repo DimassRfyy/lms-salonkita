@@ -35,6 +35,7 @@ class Course extends Model
         'is_published',
         'introduction_video_url',
         'presentation_url',
+        'task_description',
     ];
 
     protected function casts(): array

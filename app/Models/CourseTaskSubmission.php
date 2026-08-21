@@ -20,6 +20,7 @@ class CourseTaskSubmission extends Model
         'google_drive_url',
         'status',
         'score',
+        'feedback',
     ];
 
     protected function casts(): array
