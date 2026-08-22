@@ -62,6 +62,13 @@ class PromoCodeResource extends Resource
                     ->numeric()
                     ->minValue(1)
                     ->helperText('Isi 10 untuk 10% atau 50000 untuk potongan Rp 50.000'),
+                Select::make('courses')
+                    ->label('Batasi untuk Kelas Tertentu (Opsional)')
+                    ->relationship('courses', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->helperText('Pilih kelas tertentu (kosongkan jika berlaku untuk semua)'),
                 Toggle::make('is_active')
                     ->default(true)
                     ->required(),
@@ -88,6 +95,12 @@ class PromoCodeResource extends Resource
                     ->formatStateUsing(fn ($state, PromoCode $record): string => $record->type === 'percentage'
                         ? $state . '%'
                         : 'Rp ' . number_format((int) $state, 0, ',', '.')),
+                TextColumn::make('courses.name')
+                    ->label('Cakupan Kelas')
+                    ->badge()
+                    ->placeholder('Semua Kelas')
+                    ->limitList(2)
+                    ->expandableLimitedList(),
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),

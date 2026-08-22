@@ -128,12 +128,6 @@
                             <div class="flex items-center justify-between gap-3 mb-2.5">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <h2 class="text-sm md:text-base font-bold text-gray-900">Progress Penyelesaian Kelas</h2>
-                                    @if($hasCertificate)
-                                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                            Lulus & Bersertifikat
-                                        </span>
-                                    @endif
                                 </div>
                                 <span class="text-xs font-bold text-pink-600 bg-pink-50 border border-pink-200 rounded-full px-2.5 py-1 shrink-0">
                                     {{ $overallProgressPercentage }}% Selesai

@@ -154,6 +154,11 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    public function promoCodes(): BelongsToMany
+    {
+        return $this->belongsToMany(PromoCode::class, 'course_promo_code');
+    }
+
     public function videoWatches(): HasMany
     {
         return $this->hasMany(CourseVideoWatch::class);

@@ -110,7 +110,8 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-pink-100 p-6 sm:p-8 sticky top-6">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Ringkasan Pembayaran</h2>
 
-                    <livewire:transaction-promo-code :course-price="(int) $course->price"
+                    <livewire:transaction-promo-code :course-id="(int) $course->id"
+                        :course-price="(int) $course->price"
                         :initial-promo-code="(string) (old('promo_code') ?? '')" />
                 </div>
             </div>

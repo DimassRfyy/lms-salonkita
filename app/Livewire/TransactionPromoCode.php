@@ -10,6 +10,8 @@ class TransactionPromoCode extends Component
 {
     public int $coursePrice;
 
+    public ?int $courseId = null;
+
     public string $promoCode = '';
 
     public int $discountAmount = 0;
@@ -20,9 +22,10 @@ class TransactionPromoCode extends Component
 
     public ?string $promoMessage = null;
 
-    public function mount(int $coursePrice, ?string $initialPromoCode = ''): void
+    public function mount(int $coursePrice, ?string $initialPromoCode = '', ?int $courseId = null): void
     {
         $this->coursePrice = max(0, $coursePrice);
+        $this->courseId = $courseId;
         $this->promoCode = trim((string) $initialPromoCode);
         $this->finalPrice = $this->coursePrice;
 
@@ -49,12 +52,18 @@ class TransactionPromoCode extends Component
         }
 
         $promo = PromoCode::query()
+            ->with('courses')
             ->whereRaw('UPPER(code) = ?', [$normalizedCode], 'and')
             ->where('is_active', true)
             ->first();
 
         if (! $promo) {
             $this->promoMessage = 'Kode promo tidak ditemukan atau sudah tidak aktif.';
+            return;
+        }
+
+        if (! $promo->appliesToCourse($this->courseId)) {
+            $this->promoMessage = 'Kode promo tidak berlaku untuk kelas ini.';
             return;
         }
 

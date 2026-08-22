@@ -6,9 +6,12 @@ use App\Filament\Resources\CourseDiscussions\Pages\ManageCourseDiscussions;
 use App\Models\CourseDiscussion;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -183,48 +186,55 @@ class CourseDiscussionResource extends Resource
                     }),
             ])
             ->recordActions([
-                Action::make('reply')
-                    ->label('Balas Diskusi')
-                    ->icon('heroicon-m-chat-bubble-left-ellipsis')
-                    ->color('primary')
-                    ->modalHeading(fn (CourseDiscussion $record): string => 'Balas Pertanyaan dari ' . ($record->student?->name ?? 'Student'))
-                    ->modalDescription(fn (CourseDiscussion $record): string => 'Pesan student: "' . Str::limit($record->message, 150) . '"')
-                    ->modalSubmitActionLabel('Kirim Balasan')
-                    ->visible(function (CourseDiscussion $record): bool {
-                        $user = Auth::user();
-                        if (! $user) {
-                            return false;
-                        }
+                ActionGroup::make([
+                    ActionGroup::make([
+                        Action::make('reply')
+                            ->label('Balas Diskusi')
+                            ->icon('heroicon-m-chat-bubble-left-ellipsis')
+                            ->color('primary')
+                            ->modalHeading(fn (CourseDiscussion $record): string => 'Balas Pertanyaan dari ' . ($record->student?->name ?? 'Student'))
+                            ->modalDescription(fn (CourseDiscussion $record): string => 'Pesan student: "' . Str::limit($record->message, 150) . '"')
+                            ->modalSubmitActionLabel('Kirim Balasan')
+                            ->visible(function (CourseDiscussion $record): bool {
+                                $user = Auth::user();
+                                if (! $user) {
+                                    return false;
+                                }
 
-                        $isAuthorized = $user->role === 'admin' || ($user->role === 'coach' && $record->course?->user_id === $user->id);
-                        $isUnanswered = ($record->replies_count ?? $record->replies()->count()) === 0;
+                                $isAuthorized = $user->role === 'admin' || ($user->role === 'coach' && $record->course?->user_id === $user->id);
+                                $isUnanswered = ($record->replies_count ?? $record->replies()->count()) === 0;
 
-                        return $record->parent_id === null && $isUnanswered && $isAuthorized;
-                    })
-                    ->form([
-                        Textarea::make('message')
-                            ->label('Pesan Balasan Coach/Admin')
-                            ->placeholder('Tuliskan jawaban atau penjelasan untuk pertanyaan siswa ini...')
-                            ->required()
-                            ->rows(4),
+                                return $record->parent_id === null && $isUnanswered && $isAuthorized;
+                            })
+                            ->form([
+                                Textarea::make('message')
+                                    ->label('Pesan Balasan Coach/Admin')
+                                    ->placeholder('Tuliskan jawaban atau penjelasan untuk pertanyaan siswa ini...')
+                                    ->required()
+                                    ->rows(4),
+                            ])
+                            ->action(function (CourseDiscussion $record, array $data): void {
+                                $user = Auth::user();
+
+                                CourseDiscussion::query()->create([
+                                    'course_id' => $record->course_id,
+                                    'user_id' => $user->id,
+                                    'parent_id' => $record->id,
+                                    'subject' => 'Balasan: ' . ($record->subject ?: 'Diskusi'),
+                                    'message' => $data['message'],
+                                ]);
+
+                                Notification::make()
+                                    ->title('Balasan berhasil dikirim')
+                                    ->success()
+                                    ->send();
+                            }),
+                        ViewAction::make(),
+                        EditAction::make(),
                     ])
-                    ->action(function (CourseDiscussion $record, array $data): void {
-                        $user = Auth::user();
-
-                        CourseDiscussion::query()->create([
-                            'course_id' => $record->course_id,
-                            'user_id' => $user->id,
-                            'parent_id' => $record->id,
-                            'subject' => 'Balasan: ' . ($record->subject ?: 'Diskusi'),
-                            'message' => $data['message'],
-                        ]);
-
-                        Notification::make()
-                            ->title('Balasan berhasil dikirim')
-                            ->success()
-                            ->send();
-                    }),
-                DeleteAction::make(),
+                        ->dropdown(false),
+                    DeleteAction::make(),
+                ])->icon('heroicon-m-bars-3'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

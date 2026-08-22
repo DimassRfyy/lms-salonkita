@@ -52,11 +52,15 @@ class PaymentController extends Controller
                 ->with('success', 'Kelas sudah kamu miliki.');
         }
 
-        [$promoCode, $discountAmount] = $this->resolvePromoCode((string) ($validated['promo_code'] ?? ''), (int) $course->price);
+        [$promoCode, $discountAmount] = $this->resolvePromoCode(
+            (string) ($validated['promo_code'] ?? ''),
+            (int) $course->price,
+            (int) $course->id
+        );
 
         if ((string) ($validated['promo_code'] ?? '') !== '' && ! $promoCode) {
             return back()
-                ->withErrors(['promo_code' => 'Kode promo tidak valid atau sudah tidak aktif.'])
+                ->withErrors(['promo_code' => 'Kode promo tidak valid, sudah tidak aktif, atau tidak berlaku untuk kelas ini.'])
                 ->withInput();
         }
 
@@ -202,7 +206,7 @@ class PaymentController extends Controller
         return $this->redirectByOrderId((string) $request->query('order_id'), 'Terjadi kendala saat pembayaran. Silakan coba lagi.');
     }
 
-    private function resolvePromoCode(string $promoCodeInput, int $coursePrice): array
+    private function resolvePromoCode(string $promoCodeInput, int $coursePrice, ?int $courseId = null): array
     {
         $normalizedCode = mb_strtoupper(trim($promoCodeInput));
         if ($normalizedCode === '') {
@@ -210,11 +214,16 @@ class PaymentController extends Controller
         }
 
         $promoCode = PromoCode::query()
+            ->with('courses')
             ->whereRaw('UPPER(code) = ?', [$normalizedCode], 'and')
             ->where('is_active', true)
             ->first();
 
         if (! $promoCode) {
+            return [null, 0];
+        }
+
+        if (! $promoCode->appliesToCourse($courseId)) {
             return [null, 0];
         }
 
