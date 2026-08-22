@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseCertificate;
 use App\Models\CourseDiscussion;
+use App\Models\CourseReview;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoQuizCompletion;
 use App\Models\CourseVideoWatch;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Support\Youtube;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
 
 class HomeController extends Controller
@@ -326,8 +330,14 @@ class HomeController extends Controller
         }
 
         $taskSubmission = null;
+        $certificate = null;
         if ($hasCourseAccess && $viewer) {
             $taskSubmission = CourseTaskSubmission::query()
+                ->where('course_id', $course->id)
+                ->where('user_id', $viewer->id)
+                ->first();
+
+            $certificate = CourseCertificate::query()
                 ->where('course_id', $course->id)
                 ->where('user_id', $viewer->id)
                 ->first();
@@ -359,7 +369,8 @@ class HomeController extends Controller
             'currentVideoQuizCompletion',
             'nextVideoUrl',
             'taskSubmission',
-            'canSubmitTask'
+            'canSubmitTask',
+            'certificate'
         ));
     }
 
@@ -646,9 +657,136 @@ class HomeController extends Controller
             ->where('status', CourseTaskSubmission::STATUS_REVIEWED)
             ->first();
 
-        abort_unless((bool) $submission, 403);
+        abort_unless((bool) $submission, 403, 'Selesaikan tugas dan tunggu review terlebih dahulu sebelum klaim sertifikat.');
 
-        return view('pages.claim_certificate', compact('course', 'submission'));
+        $existingReview = CourseReview::query()
+            ->where('course_id', $course->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        $hasReviewed = (bool) $existingReview;
+        $certificate = null;
+
+        if ($hasReviewed) {
+            $certificate = CourseCertificate::query()->firstOrCreate([
+                'course_id' => $course->id,
+                'user_id' => $user->id,
+            ], [
+                'certificate_code' => 'SLN-' . date('Ym') . '-' . strtoupper(Str::random(6)),
+                'issued_at' => now(),
+            ]);
+        }
+
+        return view('pages.claim_certificate', compact('course', 'submission', 'hasReviewed', 'existingReview', 'certificate'));
+    }
+
+    public function storeCourseReviewAndClaim(Request $request, string $slug)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $course = Course::query()
+            ->where('is_published', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $hasAccess = $user->ownedCourses()->where('courses.id', $course->id)->exists();
+        abort_unless($hasAccess, 403);
+
+        $submission = CourseTaskSubmission::query()
+            ->where('course_id', $course->id)
+            ->where('user_id', $user->id)
+            ->where('status', CourseTaskSubmission::STATUS_REVIEWED)
+            ->first();
+
+        abort_unless((bool) $submission, 403, 'Selesaikan tugas dan tunggu review terlebih dahulu sebelum klaim sertifikat.');
+
+        $validated = $request->validate([
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'review' => ['required', 'string', 'min:5', 'max:1000'],
+        ], [
+            'rating.required' => 'Rating bintang wajib dipilih.',
+            'rating.min' => 'Rating minimal 1 bintang.',
+            'rating.max' => 'Rating maksimal 5 bintang.',
+            'review.required' => 'Ulasan wajib diisi.',
+            'review.min' => 'Ulasan minimal 5 karakter.',
+            'review.max' => 'Ulasan maksimal 1000 karakter.',
+        ]);
+
+        CourseReview::query()->updateOrCreate([
+            'course_id' => $course->id,
+            'user_id' => $user->id,
+        ], [
+            'rating' => $validated['rating'],
+            'review' => $validated['review'],
+        ]);
+
+        // Terbitkan sertifikat
+        CourseCertificate::query()->firstOrCreate([
+            'course_id' => $course->id,
+            'user_id' => $user->id,
+        ], [
+            'certificate_code' => 'SLN-' . date('Ym') . '-' . strtoupper(Str::random(6)),
+            'issued_at' => now(),
+        ]);
+
+        session()->flash('claimed_now', true);
+
+        Swal::fire([
+            'title' => '🎉 Selamat!',
+            'text' => 'Ulasan berhasil dikirim dan sertifikat kelulusanmu telah resmi diterbitkan!',
+            'icon' => 'success',
+            'confirmButtonText' => 'Lihat Sertifikat',
+            'confirmButtonColor' => '#ec4899',
+        ]);
+
+        return redirect()->route('claim-certificate', ['slug' => $course->slug]);
+    }
+
+    public function downloadCertificate(Request $request, string $slug)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $course = Course::query()
+            ->where('is_published', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $certificate = CourseCertificate::query()
+            ->where('course_id', $course->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $pdf = Pdf::loadView('pdf.certificate', compact('course', 'user', 'certificate'))
+            ->setPaper('a4', 'landscape');
+
+        $fileName = 'Sertifikat-' . Str::slug($course->name) . '-' . $certificate->certificate_code . '.pdf';
+
+        return $pdf->download($fileName);
+    }
+
+    public function viewCertificate(Request $request, string $slug)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $course = Course::query()
+            ->where('is_published', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $certificate = CourseCertificate::query()
+            ->where('course_id', $course->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $pdf = Pdf::loadView('pdf.certificate', compact('course', 'user', 'certificate'))
+            ->setPaper('a4', 'landscape');
+
+        $fileName = 'Sertifikat-' . Str::slug($course->name) . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 
     public function task(Request $request)

@@ -193,6 +193,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(RewardRedemption::class);
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(CourseCertificate::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($this->role) {

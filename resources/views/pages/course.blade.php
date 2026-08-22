@@ -1,277 +1,6 @@
 <x-layout>
     @push('styles')
-        <style>
-            .text-primary {
-                color: #ec4899;
-            }
-
-            .bg-primary {
-                background-color: #ec4899;
-            }
-
-            .border-primary {
-                border-color: #ec4899;
-            }
-
-            .hover-primary:hover {
-                background-color: #db2777;
-            }
-
-            .dropdown-content {
-                display: none;
-                padding: 0.55rem;
-                background: linear-gradient(180deg, #fff7fb 0%, #fff1f7 100%);
-                border-top: 1px solid #fbcfe8;
-            }
-
-            .dropdown-content.active {
-                display: block;
-            }
-
-            .tab-content {
-                display: none;
-            }
-
-            .tab-content.active {
-                display: block;
-            }
-
-            .btn-tab {
-                transition: all 0.3s ease;
-            }
-
-            .btn-tab.active {
-                border-bottom: 3px solid #ec4899;
-                color: #ec4899;
-            }
-
-            .task-rich-text {
-                font-size: 0.875rem;
-                line-height: 1.625;
-                color: #374151;
-            }
-
-            .task-rich-text p {
-                margin-bottom: 0.75rem;
-            }
-
-            .task-rich-text p:last-child {
-                margin-bottom: 0;
-            }
-
-            .task-rich-text ul {
-                list-style-type: disc;
-                margin-left: 1.25rem;
-                margin-bottom: 0.75rem;
-            }
-
-            .task-rich-text ol {
-                list-style-type: decimal;
-                margin-left: 1.25rem;
-                margin-bottom: 0.75rem;
-            }
-
-            .task-rich-text li {
-                margin-bottom: 0.25rem;
-            }
-
-            .task-rich-text h1,
-            .task-rich-text h2,
-            .task-rich-text h3,
-            .task-rich-text h4 {
-                font-weight: 700;
-                color: #111827;
-                margin-top: 1rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .task-rich-text h1 { font-size: 1.25rem; }
-            .task-rich-text h2 { font-size: 1.125rem; }
-            .task-rich-text h3 { font-size: 1rem; }
-
-            .task-rich-text a {
-                color: #db2777;
-                text-decoration: underline;
-            }
-
-            .task-rich-text blockquote {
-                border-left: 3px solid #ec4899;
-                padding-left: 0.75rem;
-                font-style: italic;
-                color: #4b5563;
-                margin-bottom: 0.75rem;
-            }
-
-            .task-rich-text code {
-                background-color: #f3f4f6;
-                padding: 0.15rem 0.35rem;
-                border-radius: 0.25rem;
-                font-size: 0.8em;
-                color: #be185d;
-            }
-
-            .video-placeholder {
-                background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-            }
-
-            .presentation-placeholder {
-                background: linear-gradient(135deg, #ffffff 0%, #fff7fb 100%);
-            }
-
-            .video-item {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.65rem 0.85rem;
-                margin: 0.4rem;
-                border-radius: 0.75rem;
-                border: 1px solid transparent;
-                background: #ffffff;
-                text-decoration: none;
-                transition: all 0.2s ease;
-            }
-
-            .video-item:hover {
-                background-color: #fdf2f8;
-                border-color: #fbcfe8;
-                transform: translateY(-1px);
-            }
-
-            .video-item.watched {
-                color: #6b7280;
-            }
-
-            .video-item.watched .video-icon {
-                color: #10b981;
-            }
-
-            .video-item.unwatched {
-                color: #374151;
-            }
-
-            .video-item.unwatched .video-icon {
-                color: #f472b6;
-            }
-
-            .video-item.now-playing {
-                background: linear-gradient(90deg, #fdf2f8 0%, #fce7f3 100%);
-                border: 1px solid #f9a8d4;
-                box-shadow: 0 6px 14px rgba(236, 72, 153, 0.12);
-                color: #be185d;
-                font-weight: 600;
-            }
-
-            .video-item.now-playing .video-icon {
-                color: #ec4899;
-            }
-
-            .video-item .video-title {
-                flex: 1;
-                font-size: 0.875rem;
-                line-height: 1.25rem;
-            }
-
-            .video-item .video-duration {
-                font-size: 0.75rem;
-                color: #9ca3af;
-                white-space: nowrap;
-                flex-shrink: 0;
-                padding: 0.15rem 0.45rem;
-                border-radius: 9999px;
-                background: #fdf2f8;
-            }
-
-            .video-item.now-playing .video-duration {
-                color: #be185d;
-                background: #fbcfe8;
-            }
-
-            .video-item.presentation-item {
-                background: linear-gradient(90deg, #fdf2f8 0%, #fce7f3 100%);
-                border: 1px solid #f9a8d4;
-                box-shadow: 0 6px 14px rgba(236, 72, 153, 0.12);
-                color: #be185d;
-                font-weight: 600;
-            }
-
-            .video-item.presentation-item .video-icon {
-                color: #ec4899;
-            }
-
-            .video-item.presentation-item .video-duration {
-                color: #be185d;
-                background: #fbcfe8;
-            }
-
-            .video-item.locked {
-                color: #9ca3af;
-                background-color: #fdf4f7;
-                border-color: #fce7f3;
-                cursor: not-allowed;
-            }
-
-            .video-item.locked .video-icon {
-                color: #9ca3af;
-            }
-
-            .section-header {
-                width: 100%;
-                padding: 0.9rem 1rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background: linear-gradient(135deg, #ffffff 0%, #fff1f7 100%);
-                transition: all 0.2s ease;
-            }
-
-            .section-header:hover {
-                background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-            }
-
-            .section-header .section-info {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.1rem;
-            }
-
-            .section-header .section-count {
-                font-size: 0.7rem;
-                color: #be185d;
-                font-weight: 600;
-                background: #fce7f3;
-                border: 1px solid #fbcfe8;
-                padding: 0.1rem 0.5rem;
-                border-radius: 9999px;
-                margin-top: 0.2rem;
-            }
-
-            .quiz-modal-backdrop {
-                position: fixed;
-                inset: 0;
-                background: rgba(17, 24, 39, 0.55);
-                display: none;
-                align-items: center;
-                justify-content: center;
-                z-index: 60;
-                padding: 1rem;
-            }
-
-            .quiz-modal-backdrop.active {
-                display: flex;
-            }
-
-            .quiz-modal-card {
-                width: 100%;
-                max-width: 42rem;
-                max-height: 90vh;
-                overflow-y: auto;
-                background: #ffffff;
-                border-radius: 1rem;
-                border: 1px solid #fbcfe8;
-                box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/course.css') }}">
     @endpush
 
     <x-navbar />
@@ -321,15 +50,29 @@
                     </div>
 
                     @if($hasCourseAccess)
-                        <div class="bg-white rounded-xl p-4 md:p-6 mb-6">
-                            <h2 class="text-sm md:text-base font-bold text-gray-900 mb-3 md:mb-5">Progress Penyelesaian
-                                Kelas</h2>
-
+                        <div class="bg-white rounded-2xl p-5 md:p-6 mb-6 shadow-sm border border-gray-100">
                             @php
+                                $hasCertificate = !is_null($certificate);
                                 $allVideosWatched = $totalVideosCount > 0 && $watchedVideosCount >= $totalVideosCount;
                                 $hasSubmission = !is_null($taskSubmission);
                                 $isPending = $hasSubmission && $taskSubmission->isPending();
                                 $isReviewed = $hasSubmission && $taskSubmission->isReviewed();
+
+                                if ($hasCertificate) {
+                                    $overallProgressPercentage = 100;
+                                } elseif ($isReviewed) {
+                                    $overallProgressPercentage = 80;
+                                } elseif ($isPending) {
+                                    $overallProgressPercentage = 60;
+                                } elseif ($hasSubmission) {
+                                    $overallProgressPercentage = 40;
+                                } elseif ($allVideosWatched) {
+                                    $overallProgressPercentage = 20;
+                                } else {
+                                    $overallProgressPercentage = $totalVideosCount > 0
+                                        ? (int) round(($watchedVideosCount / $totalVideosCount) * 20)
+                                        : 0;
+                                }
 
                                 $steps = [
                                     [
@@ -370,16 +113,38 @@
                                     ],
                                     [
                                         'label' => 'Dapatkan Sertifikat',
-                                        'sublabel' => $isReviewed ? 'Klik untuk klaim' : 'Selesaikan review dulu',
-                                        'done' => false,
-                                        'active' => $isReviewed,
+                                        'sublabel' => $hasCertificate ? 'Sertifikat telah terbit' : ($isReviewed ? 'Klik untuk klaim' : 'Selesaikan review dulu'),
+                                        'done' => $hasCertificate,
+                                        'active' => $isReviewed && !$hasCertificate,
                                         'url' => $isReviewed ? route('claim-certificate', ['slug' => $course->slug]) : null,
                                         'action' => !$isReviewed ? 'goToTaskTab()' : null,
-                                        'icon_done' => '',
+                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
                                         'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
                                     ],
                                 ];
                             @endphp
+
+                            <!-- Header & Progress Bar -->
+                            <div class="flex items-center justify-between gap-3 mb-2.5">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h2 class="text-sm md:text-base font-bold text-gray-900">Progress Penyelesaian Kelas</h2>
+                                    @if($hasCertificate)
+                                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            Lulus & Bersertifikat
+                                        </span>
+                                    @endif
+                                </div>
+                                <span class="text-xs font-bold text-pink-600 bg-pink-50 border border-pink-200 rounded-full px-2.5 py-1 shrink-0">
+                                    {{ $overallProgressPercentage }}% Selesai
+                                </span>
+                            </div>
+
+                            <!-- Visual Animated Progress Bar -->
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 mb-6 overflow-hidden border border-gray-200/60 p-0.5">
+                                <div class="bg-gradient-to-r {{ $overallProgressPercentage == 100 ? 'from-emerald-400 to-emerald-500' : 'from-pink-500 via-rose-500 to-pink-500' }} h-full rounded-full transition-all duration-700 ease-out"
+                                     style="width: {{ $overallProgressPercentage }}%"></div>
+                            </div>
 
                             <!-- Mobile Version (< md) -->
                             <div class="md:hidden grid grid-cols-3 gap-2">
@@ -695,6 +460,31 @@
                                                     @else
                                                         <p class="text-xs text-gray-500 italic">Coach memberikan penilaian tanpa catatan tertulis tambahan.</p>
                                                     @endif
+                                                </div>
+                                            @endif
+
+                                            @if ($taskSubmission->isReviewed())
+                                                <div class="mt-4 p-4 rounded-xl {{ $hasCertificate ? 'bg-emerald-50 border border-emerald-200' : 'bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200' }} flex flex-col sm:flex-row items-center justify-between gap-4">
+                                                    <div class="flex items-center gap-3 text-center sm:text-left">
+                                                        <div class="w-10 h-10 rounded-full {{ $hasCertificate ? 'bg-emerald-100 text-emerald-600' : 'bg-pink-100 text-pink-600' }} flex items-center justify-center shrink-0">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-bold text-gray-900 text-sm">
+                                                                {{ $hasCertificate ? '🎓 Sertifikat Kelulusanmu Sudah Terbit!' : '🎉 Selamat! Kamu Telah Lulus Review' }}
+                                                            </h4>
+                                                            <p class="text-xs text-gray-600 mt-0.5">
+                                                                {{ $hasCertificate ? 'Sertifikat resmi kelulusan kursus siap diunduh dan dilihat.' : 'Berikan ulasan kursus sekarang untuk mengklaim sertifikat kelulusanmu.' }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <a href="{{ route('claim-certificate', ['slug' => $course->slug]) }}"
+                                                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white {{ $hasCertificate ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-pink-600 hover:bg-pink-700' }} shadow-md transition shrink-0">
+                                                        <span>{{ $hasCertificate ? 'Lihat Sertifikat' : 'Klaim Sertifikat' }}</span>
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                                    </a>
                                                 </div>
                                             @endif
                                         </div>

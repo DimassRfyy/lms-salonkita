@@ -117,7 +117,6 @@ class CourseTaskSubmissionResource extends Resource
                     ->label('Umpan Balik / Catatan Review')
                     ->placeholder('Tuliskan catatan evaluasi, saran, atau masukan untuk siswa mengenai tugas ini...')
                     ->rows(4)
-                    ->helperText('Umpan balik ini akan ditampilkan kepada siswa di halaman kelas.')
                     ->nullable()
                     ->columnSpanFull(),
             ]);

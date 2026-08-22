@@ -66,7 +66,12 @@ class ProfileController extends Controller
             ->take(8)
             ->get();
 
-        return view('pages.profile', compact('user', 'ownedCourses'));
+        $certificates = $user->certificates()
+            ->with('course.category')
+            ->latest('issued_at')
+            ->get();
+
+        return view('pages.profile', compact('user', 'ownedCourses', 'certificates'));
     }
 
     public function update(Request $request)

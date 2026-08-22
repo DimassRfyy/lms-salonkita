@@ -63,6 +63,9 @@ Route::post('/mentoring/{entitlement}/book', [MentoringController::class, 'store
 Route::get('/task', [HomeController::class, 'task'])->name('task')->middleware('auth');
 
 Route::get('/claim-certificate/{slug}', [HomeController::class, 'claimCertificate'])->name('claim-certificate')->middleware('auth');
+Route::post('/course/{slug}/review', [HomeController::class, 'storeCourseReviewAndClaim'])->name('course.review.store')->middleware('auth');
+Route::get('/course/{slug}/certificate/download', [HomeController::class, 'downloadCertificate'])->name('certificate.download')->middleware('auth');
+Route::get('/course/{slug}/certificate/view', [HomeController::class, 'viewCertificate'])->name('certificate.view')->middleware('auth');
 
 Route::get('/login', [LoginController::class, 'login'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post')->middleware('guest');

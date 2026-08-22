@@ -143,6 +143,11 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(CourseCertificate::class);
+    }
+
     public function savedByUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'saved_courses')

@@ -144,7 +144,7 @@
                         <div class="md:col-span-2 p-6 md:p-8 flex flex-col justify-between">
                             <div>
                                 <p class="text-sm text-pink-600 font-medium mb-2">
-                                    {{ $continueWatching->course->category->name }}
+                                    {{ $continueWatching->course->name }}
                                 </p>
                                 <h3 class="text-2xl font-bold text-gray-900 mb-2">
                                     {{ $continueWatching->video->title }}
