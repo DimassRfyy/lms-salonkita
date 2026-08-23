@@ -42,6 +42,36 @@ class CourseResource extends Resource
 
         return $query;
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return null;
+        }
+
+        $query = static::getModel()::query()->where('is_published', false);
+
+        if ($user->role === 'coach') {
+            $query->where('user_id', $user->id);
+        }
+
+        $count = $query->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return Auth::user()?->role === 'coach'
+            ? 'Kelas Anda yang belum aktif / menunggu review'
+            : 'Kelas belum aktif / menunggu review Admin';
+    }
     
     protected static string|BackedEnum|null $navigationIcon = Heroicon::AcademicCap;
 

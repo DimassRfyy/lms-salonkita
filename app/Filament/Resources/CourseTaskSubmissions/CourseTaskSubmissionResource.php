@@ -133,9 +133,6 @@ class CourseTaskSubmissionResource extends Resource
                     ->label('Siswa')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('subject')
-                    ->label('Judul Tugas')
-                    ->searchable(),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

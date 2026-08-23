@@ -66,10 +66,14 @@ class MentorAvailabilitySlotResource extends Resource
                     ->schema([
                         DateTimePicker::make('starts_at')
                             ->label('Waktu Mulai')
+                            ->seconds(false)
+                            ->default(fn () => now()->addDay()->startOfHour())
                             ->required(),
 
                         DateTimePicker::make('ends_at')
                             ->label('Waktu Selesai')
+                            ->seconds(false)
+                            ->default(fn () => now()->addDay()->startOfHour()->addHour())
                             ->required(),
 
                         Select::make('status')
@@ -88,7 +92,7 @@ class MentorAvailabilitySlotResource extends Resource
                             ->placeholder('Slot manual (tanpa pola)')
                             ->nullable(),
                     ])
-                    ->columns(2),
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -136,7 +140,7 @@ class MentorAvailabilitySlotResource extends Resource
                         MentorAvailabilitySlot::STATUS_BLOCKED => 'Diblokir',
                     ]),
             ])
-            ->defaultSort('starts_at', 'desc')
+            ->defaultSort('starts_at', 'asc')
             ->recordActions([
                 ActionGroup::make([
                     ActionGroup::make([

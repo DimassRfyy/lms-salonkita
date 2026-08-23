@@ -192,54 +192,10 @@ class MentoringController extends Controller
 
         $selectedMentor = $approvedRequest->mentor;
 
-        $windowStart = now()->startOfDay();
-        $windowEnd = now()->addDays(13)->endOfDay();
-        $slotCountsByDate = collect();
-        $selectedDate = $request->query('date');
-
-        $slotCountsByDate = MentorAvailabilitySlot::query()
-            ->selectRaw('DATE(starts_at) as slot_date, COUNT(*) as slots_count')
-            ->where('mentor_id', $selectedMentor->id)
-            ->where('status', MentorAvailabilitySlot::STATUS_AVAILABLE)
-            ->where('starts_at', '>=', $windowStart)
-            ->where('starts_at', '<=', $windowEnd)
-            ->groupBy('slot_date')
-            ->orderBy('slot_date', 'asc')
-            ->pluck('slots_count', 'slot_date');
-
-        if (! $selectedDate || ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $selectedDate)) {
-            $selectedDate = $slotCountsByDate->keys()->first() ?: now()->addDay()->toDateString();
-        }
-
-        $availableDates = collect(range(0, 13))->map(function (int $offset) use ($windowStart, $slotCountsByDate): array {
-            $date = $windowStart->copy()->addDays($offset);
-            $dateKey = $date->toDateString();
-            $slotCount = (int) ($slotCountsByDate[$dateKey] ?? 0);
-
-            return [
-                'date' => $date,
-                'date_key' => $dateKey,
-                'label' => $date->translatedFormat('D, d M'),
-                'slots_count' => $slotCount,
-                'is_available' => $slotCount > 0,
-            ];
-        });
-
-        $availableSlots = MentorAvailabilitySlot::query()->with('mentor')
-            ->where('mentor_id', $selectedMentor->id)
-            ->where('status', MentorAvailabilitySlot::STATUS_AVAILABLE)
-            ->whereDate('starts_at', $selectedDate)
-            ->where('starts_at', '>=', now())
-            ->orderBy('starts_at')
-            ->get();
-
         return view('pages.mentoring.book', compact(
             'entitlement',
             'approvedRequest',
-            'selectedMentor',
-            'selectedDate',
-            'availableDates',
-            'availableSlots'
+            'selectedMentor'
         ));
     }
 

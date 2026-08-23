@@ -15,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Support\RawJs;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -87,9 +88,13 @@ class TransactionResource extends Resource
                     ->default(Transaction::STATUS_PENDING)
                     ->required(),
                 TextInput::make('price')
+                    ->label('Harga')
                     ->required()
+                    ->prefix('Rp')
+                    ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
+                    ->stripCharacters('.')
                     ->numeric()
-                    ->prefix('Rp'),
+                    ->minValue(0),
             ]);
     }
 
@@ -138,7 +143,7 @@ class TransactionResource extends Resource
                     ->formatStateUsing(fn ($state): string => 'Rp ' . number_format((int) $state, 0, ',', '.'))
                     ->sortable(),
                 TextColumn::make('paid_at')
-                    ->dateTime()
+                    ->date()
                     ->placeholder('-')
                     ->toggleable(),
                 TextColumn::make('created_at')

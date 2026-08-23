@@ -155,7 +155,7 @@ class CourseDiscussionResource extends Resource
                     }),
                 TextColumn::make('created_at')
                     ->label('Waktu')
-                    ->dateTime('d M Y, H:i')
+                    ->date()
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')

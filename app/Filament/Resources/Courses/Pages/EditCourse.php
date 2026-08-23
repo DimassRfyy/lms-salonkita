@@ -6,6 +6,7 @@ use App\Filament\Resources\Courses\CourseResource;
 use App\Support\Youtube;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 
 class EditCourse extends EditRecord
 {
@@ -21,6 +22,12 @@ class EditCourse extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['introduction_video_url'] = Youtube::extractId($data['introduction_video_url'] ?? null);
+
+        $user = Auth::user();
+        if ($user?->role === 'coach') {
+            unset($data['is_published']);
+            $data['user_id'] = $user->id;
+        }
 
         return $data;
     }

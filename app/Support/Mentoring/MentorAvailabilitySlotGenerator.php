@@ -9,8 +9,19 @@ use Carbon\Carbon;
 
 class MentorAvailabilitySlotGenerator
 {
+    public function pruneExpiredAvailableSlots(int $mentorId): int
+    {
+        return MentorAvailabilitySlot::query()
+            ->where('mentor_id', $mentorId)
+            ->where('status', MentorAvailabilitySlot::STATUS_AVAILABLE)
+            ->where('starts_at', '<', now())
+            ->delete();
+    }
+
     public function generateForMentor(User $mentor, int $horizonDays = 60): int
     {
+        $this->pruneExpiredAvailableSlots((int) $mentor->id);
+
         return $mentor->mentorAvailabilityTemplates()
             ->where('is_active', true)
             ->get()
@@ -19,6 +30,7 @@ class MentorAvailabilitySlotGenerator
 
     public function generateForTemplate(MentorAvailabilityTemplate $template, int $horizonDays = 60): int
     {
+        $this->pruneExpiredAvailableSlots((int) $template->mentor_id);
         $days = max(1, $horizonDays);
         $startDate = Carbon::today();
         $endDate = Carbon::today()->addDays($days);
@@ -54,5 +66,43 @@ class MentorAvailabilitySlotGenerator
         }
 
         return $createdCount;
+    }
+
+    public function syncTemplateSlots(MentorAvailabilityTemplate $template, int $horizonDays = 30): array
+    {
+        $this->pruneExpiredAvailableSlots((int) $template->mentor_id);
+
+        $futureSlotsQuery = MentorAvailabilitySlot::query()
+            ->where('mentor_availability_template_id', $template->id)
+            ->where('starts_at', '>=', now());
+
+        $bookedCount = (clone $futureSlotsQuery)
+            ->where('status', MentorAvailabilitySlot::STATUS_BOOKED)
+            ->count();
+
+        // Hapus semua slot kosong masa depan yang belum dibooking agar jadwal lama dibersihkan
+        $deletedUnbookedCount = (clone $futureSlotsQuery)
+            ->where('status', MentorAvailabilitySlot::STATUS_AVAILABLE)
+            ->delete();
+
+        $newCreatedCount = 0;
+        if ($template->is_active) {
+            $newCreatedCount = $this->generateForTemplate($template, $horizonDays);
+        }
+
+        return [
+            'deleted_unbooked' => $deletedUnbookedCount,
+            'booked_retained' => $bookedCount,
+            'new_created' => $newCreatedCount,
+        ];
+    }
+
+    public function cleanupTemplateSlotsOnDelete(int $templateId): int
+    {
+        return MentorAvailabilitySlot::query()
+            ->where('mentor_availability_template_id', $templateId)
+            ->where('status', MentorAvailabilitySlot::STATUS_AVAILABLE)
+            ->where('starts_at', '>=', now())
+            ->delete();
     }
 }

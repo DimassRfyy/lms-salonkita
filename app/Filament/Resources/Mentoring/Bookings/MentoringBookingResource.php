@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -91,7 +92,7 @@ class MentoringBookingResource extends Resource
                     ->required(),
 
                 Section::make('Informasi Booking')
-                    ->description('Detail sesi yang sudah dibooking siswa. Field ini tidak perlu diubah.')
+                    ->description('Detail sesi yang sudah dibooking siswa.')
                     ->schema([
                         Select::make('student_id')
                             ->label('Siswa')
@@ -104,21 +105,24 @@ class MentoringBookingResource extends Resource
                             ->disabled()
                             ->dehydrated(),
                         DateTimePicker::make('starts_at')
-                            ->label('Mulai')
+                            ->label('Waktu Mulai')
+                            ->seconds(false)
                             ->disabled()
                             ->dehydrated(),
                         DateTimePicker::make('ends_at')
-                            ->label('Selesai')
+                            ->label('Waktu Selesai')
+                            ->seconds(false)
                             ->disabled()
                             ->dehydrated(),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->columnSpanFull(),
 
                 Section::make('Pengaturan Meeting')
                     ->description('Isi platform dan link Meet/Zoom supaya siswa bisa bergabung.')
                     ->schema([
                         Select::make('meeting_platform')
-                            ->label('Platform')
+                            ->label('Platform Meeting')
                             ->options([
                                 'zoom' => 'Zoom',
                                 'google_meet' => 'Google Meet',
@@ -133,28 +137,28 @@ class MentoringBookingResource extends Resource
                             ->helperText('Paste link Zoom / Google Meet di sini.')
                             ->nullable(),
                         Select::make('status')
-                            ->label('Status')
+                            ->label('Status Sesi')
                             ->options([
-                                MentoringBooking::STATUS_CONFIRMED => 'Confirmed',
-                                MentoringBooking::STATUS_COMPLETED => 'Completed',
-                                MentoringBooking::STATUS_CANCELED => 'Canceled',
-                                MentoringBooking::STATUS_NO_SHOW => 'No Show',
+                                MentoringBooking::STATUS_CONFIRMED => 'Confirmed (Terjadwal)',
+                                MentoringBooking::STATUS_COMPLETED => 'Completed (Selesai)',
+                                MentoringBooking::STATUS_CANCELED => 'Canceled (Dibatalkan)',
+                                MentoringBooking::STATUS_NO_SHOW => 'No Show (Siswa Tidak Hadir)',
                             ])
                             ->native(false)
-                            ->required()
-                            ->columnSpanFull(),
+                            ->required(),
                     ])
-                    ->columns(2),
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 Section::make('Catatan')
                     ->schema([
                         Textarea::make('notes')
-                            ->label('Catatan untuk siswa')
-                            ->placeholder('Contoh: Siapkan hasil makeup kamu sebelum sesi dimulai.')
-                            ->rows(4)
-                            ->nullable()
-                            ->columnSpanFull(),
-                    ]),
+                            ->label('Catatan untuk Siswa')
+                            ->placeholder('Contoh: Siapkan hasil tugas makeup kamu sebelum sesi dimulai.')
+                            ->rows(3)
+                            ->nullable(),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -243,6 +247,7 @@ class MentoringBookingResource extends Resource
                     ->label('Atur Meeting')
                     ->modalHeading('Atur Meeting Mentoring')
                     ->modalDescription('Lengkapi platform, link meeting, status, dan catatan untuk siswa.')
+                    ->modalWidth(Width::TwoExtraLarge)
                     ->modalSubmitActionLabel('Simpan'),
                 DeleteAction::make(),
             ])

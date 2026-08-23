@@ -13,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
 use Illuminate\Support\Facades\Auth;
 
 class CourseForm
@@ -49,9 +50,13 @@ class CourseForm
                                 ->dehydrated()
                                 ->required(),
                             TextInput::make('price')
+                                ->label('Harga')
                                 ->required()
+                                ->prefix('Rp')
+                                ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
+                                ->stripCharacters('.')
                                 ->numeric()
-                                ->prefix('Rp'),
+                                ->minValue(0),
                             TextInput::make('rating')
                                 ->required()
                                 ->numeric(),
@@ -78,8 +83,13 @@ class CourseForm
                                      };
                                  }),
                             Toggle::make('is_published')
-                                ->default(false)
-                                ->required(),
+                                ->label('Publikasikan Kelas (Aktif)')
+                                ->helperText(fn () => Auth::user()?->role === 'admin'
+                                    ? 'Aktifkan kelas agar tampil di katalog student'
+                                    : 'Kelas buatan Coach harus dicek dan dipublikasikan Admin')
+                                ->disabled(fn () => Auth::user()?->role !== 'admin')
+                                ->dehydrated(fn () => Auth::user()?->role === 'admin')
+                                ->default(false),
                         ])
                         ->columns(2),
 
