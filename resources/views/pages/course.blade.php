@@ -842,10 +842,24 @@
                                     Menunggu Konfirmasi Bayar
                                 </div>
                             @else
-                                <a href="{{ route('transaction', ['course' => $course->slug]) }}"
-                                    class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
-                                    Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
-                                </a>
+                                @auth
+                                    @if(auth()->user()->role !== 'student')
+                                        <button type="button" onclick="showRestrictedRoleAlert('{{ auth()->user()->role }}')"
+                                            class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6 cursor-pointer">
+                                            Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                                        </button>
+                                    @else
+                                        <a href="{{ route('transaction', ['course' => $course->slug]) }}"
+                                            class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
+                                            Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                                        </a>
+                                    @endif
+                                @else
+                                    <a href="{{ route('transaction', ['course' => $course->slug]) }}"
+                                        class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
+                                        Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                                    </a>
+                                @endauth
                             @endif
                         @endif
                     </div>
@@ -1010,6 +1024,32 @@
         const tryAgainGifUrl = @json(asset('assets/tryagain.gif'));
         const nextVideoUrl = @json($nextVideoUrl ?? null);
 
+        function showRestrictedRoleAlert(role) {
+            const roleLabels = {
+                'mentor': 'Mentor',
+                'coach': 'Coach',
+                'admin': 'Admin'
+            };
+            const displayRole = roleLabels[role?.toLowerCase()] || (role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Pengguna');
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Akses Pembelian Dibatasi',
+                html: `
+                    <div class="text-center text-sm text-gray-600 space-y-2 mt-2">
+                        <p>Akun Anda terdaftar dengan role <strong class="text-pink-600 font-bold">${displayRole}</strong>.</p>
+                        <p class="text-xs text-gray-500">Fitur pembelian dan pendaftaran kelas hanya diperuntukkan bagi akun <strong>Student</strong>.</p>
+                    </div>
+                `,
+                confirmButtonColor: '#ec4899',
+                confirmButtonText: 'Saya Mengerti',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl font-bold px-6 py-2.5 text-sm shadow-md'
+                }
+            });
+        }
+
         function showCourseAlert(type, message) {
             if (!message) return;
 
@@ -1024,7 +1064,7 @@
             };
 
             if (type === 'error') {
-                options.title = 'Coba lagi';
+                options.title = 'Perhatian';
                 options.imageUrl = tryAgainGifUrl;
                 options.imageAlt = 'Try again gif';
             } else if (isQuizSuccess) {

@@ -8,6 +8,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class ManageUsers extends ManageRecords
 {
@@ -15,6 +16,10 @@ class ManageUsers extends ManageRecords
 
     protected function getHeaderActions(): array
     {
+        if (Auth::user()?->role !== 'admin') {
+            return [];
+        }
+
         return [
             CreateAction::make(),
         ];
@@ -22,6 +27,11 @@ class ManageUsers extends ManageRecords
 
     public function getTabs(): array
     {
+        $user = Auth::user();
+        if ($user?->role !== 'admin') {
+            return [];
+        }
+
         $pendingCount = User::query()
             ->whereIn('role', ['mentor', 'coach'])
             ->where('is_approved', false)

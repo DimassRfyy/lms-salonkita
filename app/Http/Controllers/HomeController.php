@@ -9,6 +9,8 @@ use App\Models\CourseReview;
 use App\Models\CourseTaskSubmission;
 use App\Models\CourseVideoQuizCompletion;
 use App\Models\CourseVideoWatch;
+use App\Models\MentoringBooking;
+use App\Models\MentoringRequest;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Support\Youtube;
@@ -113,8 +115,30 @@ class HomeController extends Controller
             ->pluck('courses.id');
 
         $availableMentoringEntitlement = $user->availableMentoringEntitlements()
-            ->with(['course', 'booking.mentor', 'booking.slot'])
+            ->with(['course', 'activeMentoringRequest.mentor', 'latestMentoringRequest.mentor'])
             ->latest('granted_at')
+            ->first();
+
+        $currentMentoringRequest = null;
+        if ($availableMentoringEntitlement) {
+            $currentMentoringRequest = $availableMentoringEntitlement->activeMentoringRequest
+                ?? $availableMentoringEntitlement->latestMentoringRequest;
+        }
+
+        if (! $currentMentoringRequest) {
+            $currentMentoringRequest = MentoringRequest::query()
+                ->where('student_id', $user->id)
+                ->whereIn('status', [MentoringRequest::STATUS_PENDING, MentoringRequest::STATUS_APPROVED])
+                ->with(['mentor', 'course', 'entitlement'])
+                ->latest()
+                ->first();
+        }
+
+        $activeMentoringBooking = $user->mentoringBookingsAsStudent()
+            ->where('status', MentoringBooking::STATUS_CONFIRMED)
+            ->where('starts_at', '>=', now()->subHours(2))
+            ->with(['course', 'mentor', 'slot'])
+            ->orderBy('starts_at')
             ->first();
 
         $latestMentoringBooking = $user->mentoringBookingsAsStudent()
@@ -128,7 +152,9 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
-        $hasMentoringAccess = $availableMentoringEntitlement !== null || $latestMentoringBooking !== null;
+        $hasMentoringAccess = $availableMentoringEntitlement !== null 
+            || $latestMentoringBooking !== null 
+            || $currentMentoringRequest !== null;
 
         return view('pages.dashboard', compact(
             'ownedCourses',
@@ -136,6 +162,8 @@ class HomeController extends Controller
             'continueWatching',
             'savedCourseIds',
             'availableMentoringEntitlement',
+            'currentMentoringRequest',
+            'activeMentoringBooking',
             'latestMentoringBooking',
             'mentoringHistory',
             'hasMentoringAccess'

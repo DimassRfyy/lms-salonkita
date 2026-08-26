@@ -29,6 +29,13 @@ class PaymentController extends Controller
             ->where('slug', $courseSlug)
             ->firstOrFail();
 
+        $user = $request->user();
+        if ($user && $user->role !== 'student') {
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('error', 'Akun dengan role ' . ucfirst($user->role) . ' tidak dapat membeli kelas. Fitur pembelian kelas hanya untuk akun Student.');
+        }
+
         return view('pages.transaction', compact('course'));
     }
 
@@ -45,6 +52,12 @@ class PaymentController extends Controller
         $course = Course::query()
             ->where('is_published', true)
             ->findOrFail((int) $validated['course_id']);
+
+        if ($user->role !== 'student') {
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('error', 'Akun dengan role ' . ucfirst($user->role) . ' tidak dapat membeli kelas. Fitur pembelian kelas hanya untuk akun Student.');
+        }
 
         if ($user->ownedCourses()->where('courses.id', $course->id)->exists()) {
             return redirect()

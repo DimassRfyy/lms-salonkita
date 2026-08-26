@@ -13,104 +13,301 @@
         </section>
 
         @php
-            $showMentoring = ($hasMentoringAccess ?? false) || isset($availableMentoringEntitlement) || isset($latestMentoringBooking);
+            $hasActiveBooking = isset($activeMentoringBooking) && $activeMentoringBooking !== null;
+            $hasActiveRequest = isset($currentMentoringRequest) && $currentMentoringRequest !== null;
+            $hasUnusedQuota = isset($availableMentoringEntitlement) 
+                && $availableMentoringEntitlement !== null 
+                && $availableMentoringEntitlement->used_quota < $availableMentoringEntitlement->total_quota;
+            $isMentoringVisible = $hasActiveBooking || $hasActiveRequest || $hasUnusedQuota;
         @endphp
 
-        {{-- FITUR REDEEM POINT DI-DISABLE SEMENTARA --}}
-        {{--
-        <!-- TOP WIDGETS GRID (POINTS & MENTORING - COMPACT) -->
-        <section class="mb-8">
-            <div class="grid grid-cols-1 {{ $showMentoring ? 'lg:grid-cols-2' : '' }} gap-4 sm:gap-5">
-                <!-- POINTS BANNER / WIDGET -->
-                <a href="{{ route('points.index') }}" class="group block h-full">
-                    <div class="h-full overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-4 sm:p-5 text-white shadow-sm hover:shadow-md transition-all duration-300 relative flex flex-col justify-between">
-                        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-lg pointer-events-none"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between gap-3 mb-2">
-                                <span class="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-100">
-                                    Redeem Point
+        @if($isMentoringVisible)
+            <!-- MENTORING NOTICE (RESPONSIVE: SLIM STRIP ON MOBILE, HERO BANNER ON PC) -->
+            <section class="mb-6 md:mb-8">
+                @if($hasActiveBooking)
+                    @php
+                        $isLinkReady = filled($activeMentoringBooking->meeting_url);
+                        $sessionDateShort = $activeMentoringBooking->starts_at->translatedFormat('d M');
+                        $sessionDateLong = $activeMentoringBooking->starts_at->translatedFormat('l, d M Y');
+                        $sessionTime = $activeMentoringBooking->starts_at->format('H:i') . ' WIB';
+                    @endphp
+                    @if($isLinkReady)
+                        <!-- STATE 1: LINK MEETING SIAP -->
+                        <!-- Mobile View -->
+                        <div class="md:hidden rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 p-3 text-white shadow-xs flex items-center justify-between gap-2.5">
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="relative flex h-2.5 w-2.5 shrink-0">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
                                 </span>
-                                <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-sm shadow-inner border border-white/20 shrink-0">
-                                    🪙
+                                <p class="leading-tight">
+                                    Link mentoring dengan <strong>{{ $activeMentoringBooking->mentor?->name ?? 'Mentor' }}</strong> ({{ $sessionTime }}) sudah siap!
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <a href="{{ $activeMentoringBooking->meeting_url }}" target="_blank"
+                                    class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                    Gabung ➔
+                                </a>
+                                <a href="{{ route('mentoring.index') }}"
+                                    class="text-xs text-pink-100 hover:text-white px-1 font-medium transition">
+                                    Detail
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Desktop View -->
+                        <div class="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 p-6 lg:p-7 text-white shadow-xl shadow-pink-500/15">
+                            <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute -left-10 -top-10 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                            <div class="relative z-10 flex items-center justify-between gap-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-inner shrink-0">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-white border border-white/20">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span>
+                                                Link Meeting Siap
+                                            </span>
+                                            <span class="text-xs text-pink-100 font-medium">{{ $sessionDateLong }} • {{ $sessionTime }}</span>
+                                        </div>
+                                        <h2 class="text-xl lg:text-2xl font-black tracking-tight text-white">
+                                            Sesi Mentoring dengan {{ $activeMentoringBooking->mentor?->name ?? 'Mentor' }}
+                                        </h2>
+                                        <p class="text-sm text-pink-100 max-w-xl">
+                                            Link meeting kelas <strong class="text-white font-bold">{{ $activeMentoringBooking->course?->name }}</strong> sudah siap.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 shrink-0">
+                                    <a href="{{ $activeMentoringBooking->meeting_url }}" target="_blank"
+                                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                        <svg class="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                        Gabung Meeting ➔
+                                    </a>
+                                    <a href="{{ route('mentoring.index') }}"
+                                        class="inline-flex items-center justify-center rounded-2xl bg-white/15 hover:bg-white/25 border border-white/30 px-4 py-3 font-semibold text-white transition text-xs">
+                                        Detail Sesi
+                                    </a>
                                 </div>
                             </div>
-                            <h2 class="text-lg sm:text-xl font-black">
-                                {{ number_format(auth()->user()->points_balance ?? 0) }} Poin Saya
-                            </h2>
-                            <p class="text-xs text-amber-100 mt-0.5 leading-snug">
-                                Dapatkan +50 Poin tiap beli kelas. Tukarkan poin dengan hadiah!
-                            </p>
+                        </div>
+                    @else
+                        <!-- STATE 2: SESI TERJADWAL -->
+                        <!-- Mobile View -->
+                        <div class="md:hidden rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 p-3 text-white shadow-xs flex items-center justify-between gap-2.5">
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="shrink-0 text-sm">📅</span>
+                                <p class="leading-tight">
+                                    Sesi dengan <strong>{{ $activeMentoringBooking->mentor?->name ?? 'Mentor' }}</strong> terjadwal: <strong>{{ $sessionDateShort }} ({{ $sessionTime }})</strong>.
+                                </p>
+                            </div>
+                            <div class="shrink-0">
+                                <a href="{{ route('mentoring.index') }}"
+                                    class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                    Lihat Jadwal
+                                </a>
+                            </div>
                         </div>
 
-                        <div class="mt-3 pt-2.5 border-t border-white/15 relative z-10 flex justify-end">
-                            <span class="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 font-bold text-amber-600 shadow-sm group-hover:bg-amber-50 group-hover:scale-105 transition-all text-xs">
-                                Tukar Poin
-                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </span>
+                        <!-- Desktop View -->
+                        <div class="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 p-6 lg:p-7 text-white shadow-xl shadow-pink-500/15">
+                            <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="absolute -left-10 -top-10 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                            <div class="relative z-10 flex items-center justify-between gap-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-inner shrink-0">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-white border border-white/20">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                                Sesi Terjadwal
+                                            </span>
+                                            <span class="text-xs text-pink-100 font-medium">{{ $sessionDateLong }} • {{ $sessionTime }}</span>
+                                        </div>
+                                        <h2 class="text-xl lg:text-2xl font-black tracking-tight text-white">
+                                            Sesi Mentoring dengan {{ $activeMentoringBooking->mentor?->name ?? 'Mentor' }}
+                                        </h2>
+                                        <p class="text-sm text-pink-100 max-w-xl">
+                                            Jadwal bimbingan kelas <strong class="text-white font-bold">{{ $activeMentoringBooking->course?->name }}</strong> sudah tercatat.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="shrink-0">
+                                    <a href="{{ route('mentoring.index') }}"
+                                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                        Lihat Jadwal ➔
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                @elseif($hasActiveRequest && $currentMentoringRequest->isApproved())
+                    <!-- STATE 3: PERMOHONAN DI-ACC MENTOR -->
+                    <!-- Mobile View -->
+                    <div class="md:hidden rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 p-3 text-white shadow-xs flex items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="shrink-0 text-sm">🎉</span>
+                            <p class="leading-tight">
+                                Permohonan mentoring di-ACC oleh <strong>{{ $currentMentoringRequest->mentor?->name ?? 'Mentor' }}</strong>!
+                            </p>
+                        </div>
+                        <div class="shrink-0">
+                            <a href="{{ route('mentoring.book', ['entitlement' => $currentMentoringRequest->mentoring_entitlement_id]) }}"
+                                class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                Pilih Jadwal ➔
+                            </a>
                         </div>
                     </div>
-                </a>
 
-                @if($showMentoring)
-                    <!-- MENTORING WIDGET -->
-                    <div class="h-full overflow-hidden rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-4 sm:p-5 text-white shadow-sm relative flex flex-col justify-between">
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between gap-3 mb-2">
-                                <span class="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
-                                    Mentoring Access
-                                </span>
+                    <!-- Desktop View -->
+                    <div class="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 p-6 lg:p-7 text-white shadow-xl shadow-pink-500/15">
+                        <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -left-10 -top-10 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="relative z-10 flex items-center justify-between gap-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-inner shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-white border border-white/20">
+                                        ✨ Pengajuan Di-ACC
+                                    </span>
+                                    <h2 class="text-xl lg:text-2xl font-black tracking-tight text-white">
+                                        Permohonanmu Di-ACC oleh {{ $currentMentoringRequest->mentor?->name ?? 'Mentor' }}! 🎉
+                                    </h2>
+                                    <p class="text-sm text-pink-100 max-w-xl">
+                                        Mentor siap membimbingmu. Yuk tentukan jam sesi yang cocok!
+                                    </p>
+                                </div>
                             </div>
-                            <h2 class="text-lg sm:text-xl font-bold">Halaman Mentoring</h2>
-                            <p class="text-xs text-white/90 mt-0.5 leading-snug">
-                                lihat jadwal, platform meeting, link & catatan mentor.
+                            <div class="shrink-0">
+                                <a href="{{ route('mentoring.book', ['entitlement' => $currentMentoringRequest->mentoring_entitlement_id]) }}"
+                                    class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                    Pilih Jadwal Sesi ➔
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                @elseif($hasActiveRequest && $currentMentoringRequest->isPending())
+                    <!-- STATE 4: PERMOHONAN SEDANG DITINJAU (PENDING) -->
+                    <!-- Mobile View -->
+                    <div class="md:hidden rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 p-3 text-white shadow-xs flex items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="shrink-0 text-sm">⏳</span>
+                            <p class="leading-tight">
+                                Pengajuan bimbingan ke <strong>{{ $currentMentoringRequest->mentor?->name ?? 'Mentor' }}</strong> sedang ditinjau.
                             </p>
                         </div>
-
-                        <div class="mt-3 pt-2.5 border-t border-white/15 relative z-10 flex justify-end">
+                        <div class="shrink-0">
                             <a href="{{ route('mentoring.index') }}"
-                                class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 font-bold text-pink-600 shadow-sm transition hover:bg-pink-50 text-xs">
-                                Lihat Mentoring
-                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
+                                class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                Cek Status
                             </a>
+                        </div>
+                    </div>
+
+                    <!-- Desktop View -->
+                    <div class="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 p-6 lg:p-7 text-white shadow-xl shadow-pink-500/15">
+                        <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -left-10 -top-10 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="relative z-10 flex items-center justify-between gap-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-inner shrink-0">
+                                    <svg class="w-6 h-6 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-white border border-white/20">
+                                        ⏳ Sedang Ditinjau
+                                    </span>
+                                    <h2 class="text-xl lg:text-2xl font-black tracking-tight text-white">
+                                        Pengajuan ke {{ $currentMentoringRequest->mentor?->name ?? 'Mentor' }} Sedang Diproses
+                                    </h2>
+                                    <p class="text-sm text-pink-100 max-w-xl">
+                                        Permohonan bimbingan kelas <strong class="text-white font-bold">{{ $currentMentoringRequest->course?->name }}</strong> sedang ditinjau mentor.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                <a href="{{ route('mentoring.index') }}"
+                                    class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                    Cek Status ➔
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                @elseif($hasUnusedQuota)
+                    @php
+                        $remainingQuota = $availableMentoringEntitlement->total_quota - $availableMentoringEntitlement->used_quota;
+                    @endphp
+                    <!-- STATE 5: PUNYA JATAH KUOTA MENTORING BELUM DIPAKAI -->
+                    <!-- Mobile View -->
+                    <div class="md:hidden rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 p-3 text-white shadow-xs flex items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="shrink-0 text-sm">🎁</span>
+                            <p class="leading-tight">
+                                Kamu punya <strong>{{ $remainingQuota }}x jatah mentoring gratis</strong> kelas {{ $availableMentoringEntitlement->course?->name }}.
+                            </p>
+                        </div>
+                        <div class="shrink-0">
+                            <a href="{{ route('mentoring.mentors') }}"
+                                class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                Pilih Mentor ➔
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Desktop View -->
+                    <div class="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 p-6 lg:p-7 text-white shadow-xl shadow-pink-500/15">
+                        <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -left-10 -top-10 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="relative z-10 flex items-center justify-between gap-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/30 shadow-inner shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-white border border-white/20">
+                                        🎁 Jatah Mentoring Aktif
+                                    </span>
+                                    <h2 class="text-xl lg:text-2xl font-black tracking-tight text-white">
+                                        Kamu Masih Punya {{ $remainingQuota }}x Jatah Mentoring Gratis!
+                                    </h2>
+                                    <p class="text-sm text-pink-100 max-w-xl">
+                                        Yuk konsultasi privat 1-on-1 dengan Mentor Ahli untuk kelas <strong class="text-white font-bold">{{ $availableMentoringEntitlement->course?->name }}</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                <a href="{{ route('mentoring.mentors') }}"
+                                    class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                    Pilih Mentor Sekarang ➔
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endif
-            </div>
-        </section>
-        --}}
-
-        @if($showMentoring)
-            <!-- MENTORING WIDGET (COMPACT) -->
-            <section class="mb-8">
-                <div class="grid grid-cols-1 gap-4 sm:gap-5">
-                    <div class="h-full overflow-hidden rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-4 sm:p-5 text-white shadow-sm relative flex flex-col justify-between">
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between gap-3 mb-2">
-                                <span class="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
-                                    Mentoring Access
-                                </span>
-                            </div>
-                            <h2 class="text-lg sm:text-xl font-bold">Halaman Mentoring</h2>
-                            <p class="text-xs text-white/90 mt-0.5 leading-snug">
-                                lihat jadwal, platform meeting, link & catatan mentor.
-                            </p>
-                        </div>
-
-                        <div class="mt-3 pt-2.5 border-t border-white/15 relative z-10 flex justify-end">
-                            <a href="{{ route('mentoring.index') }}"
-                                class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3.5 py-1.5 font-bold text-pink-600 shadow-sm transition hover:bg-pink-50 text-xs">
-                                Lihat Mentoring
-                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </section>
         @endif
 
