@@ -95,7 +95,8 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()
+            ->with(['activeMentorship.mentor']);
         $user = Auth::user();
 
         if ($user?->role === 'coach') {
@@ -370,6 +371,13 @@ class UserResource extends Resource
                     })
                     ->searchable()
                     ->sortable()
+                    ->visible(fn () => Auth::user()?->role === 'admin'),
+                TextColumn::make('activeMentorship.mentor.name')
+                    ->label('Mentor Aktif')
+                    ->placeholder('-')
+                    ->badge()
+                    ->color('pink')
+                    ->searchable()
                     ->visible(fn () => Auth::user()?->role === 'admin'),
                 IconColumn::make('is_approved')
                     ->label('Status Approval')

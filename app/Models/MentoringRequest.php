@@ -15,6 +15,7 @@ class MentoringRequest extends Model
     public const STATUS_REJECTED = 'rejected';
     public const STATUS_CANCELED = 'canceled';
     public const STATUS_COMPLETED = 'completed';
+    public const STATUS_TERMINATED = 'terminated';
 
     protected $fillable = [
         'mentoring_entitlement_id',
@@ -24,13 +25,17 @@ class MentoringRequest extends Model
         'status',
         'student_notes',
         'rejection_reason',
+        'termination_reason',
         'reviewed_at',
+        'terminated_at',
+        'terminated_by',
     ];
 
     protected function casts(): array
     {
         return [
             'reviewed_at' => 'datetime',
+            'terminated_at' => 'datetime',
         ];
     }
 
@@ -47,6 +52,16 @@ class MentoringRequest extends Model
     public function isRejected(): bool
     {
         return $this->status === self::STATUS_REJECTED;
+    }
+
+    public function isCanceled(): bool
+    {
+        return $this->status === self::STATUS_CANCELED;
+    }
+
+    public function isTerminated(): bool
+    {
+        return $this->status === self::STATUS_TERMINATED;
     }
 
     public function entitlement(): BelongsTo

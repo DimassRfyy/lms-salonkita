@@ -99,7 +99,7 @@ class MentoringBookingSlotPickerTest extends TestCase
         // Assert used_quota incremented
         $this->assertEquals(1, $entitlement->fresh()->used_quota);
 
-        // Assert request marked completed
-        $this->assertEquals(MentoringRequest::STATUS_COMPLETED, $request->fresh()->status);
+        // Assert request remains approved (1 Student 1 Dedicated Mentor relationship persists)
+        $this->assertEquals(MentoringRequest::STATUS_APPROVED, $request->fresh()->status);
     }
 }

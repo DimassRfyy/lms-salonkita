@@ -166,7 +166,7 @@
                             </p>
                         </div>
                         <div class="shrink-0">
-                            <a href="{{ route('mentoring.book', ['entitlement' => $currentMentoringRequest->mentoring_entitlement_id]) }}"
+                            <a href="{{ route('mentoring.book') }}"
                                 class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
                                 Pilih Jadwal ➔
                             </a>
@@ -197,7 +197,7 @@
                                 </div>
                             </div>
                             <div class="shrink-0">
-                                <a href="{{ route('mentoring.book', ['entitlement' => $currentMentoringRequest->mentoring_entitlement_id]) }}"
+                                <a href="{{ route('mentoring.book') }}"
                                     class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
                                     Pilih Jadwal Sesi ➔
                                 </a>
@@ -257,7 +257,8 @@
 
                 @elseif($hasUnusedQuota)
                     @php
-                        $remainingQuota = $availableMentoringEntitlement->total_quota - $availableMentoringEntitlement->used_quota;
+                        $remainingQuota = $totalRemainingQuota ?? ($availableMentoringEntitlement->total_quota - $availableMentoringEntitlement->used_quota);
+                        $hasDedicatedMentor = isset($activeMentorship) && $activeMentorship !== null && $activeMentorship->mentor !== null;
                     @endphp
                     <!-- STATE 5: PUNYA JATAH KUOTA MENTORING BELUM DIPAKAI -->
                     <!-- Mobile View -->
@@ -265,14 +266,25 @@
                         <div class="flex items-center gap-2 text-xs">
                             <span class="shrink-0 text-sm">🎁</span>
                             <p class="leading-tight">
-                                Kamu punya <strong>{{ $remainingQuota }}x jatah mentoring gratis</strong> kelas {{ $availableMentoringEntitlement->course?->name }}.
+                                @if($hasDedicatedMentor)
+                                    Konsultasi dengan mentor <strong>{{ $activeMentorship->mentor->name }}</strong> (Sisa {{ $remainingQuota }}x sesi).
+                                @else
+                                    Kamu punya <strong>{{ $remainingQuota }}x jatah mentoring gratis</strong>.
+                                @endif
                             </p>
                         </div>
                         <div class="shrink-0">
-                            <a href="{{ route('mentoring.mentors') }}"
-                                class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
-                                Pilih Mentor ➔
-                            </a>
+                            @if($hasDedicatedMentor)
+                                <a href="{{ route('mentoring.book') }}"
+                                    class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                    Pilih Jadwal ➔
+                                </a>
+                            @else
+                                <a href="{{ route('mentoring.mentors') }}"
+                                    class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-pink-600 hover:bg-pink-50 transition shadow-2xs">
+                                    Pilih Mentor ➔
+                                </a>
+                            @endif
                         </div>
                     </div>
 
@@ -289,21 +301,36 @@
                                 </div>
                                 <div class="space-y-1">
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-white border border-white/20">
-                                        🎁 Jatah Mentoring Aktif
+                                        @if($hasDedicatedMentor)
+                                            ✨ Dedicated Mentor: {{ $activeMentorship->mentor->name }}
+                                        @else
+                                            🎁 Jatah Mentoring Aktif
+                                        @endif
                                     </span>
                                     <h2 class="text-xl lg:text-2xl font-black tracking-tight text-white">
-                                        Kamu Masih Punya {{ $remainingQuota }}x Jatah Mentoring Gratis!
+                                        Kamu Masih Punya {{ $remainingQuota }}x Jatah Mentoring Tersedia!
                                     </h2>
                                     <p class="text-sm text-pink-100 max-w-xl">
-                                        Yuk konsultasi privat 1-on-1 dengan Mentor Ahli untuk kelas <strong class="text-white font-bold">{{ $availableMentoringEntitlement->course?->name }}</strong>.
+                                        @if($hasDedicatedMentor)
+                                            Langsung pilih jadwal slot waktu luang dengan mentor Anda untuk konsultasi materi kelas maupun bedah portofolio.
+                                        @else
+                                            Yuk konsultasi privat 1-on-1 dengan Mentor Ahli untuk seluruh kelas kecantikan Salonkita.
+                                        @endif
                                     </p>
                                 </div>
                             </div>
                             <div class="shrink-0">
-                                <a href="{{ route('mentoring.mentors') }}"
-                                    class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
-                                    Pilih Mentor Sekarang ➔
-                                </a>
+                                @if($hasDedicatedMentor)
+                                    <a href="{{ route('mentoring.book') }}"
+                                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                        Pilih Jadwal Mentoring ➔
+                                    </a>
+                                @else
+                                    <a href="{{ route('mentoring.mentors') }}"
+                                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 font-extrabold text-pink-600 shadow-md shadow-black/10 transition hover:bg-pink-50 hover:scale-105 text-sm">
+                                        Pilih Mentor Sekarang ➔
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>

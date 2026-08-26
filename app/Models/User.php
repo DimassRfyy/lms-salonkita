@@ -11,11 +11,13 @@ use App\Models\MentorAvailabilityTemplate;
 use App\Models\MentorUnavailabilityException;
 use App\Models\MentoringBooking;
 use App\Models\MentoringEntitlement;
+use App\Models\MentoringRequest;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -176,6 +178,32 @@ class User extends Authenticatable implements FilamentUser
     public function mentoringRequestsAsStudent(): HasMany
     {
         return $this->hasMany(MentoringRequest::class, 'student_id');
+    }
+
+    public function activeMentorship(): HasOne
+    {
+        return $this->hasOne(MentoringRequest::class, 'student_id')
+            ->where('status', MentoringRequest::STATUS_APPROVED)
+            ->latestOfMany();
+    }
+
+    public function pendingMentorship(): HasOne
+    {
+        return $this->hasOne(MentoringRequest::class, 'student_id')
+            ->where('status', MentoringRequest::STATUS_PENDING)
+            ->latestOfMany();
+    }
+
+    public function mentorshipHistory(): HasMany
+    {
+        return $this->hasMany(MentoringRequest::class, 'student_id')
+            ->latest();
+    }
+
+    public function activeMentees(): HasMany
+    {
+        return $this->hasMany(MentoringRequest::class, 'mentor_id')
+            ->where('status', MentoringRequest::STATUS_APPROVED);
     }
 
     public function mentorUnavailabilityExceptions(): HasMany

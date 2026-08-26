@@ -48,8 +48,12 @@
             <div class="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-pink-400/20 blur-xl pointer-events-none"></div>
         </section>
 
+        @php
+            $currentActiveReq = $pendingMentorship ?? ($activeRequest ?? null);
+        @endphp
+
         <!-- Active Request Status Banner (If Pending) -->
-        @if($activeRequest && $activeRequest->isPending())
+        @if($currentActiveReq && $currentActiveReq->isPending())
             <div class="mb-8 rounded-3xl border border-amber-200 bg-amber-50/80 p-6 text-amber-900 shadow-xs">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="flex items-start gap-3.5">
@@ -57,7 +61,7 @@
                             <span class="h-3 w-3 rounded-full bg-amber-500 animate-ping"></span>
                         </div>
                         <div>
-                            <p class="font-bold text-base">Permohonan Anda Sedang Ditinjau oleh {{ $activeRequest->mentor->name }}</p>
+                            <p class="font-bold text-base">Permohonan Anda Sedang Ditinjau oleh {{ $currentActiveReq->mentor?->name ?? 'Mentor' }}</p>
                             <p class="text-xs text-amber-700 mt-0.5">
                                 Anda sudah memiliki pengajuan aktif. Harap tunggu persetujuan mentor sebelum mengajukan ke mentor lain.
                             </p>

@@ -120,9 +120,8 @@ class MentoringBookingSlotPicker extends Component
                 $existingBooking = $slot->booking()->lockForUpdate()->first();
                 abort_unless(! $existingBooking, 422, 'Jadwal sudah diambil siswa lain.');
 
-                // Verify approved request exists for this mentor
+                // Verify approved active mentorship exists for this mentor
                 $approvedRequest = MentoringRequest::query()
-                    ->where('mentoring_entitlement_id', $lockedEntitlement->id)
                     ->where('student_id', $user->id)
                     ->where('mentor_id', $slot->mentor_id)
                     ->where('status', MentoringRequest::STATUS_APPROVED)
@@ -149,10 +148,6 @@ class MentoringBookingSlotPicker extends Component
 
                 $lockedEntitlement->update([
                     'used_quota' => min($lockedEntitlement->total_quota, $lockedEntitlement->used_quota + 1),
-                ]);
-
-                $approvedRequest->update([
-                    'status' => MentoringRequest::STATUS_COMPLETED,
                 ]);
             });
 

@@ -37,6 +37,29 @@
             <div class="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-pink-400/20 blur-xl pointer-events-none"></div>
         </section>
 
+        <!-- Course Selector Bar (if student has multiple active courses) -->
+        @if(isset($availableEntitlements) && $availableEntitlements->count() > 1)
+            <div class="mb-6 rounded-2xl bg-white p-4 border border-pink-100 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-700">Pilih Topik Kelas:</span>
+                    <span class="rounded-full bg-pink-50 border border-pink-200 px-3 py-1 text-xs font-black text-pink-700">
+                        {{ $entitlement->course->name ?? 'Kelas Aktif' }}
+                    </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs text-gray-500">Ganti kelas:</span>
+                    @foreach($availableEntitlements as $avail)
+                        @if($avail->id !== $entitlement->id)
+                            <a href="{{ route('mentoring.book.entitlement', ['entitlement' => $avail->id]) }}"
+                                class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition">
+                                {{ $avail->course->name ?? 'Kelas Lain' }} ({{ $avail->total_quota - $avail->used_quota }}x)
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <!-- Livewire Booking Slot Picker Component -->
         <livewire:mentoring-booking-slot-picker :entitlement="$entitlement" :mentor="$selectedMentor" />
     </main>

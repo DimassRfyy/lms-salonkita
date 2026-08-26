@@ -53,8 +53,14 @@ Route::post('/mentoring/{entitlement}/apply', [MentoringController::class, 'appl
 Route::post('/mentoring/requests/{mentoringRequest}/cancel', [MentoringController::class, 'cancelRequest'])
     ->name('mentoring.request.cancel')
     ->middleware('auth');
-Route::get('/mentoring/{entitlement}/book', [MentoringController::class, 'book'])
+Route::post('/mentoring/terminate', [MentoringController::class, 'terminateMentorship'])
+    ->name('mentoring.terminate')
+    ->middleware('auth');
+Route::get('/mentoring/book', [MentoringController::class, 'book'])
     ->name('mentoring.book')
+    ->middleware('auth');
+Route::get('/mentoring/{entitlement}/book', [MentoringController::class, 'book'])
+    ->name('mentoring.book.entitlement')
     ->middleware('auth');
 Route::post('/mentoring/{entitlement}/book', [MentoringController::class, 'store'])
     ->name('mentoring.store')

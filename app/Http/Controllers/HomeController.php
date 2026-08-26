@@ -114,22 +114,25 @@ class HomeController extends Controller
         $savedCourseIds = $user->savedCourses()
             ->pluck('courses.id');
 
-        $availableMentoringEntitlement = $user->availableMentoringEntitlements()
-            ->with(['course', 'activeMentoringRequest.mentor', 'latestMentoringRequest.mentor'])
+        $availableMentoringEntitlements = $user->availableMentoringEntitlements()
+            ->with('course')
             ->latest('granted_at')
+            ->get();
+
+        $availableMentoringEntitlement = $availableMentoringEntitlements->first();
+
+        $activeMentorship = $user->activeMentorship()
+            ->with(['mentor', 'course'])
             ->first();
 
-        $currentMentoringRequest = null;
-        if ($availableMentoringEntitlement) {
-            $currentMentoringRequest = $availableMentoringEntitlement->activeMentoringRequest
-                ?? $availableMentoringEntitlement->latestMentoringRequest;
-        }
+        $pendingMentorship = $user->pendingMentorship()
+            ->with(['mentor', 'course'])
+            ->first();
 
+        $currentMentoringRequest = $activeMentorship ?? $pendingMentorship;
         if (! $currentMentoringRequest) {
-            $currentMentoringRequest = MentoringRequest::query()
-                ->where('student_id', $user->id)
-                ->whereIn('status', [MentoringRequest::STATUS_PENDING, MentoringRequest::STATUS_APPROVED])
-                ->with(['mentor', 'course', 'entitlement'])
+            $currentMentoringRequest = $user->mentoringRequestsAsStudent()
+                ->with(['mentor', 'course'])
                 ->latest()
                 ->first();
         }
@@ -152,21 +155,28 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
+        $totalRemainingQuota = $availableMentoringEntitlements->sum(fn ($e) => max(0, $e->total_quota - $e->used_quota));
+
         $hasMentoringAccess = $availableMentoringEntitlement !== null 
-            || $latestMentoringBooking !== null 
-            || $currentMentoringRequest !== null;
+            || $activeMentorship !== null
+            || $pendingMentorship !== null
+            || $latestMentoringBooking !== null;
 
         return view('pages.dashboard', compact(
             'ownedCourses',
             'recommendedCourses',
             'continueWatching',
             'savedCourseIds',
+            'availableMentoringEntitlements',
             'availableMentoringEntitlement',
+            'activeMentorship',
+            'pendingMentorship',
             'currentMentoringRequest',
             'activeMentoringBooking',
             'latestMentoringBooking',
             'mentoringHistory',
-            'hasMentoringAccess'
+            'hasMentoringAccess',
+            'totalRemainingQuota'
         ));
     }
 
