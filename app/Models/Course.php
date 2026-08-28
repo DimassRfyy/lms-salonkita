@@ -70,7 +70,7 @@ class Course extends Model
 
     public function sections(): HasMany
     {
-        return $this->hasMany(CourseSection::class)->orderBy('created_at');
+        return $this->hasMany(CourseSection::class)->orderBy('sort_order')->orderBy('id');
     }
 
     public function videos(): HasManyThrough
@@ -114,7 +114,7 @@ class Course extends Model
 
     public function keypoints(): HasMany
     {
-        return $this->hasMany(CourseKeypoint::class)->orderBy('created_at');
+        return $this->hasMany(CourseKeypoint::class)->orderBy('sort_order')->orderBy('id');
     }
 
     public function taskSubmissions(): HasMany

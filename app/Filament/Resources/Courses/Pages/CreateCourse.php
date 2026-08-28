@@ -44,6 +44,12 @@ class CreateCourse extends CreateRecord
 
         return Notification::make()
             ->title('Kelas Berhasil Dibuat')
+            ->body('Silakan tambahkan section dan video materi pembelajaran di bawah.')
             ->success();
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
     }
 }

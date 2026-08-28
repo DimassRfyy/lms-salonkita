@@ -29,6 +29,7 @@ class MentoringBooking extends Model
         'meeting_platform',
         'meeting_url',
         'notes',
+        'feedback',
         'booked_at',
         'canceled_at',
         'completed_at',

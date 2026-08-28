@@ -150,12 +150,19 @@ class MentoringBookingResource extends Resource
                     ->columns(1)
                     ->columnSpanFull(),
 
-                Section::make('Catatan')
+                Section::make('Catatan & Feedback Mentoring')
+                    ->description('Catatan persiapan dan evaluasi/feedback setelah sesi mentoring selesai.')
                     ->schema([
                         Textarea::make('notes')
-                            ->label('Catatan untuk Siswa')
+                            ->label('Catatan Sebelum Sesi (untuk Siswa)')
                             ->placeholder('Contoh: Siapkan hasil tugas makeup kamu sebelum sesi dimulai.')
                             ->rows(3)
+                            ->nullable(),
+                        Textarea::make('feedback')
+                            ->label('Feedback / Evaluasi Pasca Sesi')
+                            ->placeholder('Tuliskan evaluasi perkembangan siswa, poin-poin yang sudah bagus, dan saran perbaikan...')
+                            ->helperText('Diisi setelah sesi mentoring selesai sebagai umpan balik untuk siswa.')
+                            ->rows(4)
                             ->nullable(),
                     ])
                     ->columnSpanFull(),
@@ -245,8 +252,8 @@ class MentoringBookingResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->label('Atur Meeting')
-                    ->modalHeading('Atur Meeting Mentoring')
-                    ->modalDescription('Lengkapi platform, link meeting, status, dan catatan untuk siswa.')
+                    ->modalHeading('Atur Meeting & Feedback Mentoring')
+                    ->modalDescription('Lengkapi platform, link meeting, status, catatan, dan feedback untuk siswa.')
                     ->modalWidth(Width::TwoExtraLarge)
                     ->modalSubmitActionLabel('Simpan'),
                 DeleteAction::make(),

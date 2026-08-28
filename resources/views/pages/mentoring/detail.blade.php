@@ -257,6 +257,18 @@
                                     {{ $activeMentoringBooking->notes }}
                                 </div>
                             @endif
+
+                            @if($activeMentoringBooking->feedback)
+                                <div class="mt-3 rounded-2xl bg-emerald-50/70 p-4 border border-emerald-100 text-xs text-gray-700">
+                                    <span class="font-bold text-emerald-900 block mb-0.5 flex items-center gap-1.5">
+                                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Feedback & Evaluasi dari Mentor:
+                                    </span>
+                                    <p class="mt-1 leading-relaxed text-gray-800 whitespace-pre-line">{{ $activeMentoringBooking->feedback }}</p>
+                                </div>
+                            @endif
                         @else
                             <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-8 text-center">
                                 <p class="text-sm font-semibold text-gray-700">Belum ada jadwal sesi yang aktif.</p>
@@ -264,7 +276,7 @@
                                     @if($activeMentorship)
                                         Klik tombol "Pilih Jadwal Mentoring" untuk memilih jam konsultasi dengan {{ $activeMentorship->mentor->name }}.
                                     @else
-                                        Pilih mentor pembimbing terlebih dahulu untuk membuka pemilihan jadwal.
+                                        Klaim kuota mentoring di atas untuk memulai sesi bimbingan 1-on-1 dengan mentor.
                                     @endif
                                 </p>
                             </div>
@@ -272,30 +284,25 @@
                     </div>
                 </section>
 
-                <!-- Sidebar: Informasi Kuota Mentoring & Riwayat -->
+                <!-- Sidebar Kanan: Kuota & Riwayat Sesi -->
                 <aside class="space-y-6">
-                    <!-- Kuota Card -->
-                    <div class="rounded-3xl border border-pink-100 bg-gradient-to-br from-pink-50 via-white to-rose-50 p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-base font-bold text-gray-900">Hak Kuota Mentoring</h3>
-                            <span class="rounded-full bg-pink-600 px-3 py-1 text-xs font-extrabold text-white">
-                                Total Sisa: {{ $totalRemainingQuota }}x
+                    <!-- Kuota Mentoring Card -->
+                    <div class="rounded-3xl border border-pink-100 bg-gradient-to-br from-pink-500 to-rose-500 p-6 text-white shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-pink-100">Sisa Kuota Mentoring</span>
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 text-white backdrop-blur-xs">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                             </span>
                         </div>
-
-                        <div class="space-y-3">
-                            @forelse($availableMentoringEntitlements as $entitlement)
-                                <div class="rounded-2xl bg-white p-3.5 border border-pink-100/80 shadow-2xs">
-                                    <p class="font-bold text-gray-900 text-xs line-clamp-1">{{ $entitlement->course->name ?? 'Kelas' }}</p>
-                                    <div class="flex justify-between items-center text-[11px] text-gray-500 mt-1">
-                                        <span>Kuota: {{ $entitlement->total_quota }}x Sesi</span>
-                                        <span class="font-bold text-pink-600">Sisa: {{ $entitlement->total_quota - $entitlement->used_quota }}x</span>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="text-xs text-gray-400">Tidak ada paket kuota aktif.</p>
-                            @endforelse
+                        <div class="mt-4">
+                            <span class="text-4xl font-black">{{ $totalRemainingQuota }}</span>
+                            <span class="text-sm font-medium text-pink-100"> / {{ $availableMentoringEntitlement?->total_quota ?? $totalRemainingQuota }} Sesi</span>
                         </div>
+                        <p class="mt-2 text-xs text-pink-100/90 leading-relaxed">
+                            Setiap sesi berdurasi 45 menit 1-on-1 secara online via Google Meet/Zoom dengan mentor pembimbing.
+                        </p>
                     </div>
 
                     <!-- Riwayat Sesi Card -->
@@ -314,6 +321,12 @@
                                             {{ ucfirst((string) $booking->status) }}
                                         </span>
                                     </div>
+                                    @if($booking->feedback)
+                                        <div class="mt-2 rounded-xl bg-emerald-50/60 p-2.5 border border-emerald-100 text-[11px] text-gray-700">
+                                            <span class="font-bold text-emerald-900 block mb-0.5">Feedback Mentor:</span>
+                                            <p class="leading-relaxed text-gray-800 whitespace-pre-line">{{ $booking->feedback }}</p>
+                                        </div>
+                                    @endif
                                 </div>
                             @empty
                                 <p class="text-xs text-gray-400 text-center py-4">Belum ada riwayat sesi sebelumnya.</p>

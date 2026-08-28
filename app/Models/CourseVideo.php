@@ -20,7 +20,18 @@ class CourseVideo extends Model
         'title',
         'video_url',
         'duration_seconds',
+        'sort_order',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (CourseVideo $video) {
+            if (blank($video->sort_order) || (int) $video->sort_order === 0) {
+                $maxOrder = (int) (static::where('course_section_id', $video->course_section_id)->max('sort_order') ?? 0);
+                $video->sort_order = $maxOrder + 1;
+            }
+        });
+    }
 
     public function section(): BelongsTo
     {

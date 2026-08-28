@@ -99,6 +99,9 @@ class CourseForm
                             Repeater::make('keypoints')
                                 ->label('Class Keypoints')
                                 ->relationship('keypoints')
+                                ->orderColumn('sort_order')
+                                ->reorderableWithDragAndDrop(true)
+                                ->reorderableWithButtons(true)
                                 ->schema([
                                     TextInput::make('point')
                                         ->label('Keypoint')

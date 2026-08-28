@@ -52,13 +52,21 @@ class SectionsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Judul Section')
                     ->required()
                     ->maxLength(255),
                 Repeater::make('videos')
-                    ->label('Section Videos')
+                    ->label('Video Materi Section')
                     ->relationship('videos')
+                    ->orderColumn('sort_order')
+                    ->reorderableWithDragAndDrop(true)
+                    ->reorderableWithButtons(true)
+                    ->collapsible()
+                    ->itemLabel(fn (array $state): ?string => !empty($state['title']) ? $state['title'] : 'Video Baru')
+                    ->cloneable()
                     ->schema([
                         TextInput::make('title')
+                            ->label('Judul Video')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('video_url')
@@ -83,7 +91,7 @@ class SectionsRelationManager extends RelationManager
                             ->formatStateUsing(fn (mixed $state): string => static::formatDurationForDisplay($state))
                             ->dehydrateStateUsing(fn (mixed $state): int => static::parseDurationToSeconds($state)),
                     ])
-                    ->defaultItems(3)
+                    ->defaultItems(1)
                     ->columnSpanFull()
                     ->grid(3),
             ]);
@@ -93,19 +101,34 @@ class SectionsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('title')
+            ->reorderable('sort_order')
+            ->defaultSort('sort_order', 'asc')
             ->columns([
+                TextColumn::make('sort_order')
+                    ->label('Urutan')
+                    ->sortable()
+                    ->badge(),
                 TextColumn::make('title')
+                    ->label('Judul Section')
                     ->searchable(),
                 TextColumn::make('videos_count')
-                    ->label('Videos')
+                    ->label('Total Video')
                     ->counts('videos')
-                    ->badge(),
+                    ->badge()
+                    ->color('info'),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->mutateFormDataUsing(function (array $data, RelationManager $livewire): array {
+                        $ownerRecord = $livewire->getOwnerRecord();
+                        $maxOrder = (int) ($ownerRecord->sections()->max('sort_order') ?? 0);
+                        $data['sort_order'] = $maxOrder + 1;
+
+                        return $data;
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
