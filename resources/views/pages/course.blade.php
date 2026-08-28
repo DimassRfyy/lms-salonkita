@@ -310,16 +310,16 @@
                             </div>
                         </div>
 
-                        <div class="border-b border-gray-200 mb-6">
-                            <div class="flex gap-8">
-                                <button class="btn-tab active pb-3 text-gray-900 font-medium" data-tab="tentang"
+                        <div class="border-b border-gray-200 mb-4 sm:mb-6">
+                            <div class="flex gap-4 sm:gap-8 overflow-x-auto">
+                                <button class="btn-tab active pb-2.5 sm:pb-3 text-xs sm:text-base text-gray-900 font-bold sm:font-medium whitespace-nowrap" data-tab="tentang"
                                     onclick="switchTab(event, 'tentang')">Tentang</button>
-                                <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900"
+                                <button class="btn-tab pb-2.5 sm:pb-3 text-xs sm:text-base text-gray-600 font-bold sm:font-medium hover:text-gray-900 whitespace-nowrap"
                                     data-tab="tugas" onclick="switchTab(event, 'tugas')">Tugas</button>
-                                <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900"
+                                <button class="btn-tab pb-2.5 sm:pb-3 text-xs sm:text-base text-gray-600 font-bold sm:font-medium hover:text-gray-900 whitespace-nowrap"
                                     data-tab="ulasan" onclick="switchTab(event, 'ulasan')">Ulasan</button>
                                 @if($hasCourseAccess)
-                                    <button class="btn-tab pb-3 text-gray-600 font-medium hover:text-gray-900"
+                                    <button class="btn-tab pb-2.5 sm:pb-3 text-xs sm:text-base text-gray-600 font-bold sm:font-medium hover:text-gray-900 whitespace-nowrap"
                                         data-tab="diskusi" onclick="switchTab(event, 'diskusi')">Diskusi</button>
                                 @endif
                             </div>
@@ -346,62 +346,62 @@
                         </div>
 
                         <div id="tugas" class="tab-content">
-                            <div class="space-y-6">
+                            <div class="space-y-4 sm:space-y-6">
                                 @if (session('error'))
-                                    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                    <div class="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs sm:text-sm text-red-700">
                                         {{ session('error') }}
                                     </div>
                                 @endif
 
                                 @if (!$hasCourseAccess)
-                                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center sm:text-left">
-                                        <div class="flex flex-col sm:flex-row items-center gap-3.5">
-                                            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-3.5 sm:p-5 text-left">
+                                        <div class="flex items-start sm:items-center gap-3">
+                                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h4 class="font-bold text-gray-900 text-sm">Instruksi & Pengumpulan Tugas Terkunci</h4>
-                                                <p class="text-xs text-gray-600 mt-0.5">Daftar kelas ini terlebih dahulu untuk membuka instruksi tugas dan mengunggah hasil kerja Anda.</p>
+                                                <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Instruksi & Pengumpulan Tugas Terkunci</h4>
+                                                <p class="text-[11px] sm:text-xs text-gray-600 mt-0.5 leading-relaxed">Daftar kelas ini terlebih dahulu untuk membuka instruksi tugas dan mengunggah hasil kerja Anda.</p>
                                             </div>
                                         </div>
                                     </div>
                                 @elseif (($watchedVideosCount < $totalVideosCount || $totalVideosCount === 0) && !$taskSubmission)
-                                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center sm:text-left">
-                                        <div class="flex flex-col sm:flex-row items-center gap-3.5">
-                                            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-3.5 sm:p-5 text-left">
+                                        <div class="flex items-start sm:items-center gap-3">
+                                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h4 class="font-bold text-gray-900 text-sm">Selesaikan Semua Video Terlebih Dahulu</h4>
-                                                <p class="text-xs text-gray-600 mt-0.5">Instruksi dan form pengumpulan tugas akan terbuka setelah semua video materi kelas selesai ditonton (Progress saat ini: {{ $watchedVideosCount }}/{{ $totalVideosCount }} video selesai ditonton).</p>
+                                                <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Selesaikan Semua Video Terlebih Dahulu</h4>
+                                                <p class="text-[11px] sm:text-xs text-gray-600 mt-0.5 leading-relaxed">Instruksi dan form pengumpulan tugas akan terbuka setelah semua video materi kelas selesai ditonton (Progress saat ini: {{ $watchedVideosCount }}/{{ $totalVideosCount }} video selesai ditonton).</p>
                                             </div>
                                         </div>
                                     </div>
                                 @else
                                     {{-- Petunjuk / Deskripsi Tugas --}}
-                                    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                                        <div class="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
-                                            <div class="w-9 h-9 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shrink-0">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="rounded-xl border border-gray-200 bg-white p-3.5 sm:p-5 shadow-xs">
+                                        <div class="flex items-center gap-2.5 sm:gap-3 mb-2.5 sm:mb-3 pb-2.5 sm:pb-3 border-b border-gray-100">
+                                            <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shrink-0">
+                                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3 class="font-bold text-gray-900 text-base">Instruksi Tugas</h3>
-                                                <p class="text-xs text-gray-500">Pahami panduan pengerjaan tugas berikut sebelum mengunggah hasil kerja Anda.</p>
+                                                <h3 class="font-bold text-gray-900 text-xs sm:text-sm md:text-base">Instruksi Tugas</h3>
+                                                <p class="text-[11px] sm:text-xs text-gray-500">Pahami panduan pengerjaan tugas berikut sebelum mengunggah hasil kerja Anda.</p>
                                             </div>
                                         </div>
                                         
                                         @if (!empty(trim(strip_tags($course->task_description ?? ''))))
-                                            <div class="task-rich-text leading-relaxed bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                            <div class="task-rich-text leading-relaxed bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-100 text-xs sm:text-sm">
                                                 {!! $course->task_description !!}
                                             </div>
                                         @else
-                                            <div class="rounded-lg bg-gray-50 p-4 text-sm text-gray-500 text-center">
+                                            <div class="rounded-lg bg-gray-50 p-3 sm:p-4 text-xs sm:text-sm text-gray-500 text-center">
                                                 Instruksi tugas khusus belum ditambahkan oleh instruktur. Silakan selesaikan proyek sesuai materi kelas.
                                             </div>
                                         @endif
@@ -410,74 +410,74 @@
                                     {{-- Status Pengumpulan & Umpan Balik --}}
                                     @if ($taskSubmission)
                                         <div
-                                            class="rounded-xl border {{ $taskSubmission->isReviewed() ? 'border-emerald-200 bg-emerald-50/40' : 'border-amber-200 bg-amber-50/40' }} p-5">
-                                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $taskSubmission->isReviewed() ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
-                                                        <span class="w-2 h-2 rounded-full {{ $taskSubmission->isReviewed() ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
+                                            class="rounded-xl border {{ $taskSubmission->isReviewed() ? 'border-emerald-200 bg-emerald-50/40' : 'border-amber-200 bg-amber-50/40' }} p-3.5 sm:p-5 shadow-xs">
+                                            <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 mb-2.5 sm:mb-3">
+                                                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold {{ $taskSubmission->isReviewed() ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full {{ $taskSubmission->isReviewed() ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
                                                         {{ $taskSubmission->isReviewed() ? 'Tugas Selesai Direview' : 'Tugas Menunggu Review Coach' }}
                                                     </span>
                                                     @if ($taskSubmission->isReviewed() && !is_null($taskSubmission->score))
-                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-sky-100 text-sky-800">
                                                             Nilai: {{ $taskSubmission->score }}/100
                                                         </span>
                                                     @endif
                                                 </div>
-                                                <span class="text-xs text-gray-500">
+                                                <span class="text-[10px] sm:text-xs text-gray-500">
                                                     Disubmit: {{ $taskSubmission->created_at?->translatedFormat('d F Y H:i') }}
                                                 </span>
                                             </div>
 
-                                            <div class="text-sm text-gray-800 space-y-1.5 mb-3 bg-white/90 rounded-lg p-3.5 border border-gray-100">
+                                            <div class="text-xs sm:text-sm text-gray-800 space-y-1 mb-2.5 sm:mb-3 bg-white/90 rounded-lg p-2.5 sm:p-3.5 border border-gray-100">
                                                 <p><strong class="font-medium text-gray-600">Subjek Tugas:</strong> {{ $taskSubmission->subject }}</p>
                                                 <p class="flex items-center gap-2">
                                                     <strong class="font-medium text-gray-600">Link Jawaban:</strong>
-                                                    <a href="{{ $taskSubmission->google_drive_url }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline inline-flex items-center gap-1 text-xs font-semibold">
+                                                    <a href="{{ $taskSubmission->google_drive_url }}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold">
                                                         Buka Google Drive
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                                     </a>
                                                 </p>
                                             </div>
 
                                             @if ($taskSubmission->isReviewed())
-                                                <div class="mt-4 pt-3 border-t border-emerald-200/70">
-                                                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1.5 flex items-center gap-1.5">
-                                                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <div class="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-emerald-200/70">
+                                                    <h4 class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1 sm:mb-1.5 flex items-center gap-1.5">
+                                                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
                                                         </svg>
                                                         Umpan Balik & Catatan Evaluasi Coach:
                                                     </h4>
                                                     @if (!empty(trim($taskSubmission->feedback ?? '')))
-                                                        <div class="bg-white rounded-lg p-3.5 border border-emerald-200 text-sm text-gray-800 leading-relaxed whitespace-pre-line">
+                                                        <div class="bg-white rounded-lg p-2.5 sm:p-3.5 border border-emerald-200 text-xs sm:text-sm text-gray-800 leading-relaxed whitespace-pre-line">
                                                             {{ $taskSubmission->feedback }}
                                                         </div>
                                                     @else
-                                                        <p class="text-xs text-gray-500 italic">Coach memberikan penilaian tanpa catatan tertulis tambahan.</p>
+                                                        <p class="text-[11px] sm:text-xs text-gray-500 italic">Coach memberikan penilaian tanpa catatan tertulis tambahan.</p>
                                                     @endif
                                                 </div>
                                             @endif
 
                                             @if ($taskSubmission->isReviewed())
-                                                <div class="mt-4 p-4 rounded-xl {{ $hasCertificate ? 'bg-emerald-50 border border-emerald-200' : 'bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200' }} flex flex-col sm:flex-row items-center justify-between gap-4">
-                                                    <div class="flex items-center gap-3 text-center sm:text-left">
-                                                        <div class="w-10 h-10 rounded-full {{ $hasCertificate ? 'bg-emerald-100 text-emerald-600' : 'bg-pink-100 text-pink-600' }} flex items-center justify-center shrink-0">
-                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <div class="mt-3 sm:mt-4 p-3 sm:p-4 rounded-xl {{ $hasCertificate ? 'bg-emerald-50 border border-emerald-200' : 'bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200' }} flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                                                    <div class="flex items-center gap-2.5 sm:gap-3 text-center sm:text-left">
+                                                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full {{ $hasCertificate ? 'bg-emerald-100 text-emerald-600' : 'bg-pink-100 text-pink-600' }} flex items-center justify-center shrink-0">
+                                                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                                                             </svg>
                                                         </div>
                                                         <div>
-                                                            <h4 class="font-bold text-gray-900 text-sm">
+                                                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm">
                                                                 {{ $hasCertificate ? '🎓 Sertifikat Kelulusanmu Sudah Terbit!' : '🎉 Selamat! Kamu Telah Lulus Review' }}
                                                             </h4>
-                                                            <p class="text-xs text-gray-600 mt-0.5">
+                                                            <p class="text-[11px] sm:text-xs text-gray-600 mt-0.5">
                                                                 {{ $hasCertificate ? 'Sertifikat resmi kelulusan kursus siap diunduh dan dilihat.' : 'Berikan ulasan kursus sekarang untuk mengklaim sertifikat kelulusanmu.' }}
                                                             </p>
                                                         </div>
                                                     </div>
                                                     <a href="{{ route('claim-certificate', ['slug' => $course->slug]) }}"
-                                                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white {{ $hasCertificate ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-pink-600 hover:bg-pink-700' }} shadow-md transition shrink-0">
+                                                       class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl font-bold text-xs text-white {{ $hasCertificate ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-pink-600 hover:bg-pink-700' }} shadow-xs transition shrink-0">
                                                         <span>{{ $hasCertificate ? 'Lihat Sertifikat' : 'Klaim Sertifikat' }}</span>
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                                     </a>
                                                 </div>
                                             @endif
@@ -487,18 +487,26 @@
                                     @if (!$taskSubmission || !$taskSubmission->isReviewed())
                                         <form id="taskSubmissionForm" method="POST"
                                             action="{{ route('course.task-submission.store', ['slug' => $course->slug]) }}"
-                                            class="space-y-6"
+                                            class="space-y-3.5 sm:space-y-5 bg-white rounded-xl border border-gray-200 p-3.5 sm:p-5 shadow-xs"
                                             onsubmit="return handleTaskSubmit(event, this);">
                                             @csrf
 
+                                            <div class="border-b border-gray-100 pb-2.5">
+                                                <h4 class="text-xs sm:text-sm font-bold text-gray-900">
+                                                    {{ $taskSubmission ? 'Perbarui Pengumpulan Tugas' : 'Form Pengumpulan Tugas' }}
+                                                </h4>
+                                                <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5">
+                                                    Pastikan tautan link Google Drive sudah dibuka aksesnya agar instruktur dapat menilai hasil tugas Anda.
+                                                </p>
+                                            </div>
+
                                             <div>
-                                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subjek
-                                                    Tugas</label>
+                                                <label for="subject" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5">Subjek Tugas</label>
                                                 <input id="subject" name="subject" type="text"
                                                     value="{{ old('subject', $taskSubmission?->subject) }}"
                                                     placeholder="Masukkan subjek tugas..."
                                                     required
-                                                    class="w-full px-4 py-2 border {{ $errors->has('subject') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
+                                                    class="w-full px-3 py-2 text-xs sm:text-sm border {{ $errors->has('subject') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
                                                 @error('subject')
                                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -506,20 +514,19 @@
 
                                             <div>
                                                 <label for="google_drive_url"
-                                                    class="block text-sm font-medium text-gray-700 mb-2">Link Google
-                                                    Drive</label>
+                                                    class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5">Link Google Drive</label>
                                                 <input id="google_drive_url" name="google_drive_url" type="url"
                                                     value="{{ old('google_drive_url', $taskSubmission?->google_drive_url) }}"
                                                     placeholder="https://drive.google.com/..."
                                                     required
-                                                    class="w-full px-4 py-2 border {{ $errors->has('google_drive_url') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
+                                                    class="w-full px-3 py-2 text-xs sm:text-sm border {{ $errors->has('google_drive_url') ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:outline-none focus:border-pink-400">
                                                 @error('google_drive_url')
                                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                                 @enderror
                                             </div>
 
                                             <button type="submit" id="btnTaskSubmit"
-                                                class="w-full bg-primary hover-primary text-white font-medium py-2.5 rounded-lg transition shadow-sm hover:shadow">
+                                                class="w-full bg-primary hover-primary text-white font-bold py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg transition shadow-2xs">
                                                 {{ $taskSubmission ? 'Perbarui Tugas' : 'Kirim Tugas' }}
                                             </button>
                                         </form>

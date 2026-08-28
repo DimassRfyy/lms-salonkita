@@ -1,7 +1,11 @@
+@props([
+    'containerClass' => 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-12'
+])
+
 <div class="mt-auto">
     <!-- FOOTER -->
-    <footer class="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-12">
-        <div class="max-w-7xl mx-auto">
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="{{ $containerClass }}">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <!-- Footer Brand -->
                 <div>

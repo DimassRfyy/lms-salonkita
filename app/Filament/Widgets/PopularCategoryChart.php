@@ -9,9 +9,14 @@ use Filament\Widgets\ChartWidget;
 class PopularCategoryChart extends ChartWidget
 {
     protected ?string $heading = 'Kategori Kelas Paling Laris';
-    protected ?string $maxHeight = '27vh';
+    protected ?string $maxHeight = '280px';
+    protected int | string | array $columnSpan = [
+        'default' => 'full',
+        'md' => 1,
+        'xl' => 1,
+    ];
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     public static function canView(): bool
     {
@@ -47,6 +52,24 @@ class PopularCategoryChart extends ChartWidget
                 ],
             ],
             'labels' => $salesByCategory->keys()->all(),
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                    'labels' => [
+                        'boxWidth' => 10,
+                        'padding' => 10,
+                        'usePointStyle' => true,
+                    ],
+                ],
+            ],
         ];
     }
 

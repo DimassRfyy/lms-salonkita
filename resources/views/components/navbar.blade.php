@@ -1,7 +1,11 @@
+@props([
+    'containerClass' => 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-12'
+])
+
 <div>
     <!-- NAVBAR -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-pink-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+        <div class="{{ $containerClass }}">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <a href="/" class="flex items-center">

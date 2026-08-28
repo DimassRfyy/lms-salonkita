@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class StatsOverview extends StatsOverviewWidget
 {
+    protected static ?int $sort = 1;
+
     public static function canView(): bool
     {
         return Filament::auth()->user()?->role === 'admin';
