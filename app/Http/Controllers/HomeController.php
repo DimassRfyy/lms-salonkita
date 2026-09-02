@@ -13,6 +13,7 @@ use App\Models\MentoringBooking;
 use App\Models\MentoringRequest;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\PointService;
 use App\Support\Youtube;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -277,6 +278,15 @@ class HomeController extends Controller
         $progressPercentage = $totalVideosCount > 0
             ? (int) round(($watchedVideosCount / $totalVideosCount) * 100)
             : 0;
+
+        if ($hasCourseAccess && $viewer && $totalVideosCount > 0 && $watchedVideosCount >= $totalVideosCount) {
+            app(PointService::class)->awardPoints(
+                user: $viewer,
+                amount: 20,
+                source: $course,
+                description: "Bonus +20 Poin dari menyelesaikan materi kelas {$course->name}"
+            );
+        }
 
         $embedUrl = $hasCourseAccess
             ? (Youtube::embedUrl($currentVideo?->video_url)
@@ -551,7 +561,7 @@ class HomeController extends Controller
             'google_drive_url.regex' => 'Link harus berupa URL Google Drive atau Google Docs.',
         ]);
 
-        CourseTaskSubmission::query()->updateOrCreate([
+        $submission = CourseTaskSubmission::query()->updateOrCreate([
             'course_id' => $course->id,
             'user_id' => $user->id,
         ], [
@@ -560,6 +570,13 @@ class HomeController extends Controller
             'status' => CourseTaskSubmission::STATUS_PENDING,
             'score' => null,
         ]);
+
+        app(PointService::class)->awardPoints(
+            user: $user,
+            amount: 10,
+            source: $submission,
+            description: "Bonus +10 Poin dari mengumpulkan tugas kelas {$course->name}"
+        );
 
         return redirect()
             ->to(route('course', ['slug' => $course->slug]))
@@ -713,6 +730,15 @@ class HomeController extends Controller
                 'certificate_code' => 'SLN-' . date('Ym') . '-' . strtoupper(Str::random(6)),
                 'issued_at' => now(),
             ]);
+
+            if ($certificate) {
+                app(PointService::class)->awardPoints(
+                    user: $user,
+                    amount: 10,
+                    source: $certificate,
+                    description: "Bonus +10 Poin dari kelulusan & klaim sertifikat kelas {$course->name}"
+                );
+            }
         }
 
         return view('pages.claim_certificate', compact('course', 'submission', 'hasReviewed', 'existingReview', 'certificate'));
@@ -760,13 +786,22 @@ class HomeController extends Controller
         ]);
 
         // Terbitkan sertifikat
-        CourseCertificate::query()->firstOrCreate([
+        $certificate = CourseCertificate::query()->firstOrCreate([
             'course_id' => $course->id,
             'user_id' => $user->id,
         ], [
             'certificate_code' => 'SLN-' . date('Ym') . '-' . strtoupper(Str::random(6)),
             'issued_at' => now(),
         ]);
+
+        if ($certificate) {
+            app(PointService::class)->awardPoints(
+                user: $user,
+                amount: 10,
+                source: $certificate,
+                description: "Bonus +10 Poin dari kelulusan & klaim sertifikat kelas {$course->name}"
+            );
+        }
 
         session()->flash('claimed_now', true);
 

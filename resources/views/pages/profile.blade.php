@@ -156,7 +156,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] text-gray-500 font-medium leading-none">Pencapaian</p>
-                            <p class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-pink-600 mt-0.5">6 Badges</p>
+                            <p class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-pink-600 mt-0.5">{{ $unlockedAchievementsCount }} Badges</p>
                         </div>
                     </div>
                 </button>
@@ -531,165 +531,92 @@
                 <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-100">
                     <div>
                         <h2 class="text-sm sm:text-base font-bold text-gray-900">Pencapaian & Lencana</h2>
-                        <p class="text-xs text-gray-500 mt-0.5">Lencana keahlian yang diraih melalui pembelajaran.</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Lencana keahlian yang diraih melalui pembelajaran dan penyelesaian tugas.</p>
                     </div>
                     <span class="text-xs font-bold px-2.5 py-0.5 bg-amber-50 text-amber-700 rounded-full border border-amber-200 flex-shrink-0">
-                        🏆 4 / 6 Terbuka
+                        🏆 {{ $unlockedAchievementsCount }} / {{ $totalAchievementsCount }} Terbuka
                     </span>
                 </div>
 
-                <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                    {{-- Badge 1 --}}
-                    <div class="border border-amber-200/70 bg-gradient-to-br from-amber-50/40 via-white to-amber-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="w-10 h-10 bg-amber-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
-                                    🌟
-                                </div>
-                                <span class="px-2 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
-                                    Selesai
-                                </span>
-                            </div>
-                            <h3 class="font-bold text-gray-900 text-xs">Beauty Novice</h3>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Memulai perjalanan belajar di Salonkita Academy.</p>
+                @if ($achievements->isEmpty())
+                    <div class="text-center py-12">
+                        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
+                            🌟
                         </div>
-                        <div class="mt-3 pt-2 border-t border-amber-100/70">
-                            <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
-                                <span>Progress</span>
-                                <span class="text-emerald-600 font-bold">100%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                <div class="bg-emerald-500 h-1 rounded-full" style="width: 100%"></div>
-                            </div>
-                        </div>
+                        <h3 class="text-sm font-bold text-gray-900">Belum Ada Achievement Tersedia</h3>
+                        <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                            Admin sedang menyiapkan lencana dan pencapaian baru untuk perjalanan belajarmu.
+                        </p>
                     </div>
+                @else
+                    <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        @foreach ($achievements as $achievement)
+                            @php
+                                $isUnlocked = isset($userAchievements[$achievement->id]);
+                                $userAchievement = $userAchievements[$achievement->id] ?? null;
+                                $unlockedAt = $userAchievement?->pivot?->unlocked_at ? \Carbon\Carbon::parse($userAchievement->pivot->unlocked_at) : null;
+                            @endphp
 
-                    {{-- Badge 2 --}}
-                    <div class="border border-pink-200/70 bg-gradient-to-br from-pink-50/40 via-white to-pink-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="w-10 h-10 bg-pink-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
-                                    💄
+                            @if ($isUnlocked)
+                                {{-- UNLOCKED BADGE --}}
+                                <div class="border border-amber-200/70 bg-gradient-to-br from-amber-50/40 via-white to-amber-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="w-10 h-10 bg-amber-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
+                                                🌟
+                                            </div>
+                                            <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
+                                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                                Selesai
+                                            </span>
+                                        </div>
+                                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm">{{ $achievement->name }}</h3>
+                                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                                            {{ $achievement->description }}
+                                        </p>
+                                    </div>
+                                    <div class="mt-3 pt-2 border-t border-amber-100/70">
+                                        <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
+                                            <span>Progress ({{ $unlockedAt ? 'Diraih ' . $unlockedAt->translatedFormat('d M Y') : '100%' }})</span>
+                                            <span class="text-emerald-600 font-bold">100%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                                            <div class="bg-emerald-500 h-1 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="px-2 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-pink-100 text-pink-700 rounded-full">
-                                    Proses
-                                </span>
-                            </div>
-                            <h3 class="font-bold text-gray-900 text-xs">Master of Makeup</h3>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Menyelesaikan modul tata rias profesional & pengantin.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-pink-100/70">
-                            <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
-                                <span>Progress (2/3)</span>
-                                <span class="text-pink-600 font-bold">66%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                <div class="bg-pink-500 h-1 rounded-full" style="width: 66%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Badge 3 --}}
-                    <div class="border border-purple-200/70 bg-gradient-to-br from-purple-50/40 via-white to-purple-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="w-10 h-10 bg-purple-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
-                                    🌿
+                            @else
+                                {{-- LOCKED BADGE --}}
+                                <div class="border border-gray-200/80 bg-gray-50/70 rounded-xl p-3.5 shadow-2xs opacity-80 hover:opacity-100 transition flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="w-10 h-10 bg-gray-200 text-gray-400 text-xl rounded-xl flex items-center justify-center grayscale shadow-2xs">
+                                                🌟
+                                            </div>
+                                            <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider bg-gray-200 text-gray-600 rounded-full flex items-center gap-0.5">
+                                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                Belum Terbuka
+                                            </span>
+                                        </div>
+                                        <h3 class="font-bold text-gray-700 text-xs sm:text-sm">{{ $achievement->name }}</h3>
+                                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                                            {{ $achievement->description }}
+                                        </p>
+                                    </div>
+                                    <div class="mt-3 pt-2 border-t border-gray-200/70">
+                                        <div class="flex items-center justify-between text-[10px] text-gray-400 font-medium mb-1">
+                                            <span>Syarat Pencapaian</span>
+                                            <span>0%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                                            <div class="bg-gray-300 h-1 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="px-2 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
-                                    Selesai
-                                </span>
-                            </div>
-                            <h3 class="font-bold text-gray-900 text-xs">Skincare Enthusiast</h3>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Analisis jenis kulit dan perawatan wajah intensif.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-purple-100/70">
-                            <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
-                                <span>Progress</span>
-                                <span class="text-emerald-600 font-bold">100%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                <div class="bg-emerald-500 h-1 rounded-full" style="width: 100%"></div>
-                            </div>
-                        </div>
+                            @endif
+                        @endforeach
                     </div>
-
-                    {{-- Badge 4 --}}
-                    <div class="border border-blue-200/70 bg-gradient-to-br from-blue-50/40 via-white to-blue-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="w-10 h-10 bg-blue-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
-                                    ⭐
-                                </div>
-                                <span class="px-2 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
-                                    Selesai
-                                </span>
-                            </div>
-                            <h3 class="font-bold text-gray-900 text-xs">Top Reviewer</h3>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Memberikan ulasan bintang 5 untuk instruktur.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-blue-100/70">
-                            <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
-                                <span>Progress</span>
-                                <span class="text-emerald-600 font-bold">100%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                <div class="bg-emerald-500 h-1 rounded-full" style="width: 100%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Badge 5 --}}
-                    <div class="border border-rose-200/70 bg-gradient-to-br from-rose-50/40 via-white to-rose-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="w-10 h-10 bg-rose-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
-                                    📜
-                                </div>
-                                <span class="px-2 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-rose-100 text-rose-700 rounded-full">
-                                    Proses
-                                </span>
-                            </div>
-                            <h3 class="font-bold text-gray-900 text-xs">Kolektor Sertifikat</h3>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Mengumpulkan minimal 3 sertifikat resmi.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-rose-100/70">
-                            <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
-                                <span>Progress ({{ $certificates->count() }}/3)</span>
-                                <span class="text-rose-600 font-bold">{{ min(100, round(($certificates->count() / 3) * 100)) }}%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                <div class="bg-rose-500 h-1 rounded-full" style="width: {{ min(100, round(($certificates->count() / 3) * 100)) }}%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Badge 6 (Locked) --}}
-                    <div class="border border-gray-200 bg-gray-50/80 rounded-xl p-3.5 shadow-2xs opacity-75 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="w-10 h-10 bg-gray-200 text-xl rounded-xl flex items-center justify-center grayscale">
-                                    👑
-                                </div>
-                                <span class="px-2 py-0.2 text-[9px] font-extrabold uppercase tracking-wider bg-gray-200 text-gray-600 rounded-full flex items-center gap-0.5">
-                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-                                    Terkunci
-                                </span>
-                            </div>
-                            <h3 class="font-bold text-gray-700 text-xs">Salon Kita Master</h3>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Selesaikan 10 kelas dan raih 1.000 XP.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-gray-200">
-                            <div class="flex items-center justify-between text-[10px] text-gray-400 font-semibold mb-1">
-                                <span>Progress (0/10)</span>
-                                <span>0%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                <div class="bg-gray-400 h-1 rounded-full" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
 

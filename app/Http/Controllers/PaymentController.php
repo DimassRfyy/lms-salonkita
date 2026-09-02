@@ -281,9 +281,9 @@ class PaymentController extends Controller
             $courseName = $transaction->course->name ?? 'Kelas';
             app(PointService::class)->awardPoints(
                 user: $transaction->student,
-                amount: 50,
+                amount: 40,
                 source: $transaction,
-                description: "Bonus +50 Poin dari pembelian {$courseName}"
+                description: "Bonus +40 Poin dari pembelian kelas {$courseName}"
             );
         }
     }

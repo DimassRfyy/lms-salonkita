@@ -140,14 +140,11 @@
                                         Sesi Mentoring
                                     </a>
                                 @endif
-                                {{-- FITUR REDEEM POINT DI-DISABLE SEMENTARA --}}
-                                {{--
                                 <a href="{{ route('points.index') }}"
                                     class="flex items-center gap-3 px-4 py-3 text-amber-600 font-semibold hover:bg-amber-50 border-b">
                                     <span class="text-base">🪙</span>
                                     Redem Poin
                                 </a>
-                                --}}
                                 <a href="{{ route('saved-courses') }}"
                                     class="flex items-center gap-3 px-4 py-3 text-gray-900 hover:bg-gray-50 border-b">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

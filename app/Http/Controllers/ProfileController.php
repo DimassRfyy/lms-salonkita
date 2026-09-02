@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Achievement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +72,28 @@ class ProfileController extends Controller
             ->latest('issued_at')
             ->get();
 
-        return view('pages.profile', compact('user', 'ownedCourses', 'certificates'));
+        $achievements = Achievement::query()
+            ->where('is_active', true)
+            ->oldest('id')
+            ->get();
+
+        $userAchievements = $user->achievements()
+            ->withPivot(['unlocked_at', 'progress_percentage', 'notes'])
+            ->get()
+            ->keyBy('id');
+
+        $unlockedAchievementsCount = $userAchievements->count();
+        $totalAchievementsCount = $achievements->count();
+
+        return view('pages.profile', compact(
+            'user',
+            'ownedCourses',
+            'certificates',
+            'achievements',
+            'userAchievements',
+            'unlockedAchievementsCount',
+            'totalAchievementsCount'
+        ));
     }
 
     public function update(Request $request)

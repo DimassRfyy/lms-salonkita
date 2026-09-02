@@ -226,6 +226,13 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(CourseCertificate::class);
     }
 
+    public function achievements(): BelongsToMany
+    {
+        return $this->belongsToMany(Achievement::class, 'achievement_user')
+            ->withPivot(['unlocked_at', 'progress_percentage', 'notes'])
+            ->withTimestamps();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($this->role) {
