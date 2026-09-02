@@ -111,6 +111,41 @@
     background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
 }
 
+.youtube-chrome-block {
+    position: absolute;
+    z-index: 20;
+    cursor: default;
+    background: transparent;
+}
+
+.youtube-chrome-block--channel {
+    top: 0;
+    right: 0;
+    width: 13rem;
+    height: 4.25rem;
+}
+
+.youtube-chrome-block--share {
+    left: 0;
+    bottom: 3.25rem;
+    width: 10.5rem;
+    height: 3.5rem;
+}
+
+.youtube-chrome-block--watch {
+    right: 0;
+    bottom: 3.25rem;
+    width: 11.5rem;
+    height: 3.5rem;
+}
+
+.youtube-chrome-block--logo {
+    right: 0;
+    bottom: 0;
+    width: 6.5rem;
+    height: 2.75rem;
+}
+
 .presentation-placeholder {
     background: linear-gradient(135deg, #ffffff 0%, #fff7fb 100%);
 }

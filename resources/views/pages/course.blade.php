@@ -37,9 +37,16 @@
                                     src="{{ $embedUrl }}"
                                     title="{{ $currentVideo?->title ?? $course->name }}"
                                     frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; fullscreen"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen"
+                                    allowfullscreen>
                                 </iframe>
+                                {{-- Blokir klik overlay YouTube (share, simpan, channel, tonton di YouTube). Tidak menghapus tombol dari player. --}}
+                                <div class="youtube-chrome-block youtube-chrome-block--channel" onclick="event.preventDefault(); event.stopPropagation();"></div>
+                                <div class="youtube-chrome-block youtube-chrome-block--share" onclick="event.preventDefault(); event.stopPropagation();"></div>
+                                <div class="youtube-chrome-block youtube-chrome-block--watch" onclick="event.preventDefault(); event.stopPropagation();"></div>
+                                <div class="youtube-chrome-block youtube-chrome-block--logo" onclick="event.preventDefault(); event.stopPropagation();"></div>
                             @else
                                 <img class="absolute inset-0 w-full h-full object-cover"
                                     src="{{ $course->thumbnail ? Storage::url($course->thumbnail) : asset('assets/images/thumbnails/img_placeholder.png') }}"

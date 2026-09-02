@@ -63,10 +63,27 @@ class Youtube
         return null;
     }
 
-    public static function embedUrl(?string $value): ?string
+    public static function embedUrl(?string $value, ?string $origin = null): ?string
     {
         $id = self::extractId($value);
 
-        return $id ? "https://www.youtube.com/embed/{$id}" : null;
+        if (! $id) {
+            return null;
+        }
+
+        $origin = rtrim($origin ?? (string) config('app.url'), '/');
+
+        $query = http_build_query([
+            'modestbranding' => 1,
+            'rel' => 0,
+            'iv_load_policy' => 3,
+            'playsinline' => 1,
+            'fs' => 1,
+            'disablekb' => 1,
+            'origin' => $origin,
+            'widget_referrer' => $origin,
+        ]);
+
+        return "https://www.youtube-nocookie.com/embed/{$id}?{$query}";
     }
 }
