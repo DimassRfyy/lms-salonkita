@@ -34,6 +34,10 @@
         <span class="text-xl font-extrabold text-pink-500">Rp {{ number_format((int) $finalPrice, 0, ',', '.') }}</span>
     </div>
 
+    {{--
+    Maintenance: uncomment blok ini dan hapus tombol submit di bawahnya
+    untuk menonaktifkan bayar tanpa voucher 100%.
+
     @if ($finalPrice > 0)
         <button type="button" disabled
             class="w-full py-4 bg-gray-200 text-gray-400 font-bold text-lg rounded-xl cursor-not-allowed flex items-center justify-center gap-2 select-none shadow-none">
@@ -56,4 +60,14 @@
             <span>Bayar Sekarang</span>
         </button>
     @endif
+    --}}
+
+    <button type="submit"
+        class="w-full py-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold text-lg rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Bayar Sekarang</span>
+    </button>
 </div>

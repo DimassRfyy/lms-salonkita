@@ -65,22 +65,6 @@
                                 $isPending = $hasSubmission && $taskSubmission->isPending();
                                 $isReviewed = $hasSubmission && $taskSubmission->isReviewed();
 
-                                if ($hasCertificate) {
-                                    $overallProgressPercentage = 100;
-                                } elseif ($isReviewed) {
-                                    $overallProgressPercentage = 80;
-                                } elseif ($isPending) {
-                                    $overallProgressPercentage = 60;
-                                } elseif ($hasSubmission) {
-                                    $overallProgressPercentage = 40;
-                                } elseif ($allVideosWatched) {
-                                    $overallProgressPercentage = 20;
-                                } else {
-                                    $overallProgressPercentage = $totalVideosCount > 0
-                                        ? (int) round(($watchedVideosCount / $totalVideosCount) * 20)
-                                        : 0;
-                                }
-
                                 $steps = [
                                     [
                                         'label' => 'Tonton Video',
@@ -137,14 +121,14 @@
                                     <h2 class="text-sm md:text-base font-bold text-gray-900">Progress Penyelesaian Kelas</h2>
                                 </div>
                                 <span class="text-xs font-bold text-pink-600 bg-pink-50 border border-pink-200 rounded-full px-2.5 py-1 shrink-0">
-                                    {{ $overallProgressPercentage }}% Selesai
+                                    {{ $progressPercentage }}% Selesai
                                 </span>
                             </div>
 
                             <!-- Visual Animated Progress Bar -->
                             <div class="w-full bg-gray-100 rounded-full h-2.5 mb-6 overflow-hidden border border-gray-200/60 p-0.5">
-                                <div class="bg-gradient-to-r {{ $overallProgressPercentage == 100 ? 'from-emerald-400 to-emerald-500' : 'from-pink-500 via-rose-500 to-pink-500' }} h-full rounded-full transition-all duration-700 ease-out"
-                                     style="width: {{ $overallProgressPercentage }}%"></div>
+                                <div class="bg-gradient-to-r {{ $progressPercentage == 100 ? 'from-emerald-400 to-emerald-500' : 'from-pink-500 via-rose-500 to-pink-500' }} h-full rounded-full transition-all duration-700 ease-out"
+                                     style="width: {{ $progressPercentage }}%"></div>
                             </div>
 
                             <!-- Mobile Version (< md) -->

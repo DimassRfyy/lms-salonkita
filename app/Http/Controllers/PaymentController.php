@@ -79,32 +79,36 @@ class PaymentController extends Controller
 
         $finalPrice = max((int) $course->price - $discountAmount, 0);
 
-        // Sementara: Payment Gateway sedang maintenance, hanya izinkan transaksi diskon 100%
+        /*
+        // Aktifkan lagi saat payment gateway maintenance: hanya izinkan transaksi diskon 100%.
         if ($finalPrice > 0) {
             return redirect()
                 ->route('transaction', ['course' => $course->slug])
                 ->withErrors(['payment' => 'Saat ini pembayaran kelas belum bisa dilakukan karena sistem payment gateway sedang dalam pemeliharaan (maintenance). Pembelian hanya dapat dilakukan jika memasukkan kode promo diskon 100%.'])
                 ->withInput();
         }
+        */
+
+        $isFree = $finalPrice === 0;
 
         $transaction = Transaction::query()->create([
             'user_id' => $user->id,
             'course_id' => $course->id,
             'promo_code_id' => $promoCode?->id,
-            'payment_method' => 'free',
+            'payment_method' => $isFree ? 'free' : 'xendit',
             'discount_amount' => $discountAmount,
-            'price' => 0,
+            'price' => $finalPrice,
             'status' => Transaction::STATUS_PENDING,
         ]);
 
-        $this->markTransactionAsPaid($transaction);
+        if ($isFree) {
+            $this->markTransactionAsPaid($transaction);
 
-        return redirect()
-            ->route('course', ['slug' => $course->slug])
-            ->with('success', 'Yey, pembayaranmu berhasil! Kelasnya sudah bisa diakses, ya.');
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('success', 'Yey, pembayaranmu berhasil! Kelasnya sudah bisa diakses, ya.');
+        }
 
-        /*
-        // Kode Xendit dinonaktifkan sementara selama masa maintenance
         $secretKey = (string) config('services.xendit.secret_key');
 
         if ($secretKey === '') {
@@ -160,7 +164,6 @@ class PaymentController extends Controller
         return redirect()
             ->route('transaction', ['course' => $course->slug])
             ->with('success', 'Tagihan pembayaran berhasil dibuat.');
-        */
     }
 
     public function notification(Request $request): JsonResponse
