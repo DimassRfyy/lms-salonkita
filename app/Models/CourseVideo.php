@@ -19,8 +19,13 @@ class CourseVideo extends Model
         'course_section_id',
         'title',
         'video_url',
+        'is_preview',
         'duration_seconds',
         'sort_order',
+    ];
+
+    protected $casts = [
+        'is_preview' => 'boolean',
     ];
 
     protected static function booted(): void

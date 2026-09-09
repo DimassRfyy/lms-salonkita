@@ -121,9 +121,11 @@ class MentoringController extends Controller
                 'mentorAvailabilitySlots as available_slots_count' => fn ($query) => $query
                     ->where('status', MentorAvailabilitySlot::STATUS_AVAILABLE)
                     ->where('starts_at', '>=', now()),
+                'activeMentees as total_students_count',
             ])
             ->orderBy('name')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         $activeRequest = $pendingMentorship ?? $activeMentorship;
 

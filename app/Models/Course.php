@@ -83,6 +83,24 @@ class Course extends Model
         );
     }
 
+    public function previewVideos(): HasManyThrough
+    {
+        return $this->videos()->where('course_videos.is_preview', true);
+    }
+
+    public function getHasPreviewVideosAttribute(): bool
+    {
+        if ($this->relationLoaded('previewVideos')) {
+            return $this->previewVideos->isNotEmpty();
+        }
+
+        if (isset($this->preview_videos_count)) {
+            return (int) $this->preview_videos_count > 0;
+        }
+
+        return $this->previewVideos()->exists();
+    }
+
     public function getDurationLabelAttribute(): string
     {
         $durationSeconds = (int) ($this->total_duration_seconds ?? 0);

@@ -79,7 +79,6 @@ class PaymentController extends Controller
 
         $finalPrice = max((int) $course->price - $discountAmount, 0);
 
-        /*
         // Aktifkan lagi saat payment gateway maintenance: hanya izinkan transaksi diskon 100%.
         if ($finalPrice > 0) {
             return redirect()
@@ -87,7 +86,6 @@ class PaymentController extends Controller
                 ->withErrors(['payment' => 'Saat ini pembayaran kelas belum bisa dilakukan karena sistem payment gateway sedang dalam pemeliharaan (maintenance). Pembelian hanya dapat dilakukan jika memasukkan kode promo diskon 100%.'])
                 ->withInput();
         }
-        */
 
         $isFree = $finalPrice === 0;
 

@@ -840,24 +840,26 @@
                                     Menunggu Konfirmasi Bayar
                                 </div>
                             @else
-                                @auth
-                                    @if(auth()->user()->role !== 'student')
-                                        <button type="button" onclick="showRestrictedRoleAlert('{{ auth()->user()->role }}')"
-                                            class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6 cursor-pointer">
-                                            Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
-                                        </button>
+                                <div class="mt-6">
+                                    @auth
+                                        @if(auth()->user()->role !== 'student')
+                                            <button type="button" onclick="showRestrictedRoleAlert('{{ auth()->user()->role }}')"
+                                                class="block w-full text-center bg-primary hover-primary text-white font-bold py-3.5 rounded-xl cursor-pointer shadow-sm transition">
+                                                Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                                            </button>
+                                        @else
+                                            <a href="{{ route('transaction', ['course' => $course->slug]) }}"
+                                                class="block w-full text-center bg-primary hover-primary text-white font-bold py-3.5 rounded-xl shadow-sm transition">
+                                                Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
+                                            </a>
+                                        @endif
                                     @else
                                         <a href="{{ route('transaction', ['course' => $course->slug]) }}"
-                                            class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
+                                            class="block w-full text-center bg-primary hover-primary text-white font-bold py-3.5 rounded-xl shadow-sm transition">
                                             Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
                                         </a>
-                                    @endif
-                                @else
-                                    <a href="{{ route('transaction', ['course' => $course->slug]) }}"
-                                        class="block w-full text-center bg-primary hover-primary text-white font-bold py-3 rounded-lg mt-6">
-                                        Daftar Kelas - Rp {{ number_format((int) $course->price, 0, ',', '.') }}
-                                    </a>
-                                @endauth
+                                    @endauth
+                                </div>
                             @endif
                         @endif
                     </div>

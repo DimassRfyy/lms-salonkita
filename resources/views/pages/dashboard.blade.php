@@ -531,6 +531,7 @@
                                 alt="{{ $course->name }}"
                                 onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+
                             <!-- Rating top-right -->
                             <div
                                 class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex items-center gap-0.5 sm:gap-1 bg-white/90 backdrop-blur-xs px-1.5 sm:px-2 py-0.5 rounded-full shadow-xs">
@@ -580,12 +581,17 @@
                         <div class="p-2.5 sm:p-3.5 md:p-4">
                             <h3 class="text-xs sm:text-sm md:text-base font-bold text-gray-900 mb-0.5 sm:mb-1 line-clamp-2 leading-snug">{{ $course->name }}</h3>
                             <p class="text-[11px] sm:text-xs text-pink-600 font-semibold mb-1.5 sm:mb-2 truncate">{{ $course->category->name }}</p>
-                            <div class="flex items-center gap-1 text-gray-500 text-[10px] sm:text-xs mb-2 sm:mb-3">
-                                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span>{{ $course->duration_label }}</span>
+                            <div class="flex items-center justify-between text-gray-500 text-[10px] sm:text-xs mb-2 sm:mb-3">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>{{ $course->duration_label }}</span>
+                                </div>
+                                @if($course->has_preview_videos)
+                                    <span class="text-emerald-600 font-semibold">Akses video gratis</span>
+                                @endif
                             </div>
                         </div>
                     </div>

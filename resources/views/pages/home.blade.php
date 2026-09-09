@@ -154,6 +154,7 @@
                                 alt="{{ $course->name }}"
                                 onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
                                 class="w-full h-full object-cover">
+
                             <div
                                 class="absolute top-2 right-2 flex items-center gap-1 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
                                 <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -167,12 +168,17 @@
                         <div class="p-4">
                             <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1">{{ $course->name }}</h3>
                             <p class="text-sm text-pink-600 font-medium mb-2">{{ $course->category?->name ?? 'Umum' }}</p>
-                            <div class="flex items-center gap-1 text-gray-500 text-xs mb-3">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span>{{ $course->duration_label }}</span>
+                            <div class="flex items-center justify-between text-gray-500 text-xs mb-3">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>{{ $course->duration_label }}</span>
+                                </div>
+                                @if($course->has_preview_videos)
+                                    <span class="text-emerald-600 font-semibold text-xs">Akses video gratis</span>
+                                @endif
                             </div>
                             <div class="flex items-center justify-between gap-3">
                                 <span class="text-xl font-bold text-pink-500">Rp

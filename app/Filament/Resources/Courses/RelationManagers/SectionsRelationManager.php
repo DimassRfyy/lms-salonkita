@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -90,6 +91,10 @@ class SectionsRelationManager extends RelationManager
                             ])
                             ->formatStateUsing(fn (mixed $state): string => static::formatDurationForDisplay($state))
                             ->dehydrateStateUsing(fn (mixed $state): int => static::parseDurationToSeconds($state)),
+                        Toggle::make('is_preview')
+                            ->label('Free Preview')
+                            ->default(false)
+                            ->inline(false),
                     ])
                     ->defaultItems(1)
                     ->columnSpanFull()

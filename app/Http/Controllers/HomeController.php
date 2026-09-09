@@ -27,6 +27,7 @@ class HomeController extends Controller
         $courses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
+            ->withCount(['previewVideos as preview_videos_count'])
             ->where('is_published', true)
             ->latest()
             ->take(4)
@@ -106,6 +107,7 @@ class HomeController extends Controller
         $recommendedCourses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
+            ->withCount(['previewVideos as preview_videos_count'])
             ->where('is_published', true)
             ->when(! empty($ownedCourseIds), fn($query) => $query->whereNotIn('id', $ownedCourseIds, 'and'))
             ->latest()
@@ -222,11 +224,28 @@ class HomeController extends Controller
         }
 
         $videos = $course->sections->flatMap->videos->values();
-        $requestedVideoId = $hasCourseAccess ? (int) $request->query('video') : 0;
-        $currentVideo = $requestedVideoId > 0 ? $videos->firstWhere('id', $requestedVideoId) : null;
+        $requestedVideoId = (int) $request->query('video');
+
+        // Pengecekan apakah video yang diminta adalah preview gratis atau user punya akses penuh
+        $targetVideo = $requestedVideoId > 0 ? $videos->firstWhere('id', $requestedVideoId) : null;
+        if (! $hasCourseAccess && $targetVideo && ! $targetVideo->is_preview) {
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('error', 'Video ini terkunci. Silakan beli kelas untuk mengakses materi ini.');
+        }
+
+        // Tentukan current video:
+        // Jika user memiliki akses kelas: video requested atau null (atau fallback ke unlock map)
+        // Jika belum beli: video requested jika is_preview, atau video preview pertama, atau null
+        $currentVideo = null;
+        if ($hasCourseAccess) {
+            $currentVideo = $targetVideo;
+        } elseif ($targetVideo && $targetVideo->is_preview) {
+            $currentVideo = $targetVideo;
+        }
 
         $currentVideoIndex = null;
-        if ($hasCourseAccess && $currentVideo) {
+        if ($currentVideo) {
             $currentVideoIndex = $videos->search(fn($video) => $video->id === $currentVideo->id);
         }
 
@@ -254,17 +273,22 @@ class HomeController extends Controller
 
         $videoUnlockMap = [];
         foreach ($videos as $index => $video) {
-            if ($index === 0) {
-                $videoUnlockMap[$video->id] = true;
-                continue;
+            if ($hasCourseAccess) {
+                if ($index === 0) {
+                    $videoUnlockMap[$video->id] = true;
+                    continue;
+                }
+
+                $previousVideo = $videos->get($index - 1);
+                $previousQuiz = $previousVideo?->quiz;
+                $requiresPreviousQuiz = (bool) ($previousQuiz && $previousQuiz->is_active && $previousQuiz->questions->isNotEmpty());
+
+                $videoUnlockMap[$video->id] = ! $requiresPreviousQuiz
+                    || $quizCompletionVideoIds->contains($previousVideo->id);
+            } else {
+                // Untuk user yang belum membeli: hanya video dengan is_preview = true yang terbuka
+                $videoUnlockMap[$video->id] = (bool) $video->is_preview;
             }
-
-            $previousVideo = $videos->get($index - 1);
-            $previousQuiz = $previousVideo?->quiz;
-            $requiresPreviousQuiz = (bool) ($previousQuiz && $previousQuiz->is_active && $previousQuiz->questions->isNotEmpty());
-
-            $videoUnlockMap[$video->id] = ! $requiresPreviousQuiz
-                || $quizCompletionVideoIds->contains($previousVideo->id);
         }
 
         if ($hasCourseAccess && $requestedVideoId > 0 && $currentVideo && ! ($videoUnlockMap[$currentVideo->id] ?? false)) {
@@ -288,11 +312,17 @@ class HomeController extends Controller
             );
         }
 
-        $embedUrl = $hasCourseAccess
-            ? (Youtube::embedUrl($currentVideo?->video_url)
+        // Tentukan video yang di-embed:
+        // Jika sedang memutar currentVideo (bisa dari akses penuh atau free preview): putar currentVideo
+        // Jika tidak, embed video intro kelas (atau video pertama jika ada)
+        if ($currentVideo) {
+            $embedUrl = Youtube::embedUrl($currentVideo->video_url)
                 ?? Youtube::embedUrl($course->introduction_video_url)
-                ?? Youtube::embedUrl($videos->first()?->video_url))
-            : Youtube::embedUrl($course->introduction_video_url);
+                ?? Youtube::embedUrl($videos->first()?->video_url);
+        } else {
+            $embedUrl = Youtube::embedUrl($course->introduction_video_url)
+                ?? ($videos->firstWhere('is_preview', true) ? Youtube::embedUrl($videos->firstWhere('is_preview', true)->video_url) : null);
+        }
 
         $presentationEmbedUrl = $hasCourseAccess ? $course->presentation_url : null;
 
@@ -307,23 +337,30 @@ class HomeController extends Controller
             $sectionHours = intdiv($sectionDurationSeconds, 3600);
             $sectionMinutes = intdiv($sectionDurationSeconds % 3600, 60);
             $sectionDurationLabel = trim(($sectionHours > 0 ? $sectionHours . ' jam ' : '') . max($sectionMinutes, 1) . ' menit');
-            $hasCurrentVideo = $hasCourseAccess && $currentVideo ? $section->videos->contains('id', $currentVideo->id) : false;
+            $hasCurrentVideo = $currentVideo ? $section->videos->contains('id', $currentVideo->id) : false;
 
             $sectionVideos = $section->videos->map(function ($video) use ($videos, $currentVideo, $currentVideoIndex, $course, $hasCourseAccess, $watchedVideoIds, $videoUnlockMap) {
+                $isUnlocked = (bool) ($videoUnlockMap[$video->id] ?? false);
+                $isCurrentVideo = $currentVideo && $video->id === $currentVideo->id;
+                $isLocked = ! $isUnlocked;
+
                 if (! $hasCourseAccess) {
+                    $stateClass = $isLocked
+                        ? 'locked'
+                        : ($isCurrentVideo ? 'now-playing' : 'unwatched');
+
                     return (object) [
                         'title' => $video->title,
                         'duration_label' => $video->duration_label,
-                        'state_class' => 'locked',
+                        'state_class' => $stateClass,
                         'is_watched' => false,
-                        'is_locked' => true,
-                        'url' => null,
+                        'is_locked' => $isLocked,
+                        'is_preview' => (bool) $video->is_preview,
+                        'url' => $isLocked ? null : route('course', ['slug' => $course->slug, 'video' => $video->id]),
                     ];
                 }
 
                 $videoIndex = $videos->search(fn($globalVideo) => $globalVideo->id === $video->id);
-                $isCurrentVideo = $currentVideo && $video->id === $currentVideo->id;
-                $isLocked = ! ((bool) ($videoUnlockMap[$video->id] ?? false));
                 $isWatched = $watchedVideoIds->contains($video->id)
                     || (is_int($videoIndex) && is_int($currentVideoIndex) && $videoIndex < $currentVideoIndex);
                 $stateClass = $isLocked
@@ -336,6 +373,7 @@ class HomeController extends Controller
                     'state_class' => $stateClass,
                     'is_watched' => $isWatched,
                     'is_locked' => $isLocked,
+                    'is_preview' => (bool) $video->is_preview,
                     'url' => $isLocked ? null : route('course', ['slug' => $course->slug, 'video' => $video->id]),
                 ];
             })->values();
@@ -349,8 +387,8 @@ class HomeController extends Controller
             ];
         })->values();
 
-        $activeVideoTitle = $hasCourseAccess
-            ? ($currentVideo?->title ?? 'Video preview kelas')
+        $activeVideoTitle = $currentVideo
+            ? $currentVideo->title
             : 'Video perkenalan kelas (preview)';
 
         $currentVideoQuiz = $currentVideo?->quiz;
@@ -631,6 +669,7 @@ class HomeController extends Controller
         $savedCourses = $user->savedCourses()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
+            ->withCount(['previewVideos as preview_videos_count'])
             ->orderByPivot('created_at', 'desc')
             ->get();
 
@@ -684,6 +723,7 @@ class HomeController extends Controller
         $courses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
+            ->withCount(['previewVideos as preview_videos_count'])
             ->where('is_published', true)
             ->when($search !== '', fn($query) => $query->where('name', 'like', '%' . $search . '%'))
             ->latest()
