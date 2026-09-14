@@ -263,7 +263,7 @@
     </section>
 
     <!-- SECTION FAQ -->
-    <section class="py-16 md:py-24 px-4 sm:px-6 lg:px-12 bg-pink-50">
+    <section id="faq" class="py-16 md:py-24 px-4 sm:px-6 lg:px-12 bg-pink-50 scroll-mt-16">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">

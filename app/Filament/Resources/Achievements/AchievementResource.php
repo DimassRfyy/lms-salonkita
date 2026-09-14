@@ -23,6 +23,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -56,13 +57,43 @@ class AchievementResource extends Resource
             ->components([
                 TextInput::make('name')
                     ->label('Nama Achievement')
-                    ->placeholder('Contoh: Beauty Starter')
+                    ->placeholder('Contoh: First Graduate')
                     ->required()
                     ->maxLength(100),
 
+                Select::make('level')
+                    ->label('Level / Kesulitan')
+                    ->options([
+                        Achievement::LEVEL_BEGINNER => 'Beginner',
+                        Achievement::LEVEL_INTERMEDIATE => 'Intermediate',
+                        Achievement::LEVEL_EXPERT => 'Expert',
+                    ])
+                    ->default(Achievement::LEVEL_BEGINNER)
+                    ->required(),
+
+                Select::make('category')
+                    ->label('Kelompok Aktivitas')
+                    ->options([
+                        Achievement::CATEGORY_COURSE_COMPLETION => 'Course Completion',
+                        Achievement::CATEGORY_LEARNING_ACTIVITY => 'Learning Activity',
+                        Achievement::CATEGORY_ASSIGNMENT_COMPLETION => 'Assignment Completion',
+                    ])
+                    ->default(Achievement::CATEGORY_COURSE_COMPLETION)
+                    ->required(),
+
+                TextInput::make('icon')
+                    ->label('Icon Emoji')
+                    ->default('🏆')
+                    ->maxLength(10),
+
+                TextInput::make('sort_order')
+                    ->label('Urutan Tampilan')
+                    ->numeric()
+                    ->default(0),
+
                 Textarea::make('description')
-                    ->label('Kriteria Pencapaian')
-                    ->placeholder('Contoh: Menyelesaikan video materi pertama dan kuis pertama')
+                    ->label('Deskripsi / Kriteria')
+                    ->placeholder('Contoh: Complete your first course.')
                     ->required()
                     ->rows(3)
                     ->columnSpanFull(),
@@ -79,14 +110,42 @@ class AchievementResource extends Resource
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->withCount('users'))
             ->columns([
+                TextColumn::make('icon')
+                    ->label('')
+                    ->alignCenter(),
+
                 TextColumn::make('name')
                     ->label('Nama Achievement')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
+                TextColumn::make('level')
+                    ->label('Level')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'beginner' => 'success',
+                        'intermediate' => 'info',
+                        'expert' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->sortable(),
+
+                TextColumn::make('category')
+                    ->label('Kelompok')
+                    ->badge()
+                    ->color('gray')
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        Achievement::CATEGORY_COURSE_COMPLETION => 'Course Completion',
+                        Achievement::CATEGORY_LEARNING_ACTIVITY => 'Learning Activity',
+                        Achievement::CATEGORY_ASSIGNMENT_COMPLETION => 'Assignment Completion',
+                        default => $state ?? '-',
+                    })
+                    ->sortable(),
+
                 TextColumn::make('description')
-                    ->label('Kriteria Pencapaian')
+                    ->label('Deskripsi')
                     ->wrap(),
 
                 TextColumn::make('users_count')
@@ -99,13 +158,34 @@ class AchievementResource extends Resource
                     ->label('Status Aktif')
                     ->boolean(),
 
+                TextColumn::make('sort_order')
+                    ->label('Urutan')
+                    ->sortable(),
+
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('sort_order', 'asc')
+            ->filters([
+                SelectFilter::make('level')
+                    ->label('Filter Level')
+                    ->options([
+                        Achievement::LEVEL_BEGINNER => 'Beginner',
+                        Achievement::LEVEL_INTERMEDIATE => 'Intermediate',
+                        Achievement::LEVEL_EXPERT => 'Expert',
+                    ]),
+
+                SelectFilter::make('category')
+                    ->label('Filter Kelompok')
+                    ->options([
+                        Achievement::CATEGORY_COURSE_COMPLETION => 'Course Completion',
+                        Achievement::CATEGORY_LEARNING_ACTIVITY => 'Learning Activity',
+                        Achievement::CATEGORY_ASSIGNMENT_COMPLETION => 'Assignment Completion',
+                    ]),
+            ])
             ->recordActions([
                 ActionGroup::make([
                     // Grant achievement to student directly

@@ -13,6 +13,7 @@ use App\Models\MentoringBooking;
 use App\Models\MentoringRequest;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\AchievementService;
 use App\Services\PointService;
 use App\Support\Youtube;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -260,6 +261,8 @@ class HomeController extends Controller
                     'course_id' => $course->id,
                     'watched_at' => now(),
                 ]);
+
+                app(AchievementService::class)->checkLearningActivity($viewer);
             }
 
             $watchedVideoIds = $viewer->courseVideoWatches()
@@ -616,6 +619,8 @@ class HomeController extends Controller
             description: "Bonus +10 Poin dari mengumpulkan tugas kelas {$course->name}"
         );
 
+        app(AchievementService::class)->checkAssignmentCompletion($user);
+
         return redirect()
             ->to(route('course', ['slug' => $course->slug]))
             ->with('success', 'Yeay, tugasmu berhasil dikirim! Sekarang tinggal tunggu dicek dulu ya.');
@@ -778,6 +783,8 @@ class HomeController extends Controller
                     source: $certificate,
                     description: "Bonus +10 Poin dari kelulusan & klaim sertifikat kelas {$course->name}"
                 );
+
+                app(AchievementService::class)->checkCourseCompletion($user);
             }
         }
 
@@ -841,6 +848,8 @@ class HomeController extends Controller
                 source: $certificate,
                 description: "Bonus +10 Poin dari kelulusan & klaim sertifikat kelas {$course->name}"
             );
+
+            app(AchievementService::class)->checkCourseCompletion($user);
         }
 
         session()->flash('claimed_now', true);

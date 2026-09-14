@@ -17,6 +17,15 @@
         body {
             font-family: 'Nunito', sans-serif;
         }
+
+        /* Skala tampilan 90% otomatis untuk desktop/laptop agar tidak terlalu lebar */
+        @media (min-width: 768px) {
+            body {
+                zoom: 0.9;
+                -moz-transform: scale(0.9);
+                -moz-transform-origin: 50% 0;
+            }
+        }
     </style>
     @livewireStyles
     @stack('styles')

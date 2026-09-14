@@ -528,14 +528,21 @@
         {{-- TAB 4: ACHIEVEMENTS & BADGES --}}
         <div id="tab-content-my-achievements" class="tab-pane w-full hidden">
             <div class="w-full bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5 sm:p-6 min-h-[400px]">
-                <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
                     <div>
-                        <h2 class="text-sm sm:text-base font-bold text-gray-900">Pencapaian & Lencana</h2>
-                        <p class="text-xs text-gray-500 mt-0.5">Lencana keahlian yang diraih melalui pembelajaran dan penyelesaian tugas.</p>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm sm:text-base font-bold text-gray-900">Pencapaian & Lencana</h2>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-50 text-pink-600 border border-pink-100">
+                                3 Kategori
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-0.5">Lencana keahlian bertingkat: Beginner, Intermediate, hingga Expert.</p>
                     </div>
-                    <span class="text-xs font-bold px-2.5 py-0.5 bg-amber-50 text-amber-700 rounded-full border border-amber-200 flex-shrink-0">
-                        🏆 {{ $unlockedAchievementsCount }} / {{ $totalAchievementsCount }} Terbuka
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold px-3 py-1 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 shadow-2xs flex items-center gap-1.5">
+                            <span class="text-sm">🏆</span> {{ $unlockedAchievementsCount }} / {{ $totalAchievementsCount }} Diraih
+                        </span>
+                    </div>
                 </div>
 
                 @if ($achievements->isEmpty())
@@ -549,71 +556,152 @@
                         </p>
                     </div>
                 @else
-                    <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                        @foreach ($achievements as $achievement)
+                    @php
+                        $groupedAchievements = $achievements->groupBy('category');
+                        $categoryLabels = [
+                            \App\Models\Achievement::CATEGORY_COURSE_COMPLETION => [
+                                'title' => 'Course Completion',
+                                'subtitle' => 'Penyelesaian seluruh modul & materi kelas',
+                                'icon' => '🎓',
+                            ],
+                            \App\Models\Achievement::CATEGORY_LEARNING_ACTIVITY => [
+                                'title' => 'Learning Activity',
+                                'subtitle' => 'Aktivitas menonton video pembelajaran',
+                                'icon' => '🎬',
+                            ],
+                            \App\Models\Achievement::CATEGORY_ASSIGNMENT_COMPLETION => [
+                                'title' => 'Assignment Completion',
+                                'subtitle' => 'Pengumpulan tugas & praktik kelas',
+                                'icon' => '📝',
+                            ],
+                        ];
+                    @endphp
+
+                    <div class="space-y-6">
+                        @foreach ($groupedAchievements as $categoryKey => $items)
                             @php
-                                $isUnlocked = isset($userAchievements[$achievement->id]);
-                                $userAchievement = $userAchievements[$achievement->id] ?? null;
-                                $unlockedAt = $userAchievement?->pivot?->unlocked_at ? \Carbon\Carbon::parse($userAchievement->pivot->unlocked_at) : null;
+                                $meta = $categoryLabels[$categoryKey] ?? [
+                                    'title' => ucfirst(str_replace('_', ' ', $categoryKey)),
+                                    'subtitle' => 'Pencapaian pembelajaran',
+                                    'icon' => '🎯',
+                                ];
                             @endphp
 
-                            @if ($isUnlocked)
-                                {{-- UNLOCKED BADGE --}}
-                                <div class="border border-amber-200/70 bg-gradient-to-br from-amber-50/40 via-white to-amber-50/20 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="w-10 h-10 bg-amber-100 text-xl rounded-xl flex items-center justify-center shadow-2xs">
-                                                🌟
-                                            </div>
-                                            <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
-                                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                                Selesai
-                                            </span>
-                                        </div>
-                                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm">{{ $achievement->name }}</h3>
-                                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
-                                            {{ $achievement->description }}
-                                        </p>
-                                    </div>
-                                    <div class="mt-3 pt-2 border-t border-amber-100/70">
-                                        <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
-                                            <span>Progress ({{ $unlockedAt ? 'Diraih ' . $unlockedAt->translatedFormat('d M Y') : '100%' }})</span>
-                                            <span class="text-emerald-600 font-bold">100%</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                            <div class="bg-emerald-500 h-1 rounded-full" style="width: 100%"></div>
+                            <div class="bg-gray-50/60 rounded-2xl p-4 sm:p-5 border border-gray-100">
+                                <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-gray-200/70">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg">{{ $meta['icon'] }}</span>
+                                        <div>
+                                            <h3 class="text-xs sm:text-sm font-bold text-gray-900">{{ $meta['title'] }}</h3>
+                                            <p class="text-[11px] text-gray-500">{{ $meta['subtitle'] }}</p>
                                         </div>
                                     </div>
+                                    @php
+                                        $categoryUnlockedCount = $items->filter(fn($ach) => isset($userAchievements[$ach->id]))->count();
+                                    @endphp
+                                    <span class="text-[11px] font-semibold px-2.5 py-0.5 bg-white text-gray-700 border border-gray-200 rounded-full shadow-2xs">
+                                        {{ $categoryUnlockedCount }} / {{ $items->count() }}
+                                    </span>
                                 </div>
-                            @else
-                                {{-- LOCKED BADGE --}}
-                                <div class="border border-gray-200/80 bg-gray-50/70 rounded-xl p-3.5 shadow-2xs opacity-80 hover:opacity-100 transition flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="w-10 h-10 bg-gray-200 text-gray-400 text-xl rounded-xl flex items-center justify-center grayscale shadow-2xs">
-                                                🌟
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                                    @foreach ($items as $achievement)
+                                        @php
+                                            $isUnlocked = isset($userAchievements[$achievement->id]);
+                                            $userAchievement = $userAchievements[$achievement->id] ?? null;
+                                            $unlockedAt = $userAchievement?->pivot?->unlocked_at ? \Carbon\Carbon::parse($userAchievement->pivot->unlocked_at) : null;
+                                            $level = $achievement->level ?? 'beginner';
+
+                                            $levelBadge = match ($level) {
+                                                'beginner' => ['label' => 'Beginner', 'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200'],
+                                                'intermediate' => ['label' => 'Intermediate', 'class' => 'bg-blue-50 text-blue-700 border-blue-200'],
+                                                'expert' => ['label' => 'Expert', 'class' => 'bg-amber-50 text-amber-700 border-amber-200'],
+                                                default => ['label' => ucfirst($level), 'class' => 'bg-gray-50 text-gray-700 border-gray-200'],
+                                            };
+
+                                            // Progress calculation
+                                            $target = $achievementProgress['thresholds'][$achievement->name] ?? 1;
+                                            $current = match ($achievement->category) {
+                                                \App\Models\Achievement::CATEGORY_COURSE_COMPLETION => $achievementProgress['course_count'] ?? 0,
+                                                \App\Models\Achievement::CATEGORY_LEARNING_ACTIVITY => $achievementProgress['video_count'] ?? 0,
+                                                \App\Models\Achievement::CATEGORY_ASSIGNMENT_COMPLETION => $achievementProgress['task_count'] ?? 0,
+                                                default => 0,
+                                            };
+                                            $progressPct = $isUnlocked ? 100 : min(100, (int) round(($current / max($target, 1)) * 100));
+                                        @endphp
+
+                                        @if ($isUnlocked)
+                                            {{-- UNLOCKED CARD --}}
+                                            <div class="border border-amber-200 bg-gradient-to-br from-amber-50/50 via-white to-amber-50/30 rounded-xl p-3.5 shadow-2xs flex flex-col justify-between transition hover:shadow-xs">
+                                                <div>
+                                                    <div class="flex items-center justify-between mb-2.5">
+                                                        <div class="w-10 h-10 bg-amber-100/80 text-xl rounded-xl flex items-center justify-center shadow-2xs border border-amber-200/60">
+                                                            {{ $achievement->icon ?: '🏆' }}
+                                                        </div>
+                                                        <div class="flex items-center gap-1.5">
+                                                            <span class="px-2 py-0.5 text-[9px] font-bold border rounded-full {{ $levelBadge['class'] }}">
+                                                                {{ $levelBadge['label'] }}
+                                                            </span>
+                                                            <span class="px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-0.5">
+                                                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm">{{ $achievement->name }}</h4>
+                                                    <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                                                        {{ $achievement->description }}
+                                                    </p>
+                                                </div>
+
+                                                <div class="mt-3.5 pt-2 border-t border-amber-100">
+                                                    <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mb-1">
+                                                        <span>{{ $unlockedAt ? 'Diraih ' . $unlockedAt->translatedFormat('d M Y') : 'Terbuka' }}</span>
+                                                        <span class="text-emerald-600 font-bold">100% ({{ $target }}/{{ $target }})</span>
+                                                    </div>
+                                                    <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                                        <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 100%"></div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <span class="px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider bg-gray-200 text-gray-600 rounded-full flex items-center gap-0.5">
-                                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-                                                Belum Terbuka
-                                            </span>
-                                        </div>
-                                        <h3 class="font-bold text-gray-700 text-xs sm:text-sm">{{ $achievement->name }}</h3>
-                                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
-                                            {{ $achievement->description }}
-                                        </p>
-                                    </div>
-                                    <div class="mt-3 pt-2 border-t border-gray-200/70">
-                                        <div class="flex items-center justify-between text-[10px] text-gray-400 font-medium mb-1">
-                                            <span>Syarat Pencapaian</span>
-                                            <span>0%</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                            <div class="bg-gray-300 h-1 rounded-full" style="width: 0%"></div>
-                                        </div>
-                                    </div>
+                                        @else
+                                            {{-- LOCKED CARD --}}
+                                            <div class="border border-gray-200/90 bg-white rounded-xl p-3.5 shadow-2xs opacity-85 hover:opacity-100 transition flex flex-col justify-between">
+                                                <div>
+                                                    <div class="flex items-center justify-between mb-2.5">
+                                                        <div class="w-10 h-10 bg-gray-100 text-gray-400 text-xl rounded-xl flex items-center justify-center grayscale shadow-2xs border border-gray-200">
+                                                            {{ $achievement->icon ?: '🏆' }}
+                                                        </div>
+                                                        <div class="flex items-center gap-1.5">
+                                                            <span class="px-2 py-0.5 text-[9px] font-bold border rounded-full {{ $levelBadge['class'] }}">
+                                                                {{ $levelBadge['label'] }}
+                                                            </span>
+                                                            <span class="px-1.5 py-0.5 text-[9px] font-semibold bg-gray-100 text-gray-500 rounded-full flex items-center gap-0.5">
+                                                                <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="font-bold text-gray-700 text-xs sm:text-sm">{{ $achievement->name }}</h4>
+                                                    <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                                                        {{ $achievement->description }}
+                                                    </p>
+                                                </div>
+
+                                                <div class="mt-3.5 pt-2 border-t border-gray-100">
+                                                    <div class="flex items-center justify-between text-[10px] text-gray-500 font-medium mb-1">
+                                                        <span>Progress: {{ $current }}/{{ $target }}</span>
+                                                        <span class="font-bold text-gray-700">{{ $progressPct }}%</span>
+                                                    </div>
+                                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                                        <div class="bg-pink-500 h-1.5 rounded-full transition-all duration-300" style="width: {{ $progressPct }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 </div>
-                            @endif
+                            </div>
                         @endforeach
                     </div>
                 @endif

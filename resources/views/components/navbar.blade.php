@@ -15,22 +15,70 @@
                     </div>
                 </a>
 
-                @unless(request()->routeIs('home'))
+                @if(request()->routeIs('home'))
+                    <!-- Menu Tengah Khusus Beranda (Akses Publik / Tanpa Login) -->
+                    <div class="hidden md:flex items-center gap-1 lg:gap-2">
+                        <a href="{{ route('all-courses') }}"
+                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span>Semua Kelas</span>
+                        </a>
+
+                        <a href="{{ route('register.mentor-coach', ['role' => 'mentor']) }}"
+                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>Mentor</span>
+                        </a>
+
+                        <a href="{{ route('register.mentor-coach', ['role' => 'coach']) }}"
+                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <span>Coach</span>
+                        </a>
+
+                        <a href="#faq"
+                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>FAQ</span>
+                        </a>
+                    </div>
+                @else
                     <!-- Search Bar -->
                     <div class="hidden md:flex flex-1 max-w-xl mx-8">
                         <livewire:course-search-bar />
                     </div>
-                @endunless
+                @endif
 
                 <!-- Right Side Menu -->
-                <div class="flex items-center gap-4">
-                    <!-- Mobile Search -->
-                    <a href="{{ route('all-courses') }}" class="md:hidden p-2" aria-label="Cari kelas">
-                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </a>
+                <div class="flex items-center gap-3 sm:gap-4">
+                    @if(request()->routeIs('home'))
+                        <!-- Mobile Menu Button khusus beranda -->
+                        <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-700 hover:text-pink-600 rounded-lg hover:bg-pink-50 transition" aria-label="Buka menu navigasi">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                            </svg>
+                        </button>
+                    @else
+                        <!-- Mobile Search (non-home) -->
+                        <a href="{{ route('all-courses') }}" class="md:hidden p-2 text-gray-700 hover:text-pink-600 rounded-lg hover:bg-pink-50 transition" aria-label="Cari kelas">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </a>
+                    @endif
 
                     @auth
                         @php
@@ -181,5 +229,45 @@
                 </div>
             </div>
         </div>
+
+        @if(request()->routeIs('home'))
+            <!-- Mobile Menu Dropdown (Khusus Beranda) -->
+            <div id="mobileMenu" class="hidden md:hidden border-t border-pink-100 bg-white px-4 pt-3 pb-5 shadow-lg">
+                <div class="flex flex-col space-y-2">
+                    <a href="{{ route('all-courses') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
+                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span>Semua Kelas</span>
+                    </a>
+                    <a href="{{ route('register.mentor-coach', ['role' => 'mentor']) }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
+                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span>Mentor</span>
+                    </a>
+                    <a href="{{ route('register.mentor-coach', ['role' => 'coach']) }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
+                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        <span>Coach</span>
+                    </a>
+                    <a href="#faq" onclick="toggleMobileMenu()"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
+                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>FAQ</span>
+                    </a>
+                </div>
+            </div>
+        @endif
     </nav>
 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Achievement;
+use App\Services\AchievementService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -72,8 +73,12 @@ class ProfileController extends Controller
             ->latest('issued_at')
             ->get();
 
+        // Check & sync any eligible achievements automatically
+        app(AchievementService::class)->checkAll($user);
+
         $achievements = Achievement::query()
             ->where('is_active', true)
+            ->orderBy('sort_order')
             ->oldest('id')
             ->get();
 
@@ -85,6 +90,8 @@ class ProfileController extends Controller
         $unlockedAchievementsCount = $userAchievements->count();
         $totalAchievementsCount = $achievements->count();
 
+        $achievementProgress = app(AchievementService::class)->getProgressStats($user);
+
         return view('pages.profile', compact(
             'user',
             'ownedCourses',
@@ -92,7 +99,8 @@ class ProfileController extends Controller
             'achievements',
             'userAchievements',
             'unlockedAchievementsCount',
-            'totalAchievementsCount'
+            'totalAchievementsCount',
+            'achievementProgress'
         ));
     }
 

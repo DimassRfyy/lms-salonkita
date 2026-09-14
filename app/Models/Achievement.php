@@ -11,9 +11,21 @@ class Achievement extends Model
 {
     use HasFactory;
 
+    // --- Level Constants ---
+    const LEVEL_BEGINNER     = 'beginner';
+    const LEVEL_INTERMEDIATE = 'intermediate';
+    const LEVEL_EXPERT       = 'expert';
+
+    // --- Category Constants ---
+    const CATEGORY_COURSE_COMPLETION    = 'course_completion';
+    const CATEGORY_LEARNING_ACTIVITY    = 'learning_activity';
+    const CATEGORY_ASSIGNMENT_COMPLETION = 'assignment_completion';
+
     protected $fillable = [
         'name',
         'slug',
+        'level',
+        'category',
         'description',
         'icon',
         'badge_color',
@@ -25,9 +37,9 @@ class Achievement extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
+            'is_active'     => 'boolean',
             'points_reward' => 'integer',
-            'sort_order' => 'integer',
+            'sort_order'    => 'integer',
         ];
     }
 
