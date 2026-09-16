@@ -8,6 +8,16 @@
     <link rel="icon" href="{{ asset('assets/images/logos/logo_skid.webp') }}">
     <meta name="description"
         content="Salonkita adalah platform pembelajaran online yang menyediakan kelas-kelas kecantikan profesional untuk membantu Anda mengembangkan keterampilan di bidang kecantikan. Temukan berbagai kelas makeup, skincare, hair styling, dan banyak lagi yang diajarkan oleh para ahli di industri kecantikan. Belajar dengan mudah dari rumah dan tingkatkan keahlian Anda bersama Salonkita.">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1PTPKDH5G2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-1PTPKDH5G2');
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
