@@ -35,9 +35,11 @@ class CoachStatsOverview extends StatsOverviewWidget
         $totalStudents = $ownedCourseIds->isEmpty()
             ? 0
             : (int) DB::table('course_user')
-                ->whereIn('course_id', $ownedCourseIds)
-                ->distinct('user_id')
-                ->count('user_id');
+                ->join('users', 'users.id', '=', 'course_user.user_id')
+                ->whereIn('course_user.course_id', $ownedCourseIds)
+                ->where('users.role', 'student')
+                ->distinct('course_user.user_id')
+                ->count('course_user.user_id');
 
         $pendingReviews = $ownedCourseIds->isEmpty()
             ? 0
