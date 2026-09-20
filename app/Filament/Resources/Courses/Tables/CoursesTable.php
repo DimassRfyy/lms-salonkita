@@ -33,9 +33,26 @@ class CoursesTable
                 TextColumn::make('instructor.name')
                     ->label('Coach')
                     ->searchable(),
+                TextColumn::make('level')
+                    ->label('Level')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => Course::LEVELS[$state] ?? ucfirst($state))
+                    ->color(fn (string $state): string => match ($state) {
+                        'basic' => 'success',
+                        'intermediate' => 'info',
+                        'advanced' => 'warning',
+                        default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'basic' => 'heroicon-m-gift',
+                        'intermediate' => 'heroicon-m-star',
+                        'advanced' => 'heroicon-m-rocket-launch',
+                        default => 'heroicon-m-academic-cap',
+                    })
+                    ->sortable(),
                 TextColumn::make('price')
                     ->label('Harga')
-                    ->formatStateUsing(fn ($state): string => 'Rp ' . number_format((int) $state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state, $record): string => $record->isBasic() ? 'Gratis' : 'Rp ' . number_format((int) $state, 0, ',', '.'))
                     ->sortable(),
                 TextColumn::make('is_published')
                     ->label('Status')
@@ -55,6 +72,9 @@ class CoursesTable
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                SelectFilter::make('level')
+                    ->label('Level')
+                    ->options(Course::LEVELS),
                 SelectFilter::make('is_published')
                     ->label('Status Publikasi')
                     ->options([

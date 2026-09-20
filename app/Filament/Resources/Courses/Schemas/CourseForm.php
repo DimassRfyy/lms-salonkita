@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Courses\Schemas;
 
+use App\Models\Course;
 use App\Support\Youtube;
 use App\Support\GoogleSlides;
 use Filament\Forms\Components\FileUpload;
@@ -49,6 +50,24 @@ class CourseForm
                                 ->disabled(fn () => Auth::user()?->role === 'coach')
                                 ->dehydrated()
                                 ->required(),
+                            Select::make('level')
+                                ->label('Level Kelas')
+                                ->options(Course::LEVELS)
+                                ->default(Course::LEVEL_INTERMEDIATE)
+                                ->required()
+                                ->native(false)
+                                ->helperText(fn (?string $state): string => match ($state) {
+                                    Course::LEVEL_BASIC => '🆓 Basic: Gratis, tanpa sertifikat, tugas, mentoring.',
+                                    Course::LEVEL_INTERMEDIATE => '⭐ Intermediate: Berbayar, semua fitur lengkap.',
+                                    Course::LEVEL_ADVANCED => '🚀 Advanced: Berbayar, semua fitur lengkap.',
+                                    default => 'Pilih level kelas.',
+                                })
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    if ($state === Course::LEVEL_BASIC) {
+                                        $set('price', 0);
+                                    }
+                                }),
                             TextInput::make('price')
                                 ->label('Harga')
                                 ->required()
@@ -56,7 +75,12 @@ class CourseForm
                                 ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))
                                 ->stripCharacters('.')
                                 ->numeric()
-                                ->minValue(0),
+                                ->minValue(0)
+                                ->disabled(fn ($get): bool => $get('level') === Course::LEVEL_BASIC)
+                                ->dehydrated()
+                                ->formatStateUsing(fn ($get, $state) => $get('level') === Course::LEVEL_BASIC ? 0 : $state)
+                                ->dehydrateStateUsing(fn ($get, $state) => $get('level') === Course::LEVEL_BASIC ? 0 : (int) str_replace('.', '', (string) $state))
+                                ->default(fn ($get): int => $get('level') === Course::LEVEL_BASIC ? 0 : 0),
                             TextInput::make('rating')
                                 ->required()
                                 ->numeric(),

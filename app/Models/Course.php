@@ -23,6 +23,16 @@ class Course extends Model
 {
     use HasFactory;
 
+    public const LEVEL_BASIC = 'basic';
+    public const LEVEL_INTERMEDIATE = 'intermediate';
+    public const LEVEL_ADVANCED = 'advanced';
+
+    public const LEVELS = [
+        self::LEVEL_BASIC => 'Basic',
+        self::LEVEL_INTERMEDIATE => 'Intermediate',
+        self::LEVEL_ADVANCED => 'Advanced',
+    ];
+
     protected $fillable = [
         'name',
         'slug',
@@ -32,6 +42,7 @@ class Course extends Model
         'user_id',
         'price',
         'rating',
+        'level',
         'is_published',
         'introduction_video_url',
         'presentation_url',
@@ -43,7 +54,41 @@ class Course extends Model
         return [
             'is_published' => 'boolean',
             'rating' => 'decimal:2',
+            'level' => 'string',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Course $course) {
+            if ($course->isBasic()) {
+                $course->price = 0;
+            }
+        });
+    }
+
+    /**
+     * Apakah kelas ini level Basic (gratis, tanpa sertifikat/tugas/mentoring).
+     */
+    public function isBasic(): bool
+    {
+        return $this->level === self::LEVEL_BASIC;
+    }
+
+    /**
+     * Apakah kelas ini berbayar (intermediate atau advanced).
+     */
+    public function isPaid(): bool
+    {
+        return ! $this->isBasic();
+    }
+
+    /**
+     * Label level kelas dalam Bahasa Indonesia.
+     */
+    public function getLevelLabelAttribute(): string
+    {
+        return self::LEVELS[$this->level] ?? ucfirst($this->level ?? 'intermediate');
     }
 
     public function setNameAttribute($value)
@@ -56,6 +101,19 @@ class Course extends Model
     {
         // Transform dari berbagai format URL menjadi embed URL yang siap pakai
         $this->attributes['presentation_url'] = GoogleSlides::transformToEmbedUrl($value);
+    }
+
+    public function setLevelAttribute($value): void
+    {
+        $this->attributes['level'] = $value;
+        if ($value === self::LEVEL_BASIC) {
+            $this->attributes['price'] = 0;
+        }
+    }
+
+    public function setPriceAttribute($value): void
+    {
+        $this->attributes['price'] = $this->isBasic() ? 0 : (int) $value;
     }
 
     public function category(): BelongsTo
@@ -83,23 +141,7 @@ class Course extends Model
         );
     }
 
-    public function previewVideos(): HasManyThrough
-    {
-        return $this->videos()->where('course_videos.is_preview', true);
-    }
 
-    public function getHasPreviewVideosAttribute(): bool
-    {
-        if ($this->relationLoaded('previewVideos')) {
-            return $this->previewVideos->isNotEmpty();
-        }
-
-        if (isset($this->preview_videos_count)) {
-            return (int) $this->preview_videos_count > 0;
-        }
-
-        return $this->previewVideos()->exists();
-    }
 
     public function getDurationLabelAttribute(): string
     {

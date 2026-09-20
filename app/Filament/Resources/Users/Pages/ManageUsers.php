@@ -37,8 +37,13 @@ class ManageUsers extends ManageRecords
             ->where('is_approved', false)
             ->count();
 
-        $mentorCoachCount = User::query()
-            ->whereIn('role', ['mentor', 'coach'])
+        $mentorCount = User::query()
+            ->where('role', 'mentor')
+            ->where('is_approved', true)
+            ->count();
+
+        $coachCount = User::query()
+            ->where('role', 'coach')
             ->where('is_approved', true)
             ->count();
 
@@ -52,23 +57,36 @@ class ManageUsers extends ManageRecords
                 ->badge($pendingCount > 0 ? (string) $pendingCount : null)
                 ->badgeColor('warning')
                 ->icon('heroicon-m-clock')
-                ->modifyQueryUsing(fn (Builder $query) => $query
-                    ->whereIn('role', ['mentor', 'coach'])
-                    ->where('is_approved', false)
+                ->modifyQueryUsing(
+                    fn(Builder $query) => $query
+                        ->whereIn('role', ['mentor', 'coach'])
+                        ->where('is_approved', false)
                 ),
-            'mentors_coaches' => Tab::make('Mentor & Coach')
-                ->badge($mentorCoachCount > 0 ? (string) $mentorCoachCount : null)
+            'mentors' => Tab::make('Mentor')
+                ->badge($mentorCount > 0 ? (string) $mentorCount : null)
+                ->badgeColor('warning')
                 ->icon('heroicon-m-academic-cap')
-                ->modifyQueryUsing(fn (Builder $query) => $query
-                    ->whereIn('role', ['mentor', 'coach'])
-                    ->where('is_approved', true)
+                ->modifyQueryUsing(
+                    fn(Builder $query) => $query
+                        ->where('role', 'mentor')
+                        ->where('is_approved', true)
+                ),
+            'coaches' => Tab::make('Coach')
+                ->badge($coachCount > 0 ? (string) $coachCount : null)
+                ->badgeColor('info')
+                ->icon('heroicon-m-sparkles')
+                ->modifyQueryUsing(
+                    fn(Builder $query) => $query
+                        ->where('role', 'coach')
+                        ->where('is_approved', true)
                 ),
             'students' => Tab::make('Student')
                 ->badge($studentCount > 0 ? (string) $studentCount : null)
                 ->badgeColor('gray')
                 ->icon('heroicon-m-user')
-                ->modifyQueryUsing(fn (Builder $query) => $query
-                    ->where('role', 'student')
+                ->modifyQueryUsing(
+                    fn(Builder $query) => $query
+                        ->where('role', 'student')
                 ),
         ];
     }

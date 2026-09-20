@@ -59,60 +59,76 @@
                     @if($hasCourseAccess)
                         <div class="bg-white rounded-2xl p-5 md:p-6 mb-6 shadow-sm border border-gray-100">
                             @php
-                                $hasCertificate = !is_null($certificate);
                                 $allVideosWatched = $totalVideosCount > 0 && $watchedVideosCount >= $totalVideosCount;
-                                $hasSubmission = !is_null($taskSubmission);
-                                $isPending = $hasSubmission && $taskSubmission->isPending();
-                                $isReviewed = $hasSubmission && $taskSubmission->isReviewed();
 
-                                $steps = [
-                                    [
-                                        'label' => 'Tonton Video',
-                                        'sublabel' => $allVideosWatched ? ($totalVideosCount . '/' . $totalVideosCount . ' video') : ($watchedVideosCount . '/' . $totalVideosCount . ' video'),
-                                        'done' => $allVideosWatched,
-                                        'active' => !$allVideosWatched,
-                                        'action' => 'scrollToVideo()',
-                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                        'icon_todo' => '<path d="M8 5v14l11-7z"/>',
-                                    ],
-                                    [
-                                        'label' => 'Submit Tugas',
-                                        'sublabel' => $hasSubmission ? 'Tugas terkirim' : 'Belum di-submit',
-                                        'done' => $hasSubmission,
-                                        'active' => $allVideosWatched && !$hasSubmission,
-                                        'action' => 'goToTaskTab()',
-                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                        'icon_todo' => '<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>',
-                                    ],
-                                    [
-                                        'label' => 'Di Review',
-                                        'sublabel' => $isReviewed ? 'Review selesai' : ($isPending ? 'Sedang direview' : 'Menunggu submit'),
-                                        'done' => $isReviewed,
-                                        'active' => $isPending,
-                                        'action' => 'goToTaskTab()',
-                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                        'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
-                                    ],
-                                    [
-                                        'label' => 'Selesai Direview',
-                                        'sublabel' => $isReviewed ? (is_null($taskSubmission->score) ? 'Sudah dinilai' : 'Nilai: ' . $taskSubmission->score . '/100') : 'Belum direview',
-                                        'done' => $isReviewed,
-                                        'active' => false,
-                                        'action' => 'goToTaskTab()',
-                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                        'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
-                                    ],
-                                    [
-                                        'label' => 'Dapatkan Sertifikat',
-                                        'sublabel' => $hasCertificate ? 'Sertifikat telah terbit' : ($isReviewed ? 'Klik untuk klaim' : 'Selesaikan review dulu'),
-                                        'done' => $hasCertificate,
-                                        'active' => $isReviewed && !$hasCertificate,
-                                        'url' => $isReviewed ? route('claim-certificate', ['slug' => $course->slug]) : null,
-                                        'action' => !$isReviewed ? 'goToTaskTab()' : null,
-                                        'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
-                                        'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
-                                    ],
-                                ];
+                                if ($isBasicCourse) {
+                                    // Kelas Basic: hanya step Tonton Video
+                                    $steps = [
+                                        [
+                                            'label' => 'Tonton Video',
+                                            'sublabel' => $allVideosWatched ? ($totalVideosCount . '/' . $totalVideosCount . ' video') : ($watchedVideosCount . '/' . $totalVideosCount . ' video'),
+                                            'done' => $allVideosWatched,
+                                            'active' => !$allVideosWatched,
+                                            'action' => 'scrollToVideo()',
+                                            'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                            'icon_todo' => '<path d="M8 5v14l11-7z"/>',
+                                        ],
+                                    ];
+                                } else {
+                                    $hasCertificate = !is_null($certificate);
+                                    $hasSubmission = !is_null($taskSubmission);
+                                    $isPending = $hasSubmission && $taskSubmission->isPending();
+                                    $isReviewed = $hasSubmission && $taskSubmission->isReviewed();
+
+                                    $steps = [
+                                        [
+                                            'label' => 'Tonton Video',
+                                            'sublabel' => $allVideosWatched ? ($totalVideosCount . '/' . $totalVideosCount . ' video') : ($watchedVideosCount . '/' . $totalVideosCount . ' video'),
+                                            'done' => $allVideosWatched,
+                                            'active' => !$allVideosWatched,
+                                            'action' => 'scrollToVideo()',
+                                            'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                            'icon_todo' => '<path d="M8 5v14l11-7z"/>',
+                                        ],
+                                        [
+                                            'label' => 'Submit Tugas',
+                                            'sublabel' => $hasSubmission ? 'Tugas terkirim' : 'Belum di-submit',
+                                            'done' => $hasSubmission,
+                                            'active' => $allVideosWatched && !$hasSubmission,
+                                            'action' => 'goToTaskTab()',
+                                            'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                            'icon_todo' => '<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>',
+                                        ],
+                                        [
+                                            'label' => 'Di Review',
+                                            'sublabel' => $isReviewed ? 'Review selesai' : ($isPending ? 'Sedang direview' : 'Menunggu submit'),
+                                            'done' => $isReviewed,
+                                            'active' => $isPending,
+                                            'action' => 'goToTaskTab()',
+                                            'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                            'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
+                                        ],
+                                        [
+                                            'label' => 'Selesai Direview',
+                                            'sublabel' => $isReviewed ? (is_null($taskSubmission->score) ? 'Sudah dinilai' : 'Nilai: ' . $taskSubmission->score . '/100') : 'Belum direview',
+                                            'done' => $isReviewed,
+                                            'active' => false,
+                                            'action' => 'goToTaskTab()',
+                                            'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                            'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
+                                        ],
+                                        [
+                                            'label' => 'Dapatkan Sertifikat',
+                                            'sublabel' => $hasCertificate ? 'Sertifikat telah terbit' : ($isReviewed ? 'Klik untuk klaim' : 'Selesaikan review dulu'),
+                                            'done' => $hasCertificate,
+                                            'active' => $isReviewed && !$hasCertificate,
+                                            'url' => $isReviewed ? route('claim-certificate', ['slug' => $course->slug]) : null,
+                                            'action' => !$isReviewed ? 'goToTaskTab()' : null,
+                                            'icon_done' => '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                                            'icon_todo' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
+                                        ],
+                                    ];
+                                }
                             @endphp
 
                             <!-- Header & Progress Bar -->
@@ -663,7 +679,20 @@
 
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-xl p-6 sticky top-24">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Daftar Kelas</h2>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-gray-900">Daftar Kelas</h2>
+                            @php
+                                $levelBadgeClass = match($course->level) {
+                                    'basic' => 'bg-emerald-100 text-emerald-700',
+                                    'intermediate' => 'bg-blue-100 text-blue-700',
+                                    'advanced' => 'bg-purple-100 text-purple-700',
+                                    default => 'bg-gray-100 text-gray-700',
+                                };
+                            @endphp
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full {{ $levelBadgeClass }}">
+                                {{ $course->level_label }}
+                            </span>
+                        </div>
 
                         @if($hasCourseAccess)
                                             <div class="mb-5 rounded-xl border border-pink-100 bg-pink-50 p-4">
@@ -783,35 +812,37 @@
                             @empty
                                 <div class="text-sm text-gray-500">Belum ada section di kelas ini.</div>
                             @endforelse
-
-                            @if($hasCourseAccess && $currentVideo && !$showPresentation)
-                                <div class="mt-4 mb-4 space-y-2.5">
-                                    @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
+                        </div>
+                        {{-- Tombol aksi (Next Video, Quiz, Tugas) di LUAR area scroll --}}
+                        @if($hasCourseAccess && $currentVideo && !$showPresentation)
+                            <div class="mt-3 space-y-2.5">
+                                @if ($hasCurrentVideoQuiz && !$isCurrentVideoQuizCompleted)
+                                    <button type="button" onclick="openQuizModal()"
+                                        class="w-full bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                        <span>Kerjakan Quiz</span>
+                                    </button>
+                                @elseif ($nextVideoUrl)
+                                    <a href="{{ $nextVideoUrl }}"
+                                        class="w-full inline-flex items-center justify-center gap-2 bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm">
+                                        <span>Next Video</span>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
+                                    @if ($hasCurrentVideoQuiz)
                                         <button type="button" onclick="openQuizModal()"
-                                            class="w-full bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                            class="w-full py-2.5 px-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2">
+                                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                             </svg>
-                                            <span>Kerjakan Quiz</span>
+                                            <span>Ulangi Quiz (Skor: {{ $currentVideoQuizCompletion?->score ?? 0 }}/100)</span>
                                         </button>
-                                    @elseif ($nextVideoUrl)
-                                        <a href="{{ $nextVideoUrl }}"
-                                            class="w-full inline-flex items-center justify-center gap-2 bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm">
-                                            <span>Next Video</span>
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </a>
-                                        @if ($hasCurrentVideoQuiz)
-                                            <button type="button" onclick="openQuizModal()"
-                                                class="w-full py-2.5 px-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2">
-                                                <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                </svg>
-                                                <span>Ulangi Quiz (Skor: {{ $currentVideoQuizCompletion?->score ?? 0 }}/100)</span>
-                                            </button>
-                                        @endif
-                                    @else
+                                    @endif
+                                @else
+                                    @if($course->isPaid())
                                         <button type="button" onclick="goToTaskTab()"
                                             class="w-full inline-flex items-center justify-center gap-2 bg-primary hover-primary text-white font-bold py-3 rounded-xl transition shadow-sm">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -819,22 +850,54 @@
                                             </svg>
                                             <span>Kerjakan Tugas</span>
                                         </button>
-                                        @if ($hasCurrentVideoQuiz)
-                                            <button type="button" onclick="openQuizModal()"
-                                                class="w-full py-2.5 px-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2">
-                                                <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                </svg>
-                                                <span>Ulangi Quiz (Skor: {{ $currentVideoQuizCompletion?->score ?? 0 }}/100)</span>
-                                            </button>
-                                        @endif
+                                    @else
+                                        <div class="w-full inline-flex items-center justify-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold py-3 rounded-xl">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span>Semua video selesai ditonton!</span>
+                                        </div>
                                     @endif
-                                </div>
-                            @endif
-                        </div>
+                                    @if ($hasCurrentVideoQuiz)
+                                        <button type="button" onclick="openQuizModal()"
+                                            class="w-full py-2.5 px-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-700 font-semibold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2">
+                                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span>Ulangi Quiz (Skor: {{ $currentVideoQuizCompletion?->score ?? 0 }}/100)</span>
+                                        </button>
+                                    @endif
+                                @endif
+                            </div>
+                        @endif
 
                         @if(!$hasCourseAccess)
-                            @if($hasPendingTransaction)
+                            @if($course->isBasic())
+                                {{-- Basic course: form POST untuk auto-enroll dengan popup sukses --}}
+                                <div class="mt-6">
+                                    @auth
+                                        @if(auth()->user()->role === 'student')
+                                            <form method="POST" action="{{ route('course.enroll', ['slug' => $course->slug]) }}">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="block w-full text-center bg-primary hover-primary text-white font-bold py-3.5 rounded-xl shadow-sm transition">
+                                                    Daftar Gratis
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" onclick="showRestrictedRoleAlert('{{ auth()->user()->role }}')"
+                                                class="block w-full text-center bg-primary text-white font-bold py-3.5 rounded-xl shadow-sm opacity-75 cursor-not-allowed">
+                                                Daftar Gratis
+                                            </button>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}"
+                                            class="block w-full text-center bg-primary hover-primary text-white font-bold py-3.5 rounded-xl shadow-sm transition">
+                                            Daftar Gratis
+                                        </a>
+                                    @endauth
+                                </div>
+                            @elseif($hasPendingTransaction)
                                 <div
                                     class="block w-full text-center bg-gray-200 text-gray-600 font-bold py-3 rounded-lg mt-6 cursor-not-allowed">
                                     Menunggu Konfirmasi Bayar
@@ -862,6 +925,7 @@
                                 </div>
                             @endif
                         @endif
+
                     </div>
                 </div>
             </div>
@@ -1056,25 +1120,32 @@
             const isQuizSuccess = type === 'success' && message.toLowerCase().includes('quiz');
             const shouldGoNext = isQuizSuccess && !!nextVideoUrl;
             const options = {
-                title: type === 'success' ? 'Berhasil' : 'Perhatian',
+                title: type === 'success' ? 'Pendaftaran Berhasil! 🎉' : 'Perhatian',
                 text: message,
                 confirmButtonColor: '#ec4899',
                 background: '#fff',
-                imageWidth: 220,
+                imageWidth: 240,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    confirmButton: 'rounded-xl font-bold px-6 py-2.5 text-sm shadow-md'
+                }
             };
 
             if (type === 'error') {
                 options.title = 'Perhatian';
                 options.imageUrl = tryAgainGifUrl;
                 options.imageAlt = 'Try again gif';
+                options.confirmButtonText = 'Tutup';
             } else if (isQuizSuccess) {
-                options.title = 'Quiz selesai';
+                options.title = 'Quiz Selesai! 🎉';
                 options.imageUrl = quizSuccessGifUrl;
                 options.imageAlt = 'Quiz success gif';
-                options.confirmButtonText = 'Lanjut belajar';
+                options.confirmButtonText = 'Lanjut Belajar';
             } else {
+                // Notif pendaftaran gratis / pembelian kelas berbayar menggunakan GIF congratulations yang sama
                 options.imageUrl = quizSuccessGifUrl;
-                options.imageAlt = 'Success gif';
+                options.imageAlt = 'Selamat!';
+                options.confirmButtonText = 'Mulai Belajar ➔';
             }
 
             Swal.fire(options).then((result) => {
@@ -1500,9 +1571,18 @@
             return false;
         }
 
-        window.addEventListener('load', () => {
+        function initCourseAlerts() {
             showCourseAlert('success', sessionSuccessMessage);
             showCourseAlert('error', sessionErrorMessage);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCourseAlerts);
+        } else {
+            initCourseAlerts();
+        }
+
+        window.addEventListener('load', () => {
 
             const hasTaskFormError = {{ $errors->has('subject') || $errors->has('google_drive_url') ? 'true' : 'false' }};
             const hasDiscussionError = {{ $errors->has('message') ? 'true' : 'false' }};

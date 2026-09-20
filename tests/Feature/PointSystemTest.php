@@ -29,9 +29,17 @@ test('user receives 40 points when buying a course successfully', function () {
         'trx_id' => 'TRX-TEST-001',
         'user_id' => $student->id,
         'course_id' => $course->id,
+        'payment_method' => 'xendit',
         'price' => 150000,
         'status' => Transaction::STATUS_PENDING,
     ]);
+
+    config(['services.xendit.webhook_token' => 'test-token']);
+    $this->withHeaders(['x-callback-token' => 'test-token'])
+        ->postJson(route('payments.xendit.webhook'), [
+            'external_id' => $transaction->trx_id,
+            'status' => 'PAID',
+        ]);
 
     $this->actingAs($student);
     $response = $this->get(route('payments.xendit.finish', ['order_id' => $transaction->trx_id]));

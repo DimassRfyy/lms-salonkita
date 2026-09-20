@@ -29,6 +29,13 @@ class PaymentController extends Controller
             ->where('slug', $courseSlug)
             ->firstOrFail();
 
+        // Kelas Basic atau gratis tidak memerlukan pembayaran, redirect ke halaman kelas
+        if ($course->isBasic() || (int) $course->price === 0) {
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('info', 'Kelas ini gratis! Kamu bisa langsung mulai belajar.');
+        }
+
         $user = $request->user();
         if ($user && $user->role !== 'student') {
             return redirect()
@@ -52,6 +59,13 @@ class PaymentController extends Controller
         $course = Course::query()
             ->where('is_published', true)
             ->findOrFail((int) $validated['course_id']);
+
+        // Kelas Basic atau gratis tidak memerlukan pembayaran
+        if ($course->isBasic() || (int) $course->price === 0) {
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('info', 'Kelas ini gratis! Kamu bisa langsung mulai belajar.');
+        }
 
         if ($user->role !== 'student') {
             return redirect()
@@ -292,6 +306,12 @@ class PaymentController extends Controller
     private function grantMentoringEntitlement(Transaction $transaction): void
     {
         if (! $transaction->student || ! $transaction->course_id) {
+            return;
+        }
+
+        // Kelas Basic tidak mendapat jatah mentoring
+        $course = $transaction->course;
+        if ($course && ($course->isBasic() || (int) $course->price === 0)) {
             return;
         }
 

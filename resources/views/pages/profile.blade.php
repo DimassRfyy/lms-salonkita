@@ -426,29 +426,52 @@
                                 $progressPercentage = $totalVideos > 0 ? (int) round(($watchedVideos / $totalVideos) * 100) : 0;
                             @endphp
 
-                            <div class="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-pink-200 hover:shadow-sm transition flex flex-col justify-between">
-                                <div class="relative h-36 bg-gray-100 overflow-hidden">
+                            <div class="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-pink-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between">
+                                <a href="{{ route('course', $course->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="Lanjut belajar {{ $course->name }}"></a>
+                                <div class="relative aspect-[16/10] bg-gray-100 overflow-hidden">
                                     <img src="{{ $thumbnailUrl }}" alt="{{ $course->name }}"
                                         onerror="this.onerror=null;this.src='{{ asset('assets/images/thumbnails/img_placeholder.png') }}';"
-                                        class="w-full h-full object-cover">
-                                    <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-sm">
+                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                                    {{-- Level Badge (Top Left) --}}
+                                    <div class="absolute top-2.5 left-2.5 z-20">
+                                        @if($course->level === 'basic' || (int) $course->price === 0)
+                                            <span class="inline-flex items-center gap-1 bg-emerald-500/95 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs backdrop-blur-xs">
+                                                Basic
+                                            </span>
+                                        @elseif($course->level === 'intermediate')
+                                            <span class="inline-flex items-center gap-1 bg-sky-600/95 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs backdrop-blur-xs">
+                                                Intermediate
+                                            </span>
+                                        @elseif($course->level === 'advanced')
+                                            <span class="inline-flex items-center gap-1 bg-purple-600/95 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs backdrop-blur-xs">
+                                                Advanced
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <span class="absolute top-2.5 right-2.5 z-20 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 text-gray-800 backdrop-blur-xs shadow-xs">
                                         {{ $course->category?->name ?? 'Course' }}
                                     </span>
                                 </div>
-                                <div class="p-3.5 flex-1 flex flex-col justify-between">
+                                <div class="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
                                     <div>
-                                        <h3 class="font-bold text-gray-900 text-xs sm:text-sm line-clamp-1 mb-1.5">{{ $course->name }}</h3>
-                                        <div class="w-full bg-gray-100 rounded-full h-1.5 mb-1 overflow-hidden">
+                                        <h3 class="font-bold text-gray-900 text-sm group-hover:text-pink-600 transition-colors line-clamp-1 mb-2">{{ $course->name }}</h3>
+                                        <div class="w-full bg-gray-100 rounded-full h-1.5 mb-1.5 overflow-hidden">
                                             <div class="bg-pink-500 h-1.5 rounded-full transition-all duration-300" style="width: {{ $progressPercentage }}%"></div>
                                         </div>
-                                        <p class="text-[10px] text-gray-500 font-medium">{{ $progressPercentage }}% Selesai</p>
+                                        <div class="flex items-center justify-between text-[11px] text-gray-500">
+                                            <span>Progress</span>
+                                            <span class="font-bold text-pink-600">{{ $progressPercentage }}% Selesai</span>
+                                        </div>
                                     </div>
 
-                                    <div class="mt-3 pt-2.5 border-t border-gray-50">
-                                        <a href="{{ route('course', $course->slug) }}" class="inline-flex items-center justify-center w-full px-3 py-1.5 bg-pink-50 hover:bg-pink-500 text-pink-600 hover:text-white font-bold text-xs rounded-lg transition">
-                                            Lanjut Belajar
-                                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                        </a>
+                                    <div class="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between">
+                                        <span class="text-xs font-bold text-gray-700 group-hover:text-pink-600 transition-colors">Lanjut Belajar</span>
+                                        <div class="w-7 h-7 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-500 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300 shadow-2xs">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

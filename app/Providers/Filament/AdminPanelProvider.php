@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->spa(hasPrefetching: true)
             ->sidebarCollapsibleOnDesktop()
             ->collapsibleNavigationGroups(true)
             ->sidebarWidth('15.5rem')

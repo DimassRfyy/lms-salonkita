@@ -35,11 +35,10 @@ test('student profile displays achievements and badge counts accurately', functi
 
     $response->assertStatus(200);
     $response->assertSee('1 Badges');
-    $response->assertSee('1 / 2 Terbuka');
+    $response->assertSee('1 / 2 Diraih');
     $response->assertSee('Beauty Starter');
     $response->assertSee('Hair Styling Virtuoso');
-    $response->assertSee('Terbuka');
-    $response->assertSee('Belum Terbuka');
+    $response->assertSee('Progress:');
 });
 
 test('admin can grant and revoke achievement to student', function () {

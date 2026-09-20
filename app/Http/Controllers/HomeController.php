@@ -28,8 +28,8 @@ class HomeController extends Controller
         $courses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
-            ->withCount(['previewVideos as preview_videos_count'])
             ->where('is_published', true)
+            ->orderByRaw("CASE WHEN level = 'basic' OR price = 0 THEN 0 ELSE 1 END")
             ->latest()
             ->take(4)
             ->get();
@@ -102,15 +102,15 @@ class HomeController extends Controller
 
             return $course;
         })
-        ->sortBy(fn ($course) => $course->progress_percentage >= 100 ? 1 : 0)
-        ->values();
+            ->sortBy(fn($course) => $course->progress_percentage >= 100 ? 1 : 0)
+            ->values();
 
         $recommendedCourses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
-            ->withCount(['previewVideos as preview_videos_count'])
             ->where('is_published', true)
-            ->when(! empty($ownedCourseIds), fn($query) => $query->whereNotIn('id', $ownedCourseIds, 'and'))
+            ->when(!empty($ownedCourseIds), fn($query) => $query->whereNotIn('id', $ownedCourseIds, 'and'))
+            ->orderByRaw("CASE WHEN level = 'basic' OR price = 0 THEN 0 ELSE 1 END")
             ->latest()
             ->paginate(8)
             ->withQueryString();
@@ -134,7 +134,7 @@ class HomeController extends Controller
             ->first();
 
         $currentMentoringRequest = $activeMentorship ?? $pendingMentorship;
-        if (! $currentMentoringRequest) {
+        if (!$currentMentoringRequest) {
             $currentMentoringRequest = $user->mentoringRequestsAsStudent()
                 ->with(['mentor', 'course'])
                 ->latest()
@@ -159,9 +159,9 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
-        $totalRemainingQuota = $availableMentoringEntitlements->sum(fn ($e) => max(0, $e->total_quota - $e->used_quota));
+        $totalRemainingQuota = $availableMentoringEntitlements->sum(fn($e) => max(0, $e->total_quota - $e->used_quota));
 
-        $hasMentoringAccess = $availableMentoringEntitlement !== null 
+        $hasMentoringAccess = $availableMentoringEntitlement !== null
             || $activeMentorship !== null
             || $pendingMentorship !== null
             || $latestMentoringBooking !== null;
@@ -208,14 +208,17 @@ class HomeController extends Controller
             ? (clone $query)->where('slug', $slug)->firstOrFail()
             : (clone $query)->latest()->firstOrFail();
 
+        // Kelas Basic: gratis namun tetap wajib terdaftar untuk mengakses materi
+        $isBasicCourse = $course->isBasic();
+
         $hasCourseAccess = false;
         $hasPendingTransaction = false;
         if ($viewer) {
             $isCourseInstructor = $viewer->id === (int) $course->user_id;
-            $hasCourseAccess = $isCourseInstructor
-                || $viewer->ownedCourses()->where('courses.id', $course->id)->exists();
+            $isEnrolled = $viewer->ownedCourses()->where('courses.id', $course->id)->exists();
+            $hasCourseAccess = $isCourseInstructor || $isEnrolled;
 
-            if (! $hasCourseAccess) {
+            if (!$hasCourseAccess && !$isBasicCourse) {
                 $hasPendingTransaction = $viewer->transactions()
                     ->where('course_id', $course->id)
                     ->latest('created_at')
@@ -227,22 +230,28 @@ class HomeController extends Controller
         $videos = $course->sections->flatMap->videos->values();
         $requestedVideoId = (int) $request->query('video');
 
-        // Pengecekan apakah video yang diminta adalah preview gratis atau user punya akses penuh
+        // Cek akses video jika ada video yang diminta
         $targetVideo = $requestedVideoId > 0 ? $videos->firstWhere('id', $requestedVideoId) : null;
-        if (! $hasCourseAccess && $targetVideo && ! $targetVideo->is_preview) {
+        if (!$hasCourseAccess && $targetVideo) {
+            if (!$viewer) {
+                return redirect()
+                    ->route('login')
+                    ->with('error', 'Silakan login terlebih dahulu untuk mengakses kelas ini.');
+            }
+            if ($isBasicCourse) {
+                return redirect()
+                    ->route('course', ['slug' => $course->slug])
+                    ->with('error', 'Silakan klik tombol "Daftar Gratis" terlebih dahulu untuk mulai belajar.');
+            }
             return redirect()
                 ->route('course', ['slug' => $course->slug])
                 ->with('error', 'Video ini terkunci. Silakan beli kelas untuk mengakses materi ini.');
         }
 
-        // Tentukan current video:
-        // Jika user memiliki akses kelas: video requested atau null (atau fallback ke unlock map)
-        // Jika belum beli: video requested jika is_preview, atau video preview pertama, atau null
+        // Tentukan current video: hanya diset jika pengguna punya akses kelas
         $currentVideo = null;
         if ($hasCourseAccess) {
-            $currentVideo = $targetVideo;
-        } elseif ($targetVideo && $targetVideo->is_preview) {
-            $currentVideo = $targetVideo;
+            $currentVideo = $targetVideo ?? $videos->first();
         }
 
         $currentVideoIndex = null;
@@ -286,15 +295,15 @@ class HomeController extends Controller
                 $previousQuiz = $previousVideo?->quiz;
                 $requiresPreviousQuiz = (bool) ($previousQuiz && $previousQuiz->is_active && $previousQuiz->questions->isNotEmpty());
 
-                $videoUnlockMap[$video->id] = ! $requiresPreviousQuiz
+                $videoUnlockMap[$video->id] = !$requiresPreviousQuiz
                     || $quizCompletionVideoIds->contains($previousVideo->id);
             } else {
-                // Untuk user yang belum membeli: hanya video dengan is_preview = true yang terbuka
-                $videoUnlockMap[$video->id] = (bool) $video->is_preview;
+                // Untuk kelas non-basic yang belum dibeli: semua video terkunci
+                $videoUnlockMap[$video->id] = false;
             }
         }
 
-        if ($hasCourseAccess && $requestedVideoId > 0 && $currentVideo && ! ($videoUnlockMap[$currentVideo->id] ?? false)) {
+        if ($hasCourseAccess && $requestedVideoId > 0 && $currentVideo && !($videoUnlockMap[$currentVideo->id] ?? false)) {
             $fallbackVideo = $videos->first(fn($video) => (bool) ($videoUnlockMap[$video->id] ?? false));
             $currentVideo = $fallbackVideo;
             $currentVideoIndex = $currentVideo ? $videos->search(fn($video) => $video->id === $currentVideo->id) : null;
@@ -315,16 +324,13 @@ class HomeController extends Controller
             );
         }
 
-        // Tentukan video yang di-embed:
-        // Jika sedang memutar currentVideo (bisa dari akses penuh atau free preview): putar currentVideo
-        // Jika tidak, embed video intro kelas (atau video pertama jika ada)
+        // Tentukan video yang di-embed
         if ($currentVideo) {
             $embedUrl = Youtube::embedUrl($currentVideo->video_url)
-                ?? Youtube::embedUrl($course->introduction_video_url)
-                ?? Youtube::embedUrl($videos->first()?->video_url);
+                ?? Youtube::embedUrl($course->introduction_video_url);
         } else {
-            $embedUrl = Youtube::embedUrl($course->introduction_video_url)
-                ?? ($videos->firstWhere('is_preview', true) ? Youtube::embedUrl($videos->firstWhere('is_preview', true)->video_url) : null);
+            // Jika belum memiliki akses, hanya tampilkan video perkenalan kelas (trailer) jika tersedia
+            $embedUrl = Youtube::embedUrl($course->introduction_video_url);
         }
 
         $presentationEmbedUrl = $hasCourseAccess ? $course->presentation_url : null;
@@ -345,21 +351,16 @@ class HomeController extends Controller
             $sectionVideos = $section->videos->map(function ($video) use ($videos, $currentVideo, $currentVideoIndex, $course, $hasCourseAccess, $watchedVideoIds, $videoUnlockMap) {
                 $isUnlocked = (bool) ($videoUnlockMap[$video->id] ?? false);
                 $isCurrentVideo = $currentVideo && $video->id === $currentVideo->id;
-                $isLocked = ! $isUnlocked;
+                $isLocked = !$isUnlocked;
 
-                if (! $hasCourseAccess) {
-                    $stateClass = $isLocked
-                        ? 'locked'
-                        : ($isCurrentVideo ? 'now-playing' : 'unwatched');
-
+                if (!$hasCourseAccess) {
                     return (object) [
                         'title' => $video->title,
                         'duration_label' => $video->duration_label,
-                        'state_class' => $stateClass,
+                        'state_class' => 'locked',
                         'is_watched' => false,
-                        'is_locked' => $isLocked,
-                        'is_preview' => (bool) $video->is_preview,
-                        'url' => $isLocked ? null : route('course', ['slug' => $course->slug, 'video' => $video->id]),
+                        'is_locked' => true,
+                        'url' => null,
                     ];
                 }
 
@@ -376,7 +377,6 @@ class HomeController extends Controller
                     'state_class' => $stateClass,
                     'is_watched' => $isWatched,
                     'is_locked' => $isLocked,
-                    'is_preview' => (bool) $video->is_preview,
                     'url' => $isLocked ? null : route('course', ['slug' => $course->slug, 'video' => $video->id]),
                 ];
             })->values();
@@ -420,7 +420,8 @@ class HomeController extends Controller
 
         $taskSubmission = null;
         $certificate = null;
-        if ($hasCourseAccess && $viewer) {
+        // Tugas dan sertifikat hanya untuk kelas berbayar (intermediate & advanced)
+        if ($hasCourseAccess && $viewer && $course->isPaid()) {
             $taskSubmission = CourseTaskSubmission::query()
                 ->where('course_id', $course->id)
                 ->where('user_id', $viewer->id)
@@ -432,13 +433,15 @@ class HomeController extends Controller
                 ->first();
         }
 
-        $canSubmitTask = $hasCourseAccess
+        $canSubmitTask = $course->isPaid()
+            && $hasCourseAccess
             && $totalVideosCount > 0
             && $watchedVideosCount >= $totalVideosCount
-            && (! $taskSubmission || ! $taskSubmission->isReviewed());
+            && (!$taskSubmission || !$taskSubmission->isReviewed());
 
         return view('pages.course', compact(
             'course',
+            'isBasicCourse',
             'currentVideo',
             'currentVideoIndex',
             'embedUrl',
@@ -556,6 +559,44 @@ class HomeController extends Controller
             ->with('success', 'Quiz berhasil dikerjakan.');
     }
 
+    /**
+     * Daftarkan student ke kelas Basic (gratis) tanpa pembayaran.
+     */
+    public function enrollBasicCourse(Request $request, string $slug)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $course = Course::query()
+            ->with('sections.videos')
+            ->where('is_published', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        abort_unless($course->isBasic() || (int) $course->price === 0, 403, 'Hanya kelas Basic yang bisa didaftarkan gratis.');
+
+        if ($user->role !== 'student') {
+            return redirect()
+                ->route('course', ['slug' => $course->slug])
+                ->with('error', 'Akun dengan role ' . ucfirst($user->role) . ' tidak dapat mendaftar kelas. Pendaftaran kelas hanya untuk akun Student.');
+        }
+
+        // Jika belum terdaftar, daftarkan sekarang
+        if (!$user->ownedCourses()->where('courses.id', $course->id)->exists()) {
+            $user->ownedCourses()->syncWithoutDetaching([$course->id]);
+        }
+
+        $firstVideo = $course->sections->flatMap->videos->first();
+        $redirectParams = ['slug' => $course->slug];
+        if ($firstVideo) {
+            $redirectParams['video'] = $firstVideo->id;
+        }
+
+        return redirect()
+            ->route('course', $redirectParams)
+            ->with('success', 'Hore! Pendaftaran kelas gratis berhasil. Yuk, mulai belajar sekarang!');
+    }
+
     public function storeCourseTaskSubmission(Request $request, string $slug)
     {
         /** @var User $user */
@@ -566,6 +607,9 @@ class HomeController extends Controller
             ->where('is_published', true)
             ->where('slug', $slug)
             ->firstOrFail();
+
+        // Kelas Basic tidak memiliki fitur tugas
+        abort_if($course->isBasic(), 403, 'Kelas Basic tidak memiliki fitur tugas.');
 
         $hasAccess = $user->ownedCourses()->where('courses.id', $course->id)->exists();
         abort_unless($hasAccess, 403);
@@ -674,7 +718,6 @@ class HomeController extends Controller
         $savedCourses = $user->savedCourses()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
-            ->withCount(['previewVideos as preview_videos_count'])
             ->orderByPivot('created_at', 'desc')
             ->get();
 
@@ -728,14 +771,16 @@ class HomeController extends Controller
         $courses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
-            ->withCount(['previewVideos as preview_videos_count'])
             ->where('is_published', true)
             ->when($search !== '', fn($query) => $query->where('name', 'like', '%' . $search . '%'))
+            ->orderByRaw("CASE WHEN level = 'basic' OR price = 0 THEN 0 ELSE 1 END")
             ->latest()
             ->paginate(8)
             ->withQueryString();
 
-        return view('pages.all_courses', compact('courses', 'search'));
+        $savedCourseIds = $request->user()?->savedCourses()->pluck('courses.id') ?? collect();
+
+        return view('pages.all_courses', compact('courses', 'search', 'savedCourseIds'));
     }
 
     public function claimCertificate(Request $request, string $slug)
@@ -750,6 +795,9 @@ class HomeController extends Controller
 
         $hasAccess = $user->ownedCourses()->where('courses.id', $course->id)->exists();
         abort_unless($hasAccess, 403);
+
+        // Kelas Basic tidak memiliki fitur sertifikat
+        abort_if($course->isBasic(), 403, 'Kelas Basic tidak memiliki fitur sertifikat.');
 
         $submission = CourseTaskSubmission::query()
             ->where('course_id', $course->id)
@@ -803,6 +851,9 @@ class HomeController extends Controller
 
         $hasAccess = $user->ownedCourses()->where('courses.id', $course->id)->exists();
         abort_unless($hasAccess, 403);
+
+        // Kelas Basic tidak memiliki fitur sertifikat
+        abort_if($course->isBasic(), 403, 'Kelas Basic tidak memiliki fitur sertifikat.');
 
         $submission = CourseTaskSubmission::query()
             ->where('course_id', $course->id)
@@ -916,12 +967,14 @@ class HomeController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        // Halaman tugas hanya menampilkan kelas berbayar (intermediate & advanced)
         $courses = $user->ownedCourses()
             ->with([
                 'category',
                 'taskSubmissions' => fn($query) => $query->where('user_id', $user->id),
             ])
             ->withCount('videos')
+            ->where(fn($query) => $query->whereNull('level')->orWhere('level', '!=', Course::LEVEL_BASIC))
             ->orderByPivot('created_at', 'desc')
             ->get();
 

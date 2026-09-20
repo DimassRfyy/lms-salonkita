@@ -26,6 +26,10 @@ Route::post('/course/{slug}/task-submission', [HomeController::class, 'storeCour
 Route::post('/course/{slug}/discussion', [HomeController::class, 'storeCourseDiscussion'])
     ->name('course.discussion.store')
     ->middleware('auth');
+Route::post('/course/{slug}/enroll', [HomeController::class, 'enrollBasicCourse'])
+    ->name('course.enroll')
+    ->middleware('auth');
+
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile')->middleware('auth');
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
