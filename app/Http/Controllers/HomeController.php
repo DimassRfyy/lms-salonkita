@@ -767,12 +767,16 @@ class HomeController extends Controller
     public function allCourses(Request $request)
     {
         $search = trim((string) $request->query('search', ''));
+        $level = trim((string) $request->query('level', ''));
+        $allowedLevels = [Course::LEVEL_BASIC, Course::LEVEL_INTERMEDIATE, Course::LEVEL_ADVANCED];
+        $activeLevel = in_array($level, $allowedLevels, true) ? $level : null;
 
         $courses = Course::query()
             ->with('category')
             ->withSum('videos as total_duration_seconds', 'duration_seconds')
             ->where('is_published', true)
             ->when($search !== '', fn($query) => $query->where('name', 'like', '%' . $search . '%'))
+            ->when($activeLevel !== null, fn($query) => $query->where('level', $activeLevel))
             ->orderByRaw("CASE WHEN level = 'basic' OR price = 0 THEN 0 ELSE 1 END")
             ->latest()
             ->paginate(8)
@@ -780,7 +784,7 @@ class HomeController extends Controller
 
         $savedCourseIds = $request->user()?->savedCourses()->pluck('courses.id') ?? collect();
 
-        return view('pages.all_courses', compact('courses', 'search', 'savedCourseIds'));
+        return view('pages.all_courses', compact('courses', 'search', 'savedCourseIds', 'activeLevel'));
     }
 
     public function claimCertificate(Request $request, string $slug)

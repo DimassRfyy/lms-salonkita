@@ -18,6 +18,9 @@
             <div class="bg-white border border-pink-100 rounded-2xl p-4 md:p-5 shadow-sm">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <form method="GET" action="{{ route('all-courses') }}" class="w-full md:max-w-md relative">
+                        @if(!empty($activeLevel))
+                            <input type="hidden" name="level" value="{{ $activeLevel }}">
+                        @endif
                         <input type="text" name="search" value="{{ $search ?? '' }}"
                             placeholder="Cari kelas berdasarkan nama..."
                             class="w-full pl-11 pr-24 py-3 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-300 focus:bg-white transition">
@@ -28,7 +31,7 @@
                         </svg>
                         <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             @if(!empty($search))
-                                <a href="{{ route('all-courses') }}"
+                                <a href="{{ route('all-courses', array_filter(['level' => $activeLevel])) }}"
                                     class="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition">
                                     Reset
                                 </a>
@@ -44,15 +47,44 @@
                             class="font-semibold text-pink-600">{{ $courses->total() }}</span> kelas
                     </p>
                 </div>
+
+                {{-- LEVEL FILTER TABS --}}
+                <div class="flex items-center gap-2 pt-4 mt-4 border-t border-gray-100 overflow-x-auto pb-1">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 shrink-0">Level:</span>
+                    <a href="{{ route('all-courses', array_filter(['search' => $search])) }}"
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold transition shrink-0 {{ empty($activeLevel) ? 'bg-pink-500 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-pink-50 hover:text-pink-600' }}">
+                        Semua Level
+                    </a>
+                    <a href="{{ route('all-courses', array_filter(['search' => $search, 'level' => 'basic'])) }}"
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold transition shrink-0 {{ $activeLevel === 'basic' ? 'bg-emerald-500 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600' }}">
+                        Basic (Free)
+                    </a>
+                    <a href="{{ route('all-courses', array_filter(['search' => $search, 'level' => 'intermediate'])) }}"
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold transition shrink-0 {{ $activeLevel === 'intermediate' ? 'bg-sky-600 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-sky-50 hover:text-sky-600' }}">
+                        Intermediate
+                    </a>
+                    <a href="{{ route('all-courses', array_filter(['search' => $search, 'level' => 'advanced'])) }}"
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold transition shrink-0 {{ $activeLevel === 'advanced' ? 'bg-purple-600 text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-purple-50 hover:text-purple-600' }}">
+                        Advanced
+                    </a>
+                </div>
             </div>
         </section>
 
-        @if(!empty($search))
-            <section class="mb-6">
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-50 text-pink-700 border border-pink-100 text-sm font-medium">
-                    Hasil pencarian untuk "{{ $search }}"
-                </div>
+        @if(!empty($search) || !empty($activeLevel))
+            <section class="mb-6 flex flex-wrap items-center gap-2">
+                @if(!empty($search))
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-50 text-pink-700 border border-pink-100 text-xs font-semibold">
+                        <span>Pencarian: "{{ $search }}"</span>
+                        <a href="{{ route('all-courses', array_filter(['level' => $activeLevel])) }}" class="hover:text-pink-900 font-bold ml-1">×</a>
+                    </div>
+                @endif
+                @if(!empty($activeLevel))
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-50 text-pink-700 border border-pink-100 text-xs font-semibold">
+                        <span>Level: {{ ucfirst($activeLevel) }}</span>
+                        <a href="{{ route('all-courses', array_filter(['search' => $search])) }}" class="hover:text-pink-900 font-bold ml-1">×</a>
+                    </div>
+                @endif
             </section>
         @endif
 

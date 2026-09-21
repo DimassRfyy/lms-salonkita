@@ -15,70 +15,76 @@
                     </div>
                 </a>
 
-                @if(request()->routeIs('home'))
-                    <!-- Menu Tengah Khusus Beranda (Akses Publik / Tanpa Login) -->
-                    <div class="hidden md:flex items-center gap-1 lg:gap-2">
-                        <a href="{{ route('all-courses') }}"
-                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
+                <!-- Menu Tengah (Akses Publik & Login) -->
+                <div class="hidden md:flex items-center gap-1 lg:gap-2">
+                    <!-- Dropdown Semua Kelas -->
+                    <div class="relative group">
+                        <button type="button"
+                            class="px-3.5 lg:px-4 py-2 text-[15px] font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 inline-flex items-center gap-1 focus:outline-none cursor-pointer {{ request()->routeIs('all-courses') ? 'text-pink-600 bg-pink-50/70' : '' }}">
                             <span>Semua Kelas</span>
-                        </a>
-
-                        <a href="{{ route('register.mentor-coach', ['role' => 'mentor']) }}"
-                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-pink-600 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
-                            <span>Mentor</span>
-                        </a>
+                        </button>
 
-                        <a href="{{ route('register.mentor-coach', ['role' => 'coach']) }}"
-                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            <span>Coach</span>
-                        </a>
-
-                        <a href="#faq"
-                            class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>FAQ</span>
-                        </a>
+                        <!-- Dropdown Menu Level -->
+                        <div class="absolute left-0 mt-1 w-60 bg-white rounded-2xl shadow-xl border border-pink-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <a href="{{ route('all-courses') }}"
+                                class="flex flex-col px-4 py-2 hover:bg-pink-50 transition">
+                                <span class="text-sm font-bold text-gray-800 hover:text-pink-600">Semua Kelas</span>
+                            </a>
+                            <div class="border-t border-pink-50 my-1"></div>
+                            <a href="{{ route('all-courses', ['level' => 'basic']) }}"
+                                class="flex items-center justify-between px-4 py-2 hover:bg-pink-50 transition group/item">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-gray-700 group-hover/item:text-pink-600">Basic (Free)</span>
+                                    <span class="text-[11px] text-gray-400">Tingkat dasar gratis</span>
+                                </div>
+                            </a>
+                            <a href="{{ route('all-courses', ['level' => 'intermediate']) }}"
+                                class="flex items-center justify-between px-4 py-2 hover:bg-pink-50 transition group/item">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-gray-700 group-hover/item:text-pink-600">Intermediate</span>
+                                    <span class="text-[11px] text-gray-400">Tingkat menengah</span>
+                                </div>
+                            </a>
+                            <a href="{{ route('all-courses', ['level' => 'advanced']) }}"
+                                class="flex items-center justify-between px-4 py-2 hover:bg-pink-50 transition group/item">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-gray-700 group-hover/item:text-pink-600">Advanced</span>
+                                    <span class="text-[11px] text-gray-400">Tingkat profesional</span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                @else
-                    <!-- Search Bar -->
-                    <div class="hidden md:flex flex-1 max-w-xl mx-8">
-                        <livewire:course-search-bar />
-                    </div>
-                @endif
+
+                    <!-- Mentor Link -->
+                    <a href="{{ route('mentors.index') }}"
+                        class="px-3.5 lg:px-4 py-2 text-[15px] font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 {{ request()->routeIs('mentors.*') ? 'text-pink-600 bg-pink-50/70' : '' }}">
+                        Mentor
+                    </a>
+
+                    <!-- Coach Link -->
+                    <a href="{{ route('coaches.index') }}"
+                        class="px-3.5 lg:px-4 py-2 text-[15px] font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150 {{ request()->routeIs('coaches.*') ? 'text-pink-600 bg-pink-50/70' : '' }}">
+                        Coach
+                    </a>
+
+                    <!-- FAQ Link -->
+                    <a href="{{ route('home') }}#faq"
+                        class="px-3.5 lg:px-4 py-2 text-[15px] font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition duration-150">
+                        FAQ
+                    </a>
+                </div>
 
                 <!-- Right Side Menu -->
                 <div class="flex items-center gap-3 sm:gap-4">
-                    @if(request()->routeIs('home'))
-                        <!-- Mobile Menu Button khusus beranda -->
-                        <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-700 hover:text-pink-600 rounded-lg hover:bg-pink-50 transition" aria-label="Buka menu navigasi">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                            </svg>
-                        </button>
-                    @else
-                        <!-- Mobile Search (non-home) -->
-                        <a href="{{ route('all-courses') }}" class="md:hidden p-2 text-gray-700 hover:text-pink-600 rounded-lg hover:bg-pink-50 transition" aria-label="Cari kelas">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </a>
-                    @endif
+                    <!-- Mobile Hamburger Button -->
+                    <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-700 hover:text-pink-600 rounded-lg hover:bg-pink-50 transition" aria-label="Buka menu navigasi">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
 
                     @auth
                         @php
@@ -234,44 +240,69 @@
             </div>
         </div>
 
-        @if(request()->routeIs('home'))
-            <!-- Mobile Menu Dropdown (Khusus Beranda) -->
-            <div id="mobileMenu" class="hidden md:hidden border-t border-pink-100 bg-white px-4 pt-3 pb-5 shadow-lg">
-                <div class="flex flex-col space-y-2">
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-pink-100 bg-white px-4 pt-3 pb-5 shadow-lg">
+            <div class="flex flex-col space-y-1">
+                <div class="py-1">
+                    <span class="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Katalog Kelas</span>
                     <a href="{{ route('all-courses') }}"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
-                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
+                        class="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-gray-800 hover:text-pink-600 hover:bg-pink-50 transition">
                         <span>Semua Kelas</span>
                     </a>
-                    <a href="{{ route('register.mentor-coach', ['role' => 'mentor']) }}"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
-                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>Mentor</span>
-                    </a>
-                    <a href="{{ route('register.mentor-coach', ['role' => 'coach']) }}"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
-                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                        <span>Coach</span>
-                    </a>
-                    <a href="#faq" onclick="toggleMobileMenu()"
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition">
-                        <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>FAQ</span>
-                    </a>
+                    <div class="pl-3 flex flex-col space-y-0.5 border-l-2 border-pink-100 ml-3 my-1">
+                        <a href="{{ route('all-courses', ['level' => 'basic']) }}"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition flex items-center justify-between">
+                            <span>Basic (Free)</span>
+                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Free</span>
+                        </a>
+                        <a href="{{ route('all-courses', ['level' => 'intermediate']) }}"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition flex items-center justify-between">
+                            <span>Intermediate</span>
+                            <span class="text-[10px] font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">Pro</span>
+                        </a>
+                        <a href="{{ route('all-courses', ['level' => 'advanced']) }}"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition flex items-center justify-between">
+                            <span>Advanced</span>
+                            <span class="text-[10px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">Expert</span>
+                        </a>
+                    </div>
                 </div>
+
+                <div class="border-t border-gray-100 my-1"></div>
+
+                <a href="{{ route('mentors.index') }}"
+                    class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-800 hover:text-pink-600 hover:bg-pink-50 transition {{ request()->routeIs('mentors.*') ? 'text-pink-600 bg-pink-50/70' : '' }}">
+                    Mentor
+                </a>
+
+                <a href="{{ route('coaches.index') }}"
+                    class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-800 hover:text-pink-600 hover:bg-pink-50 transition {{ request()->routeIs('coaches.*') ? 'text-pink-600 bg-pink-50/70' : '' }}">
+                    Coach
+                </a>
+
+                <a href="{{ route('home') }}#faq" onclick="toggleMobileMenu()"
+                    class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-800 hover:text-pink-600 hover:bg-pink-50 transition">
+                    FAQ
+                </a>
+
+                @guest
+                    <div class="pt-3 border-t border-gray-100 flex items-center gap-2">
+                        <a href="{{ route('login') }}" class="flex-1 py-2 text-center text-sm font-semibold text-gray-700 hover:text-pink-600 bg-gray-50 rounded-xl">Masuk</a>
+                        <a href="{{ route('register') }}" class="flex-1 py-2 text-center text-sm font-semibold text-white bg-pink-500 hover:bg-pink-600 rounded-xl">Daftar</a>
+                    </div>
+                @endguest
             </div>
-        @endif
+        </div>
+
+        <script>
+            if (typeof toggleMobileMenu !== 'function') {
+                function toggleMobileMenu() {
+                    const menu = document.getElementById('mobileMenu');
+                    if (menu) {
+                        menu.classList.toggle('hidden');
+                    }
+                }
+            }
+        </script>
     </nav>
 </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MentoringController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicMentorCoachController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,12 @@ Route::post('/savedCourses/{course}', [HomeController::class, 'storeSavedCourse'
 Route::delete('/savedCourses/{course}', [HomeController::class, 'destroySavedCourse'])->name('saved-courses.destroy')->middleware('auth');
 
 Route::get('/all-courses', [HomeController::class, 'allCourses'])->name('all-courses');
+
+Route::get('/mentors', [PublicMentorCoachController::class, 'mentors'])->name('mentors.index');
+Route::get('/mentors/{id}', [PublicMentorCoachController::class, 'mentorDetail'])->name('mentors.show');
+
+Route::get('/coaches', [PublicMentorCoachController::class, 'coaches'])->name('coaches.index');
+Route::get('/coaches/{id}', [PublicMentorCoachController::class, 'coachDetail'])->name('coaches.show');
 
 Route::get('/mentoring', [MentoringController::class, 'index'])
     ->name('mentoring.index')
