@@ -184,7 +184,7 @@ class HomeController extends Controller
         ));
     }
 
-    public function course(?string $slug = null, Request $request)
+    public function course(Request $request, ?string $slug = null)
     {
         /** @var User|null $viewer */
         $viewer = $request->user();
@@ -284,27 +284,41 @@ class HomeController extends Controller
         }
 
         $videoUnlockMap = [];
+        $isChainLocked = false;
         foreach ($videos as $index => $video) {
-            if ($hasCourseAccess) {
-                if ($index === 0) {
-                    $videoUnlockMap[$video->id] = true;
-                    continue;
-                }
-
-                $previousVideo = $videos->get($index - 1);
-                $previousQuiz = $previousVideo?->quiz;
-                $requiresPreviousQuiz = (bool) ($previousQuiz && $previousQuiz->is_active && $previousQuiz->questions->isNotEmpty());
-
-                $videoUnlockMap[$video->id] = !$requiresPreviousQuiz
-                    || $quizCompletionVideoIds->contains($previousVideo->id);
-            } else {
-                // Untuk kelas non-basic yang belum dibeli: semua video terkunci
+            if (!$hasCourseAccess) {
                 $videoUnlockMap[$video->id] = false;
+                continue;
+            }
+
+            if ($index === 0) {
+                $videoUnlockMap[$video->id] = true;
+                continue;
+            }
+
+            // Jika rantai sebelumnya sudah terkunci, maka SEMUA video berikutnya wajib terkunci!
+            if ($isChainLocked) {
+                $videoUnlockMap[$video->id] = false;
+                continue;
+            }
+
+            $previousVideo = $videos->get($index - 1);
+            $previousQuiz = $previousVideo?->quiz;
+            $requiresPreviousQuiz = (bool) ($previousQuiz && $previousQuiz->is_active && $previousQuiz->questions->isNotEmpty());
+
+            $isPreviousUnlocked = (bool) ($videoUnlockMap[$previousVideo->id] ?? false);
+            $isPreviousQuizCompleted = !$requiresPreviousQuiz || $quizCompletionVideoIds->contains($previousVideo->id);
+
+            if ($isPreviousUnlocked && $isPreviousQuizCompleted) {
+                $videoUnlockMap[$video->id] = true;
+            } else {
+                $videoUnlockMap[$video->id] = false;
+                $isChainLocked = true;
             }
         }
 
         if ($hasCourseAccess && $requestedVideoId > 0 && $currentVideo && !($videoUnlockMap[$currentVideo->id] ?? false)) {
-            $fallbackVideo = $videos->first(fn($video) => (bool) ($videoUnlockMap[$video->id] ?? false));
+            $fallbackVideo = $videos->filter(fn($video) => (bool) ($videoUnlockMap[$video->id] ?? false))->last() ?? $videos->first();
             $currentVideo = $fallbackVideo;
             $currentVideoIndex = $currentVideo ? $videos->search(fn($video) => $video->id === $currentVideo->id) : null;
         }
@@ -341,42 +355,61 @@ class HomeController extends Controller
 
         $studentsCount = (int) ($course->students_count ?? 0);
 
-        $courseSections = $course->sections->map(function ($section) use ($videos, $currentVideo, $currentVideoIndex, $course, $hasCourseAccess, $watchedVideoIds, $videoUnlockMap) {
+        $courseSections = $course->sections->map(function ($section) use ($videos, $currentVideo, $currentVideoIndex, $course, $hasCourseAccess, $watchedVideoIds, $videoUnlockMap, $quizCompletionVideoIds) {
             $sectionDurationSeconds = (int) $section->videos->sum('duration_seconds');
             $sectionHours = intdiv($sectionDurationSeconds, 3600);
             $sectionMinutes = intdiv($sectionDurationSeconds % 3600, 60);
             $sectionDurationLabel = trim(($sectionHours > 0 ? $sectionHours . ' jam ' : '') . max($sectionMinutes, 1) . ' menit');
             $hasCurrentVideo = $currentVideo ? $section->videos->contains('id', $currentVideo->id) : false;
 
-            $sectionVideos = $section->videos->map(function ($video) use ($videos, $currentVideo, $currentVideoIndex, $course, $hasCourseAccess, $watchedVideoIds, $videoUnlockMap) {
+            $sectionVideos = $section->videos->map(function ($video) use ($videos, $currentVideo, $currentVideoIndex, $course, $hasCourseAccess, $watchedVideoIds, $videoUnlockMap, $quizCompletionVideoIds) {
                 $isUnlocked = (bool) ($videoUnlockMap[$video->id] ?? false);
                 $isCurrentVideo = $currentVideo && $video->id === $currentVideo->id;
                 $isLocked = !$isUnlocked;
 
+                $videoQuiz = $video->quiz;
+                $hasQuiz = (bool) ($videoQuiz && $videoQuiz->is_active && $videoQuiz->questions->isNotEmpty());
+                $isQuizCompleted = $hasQuiz && $quizCompletionVideoIds->contains($video->id);
+
                 if (!$hasCourseAccess) {
                     return (object) [
+                        'id' => $video->id,
                         'title' => $video->title,
                         'duration_label' => $video->duration_label,
                         'state_class' => 'locked',
+                        'is_current' => false,
                         'is_watched' => false,
                         'is_locked' => true,
+                        'has_quiz' => $hasQuiz,
+                        'is_quiz_completed' => false,
                         'url' => null,
                     ];
                 }
 
-                $videoIndex = $videos->search(fn($globalVideo) => $globalVideo->id === $video->id);
-                $isWatched = $watchedVideoIds->contains($video->id)
-                    || (is_int($videoIndex) && is_int($currentVideoIndex) && $videoIndex < $currentVideoIndex);
-                $stateClass = $isLocked
-                    ? 'locked'
-                    : ($isCurrentVideo ? 'now-playing' : ($isWatched ? 'watched' : 'unwatched'));
+                $isRecordedWatched = $watchedVideoIds->contains($video->id);
+                // Ditonton/selesai hanya jika bukan yang sedang diputar, sudah ditonton, dan jika ada quiz, quiz-nya telah selesai
+                $isWatched = !$isCurrentVideo && $isRecordedWatched && (!$hasQuiz || $isQuizCompleted);
+
+                if ($isLocked) {
+                    $stateClass = 'locked';
+                } elseif ($isCurrentVideo) {
+                    $stateClass = 'now-playing';
+                } elseif ($isWatched) {
+                    $stateClass = 'watched';
+                } else {
+                    $stateClass = 'unwatched';
+                }
 
                 return (object) [
+                    'id' => $video->id,
                     'title' => $video->title,
                     'duration_label' => $video->duration_label,
                     'state_class' => $stateClass,
+                    'is_current' => $isCurrentVideo,
                     'is_watched' => $isWatched,
                     'is_locked' => $isLocked,
+                    'has_quiz' => $hasQuiz,
+                    'is_quiz_completed' => $isQuizCompleted,
                     'url' => $isLocked ? null : route('course', ['slug' => $course->slug, 'video' => $video->id]),
                 ];
             })->values();
@@ -526,7 +559,8 @@ class HomeController extends Controller
             : 0;
 
         $passingScore = (int) ($quiz->passing_score ?? 70);
-        $isPassed = $score >= $passingScore;
+        // Passing score sementara tidak digunakan: pengerjaan quiz selalu dianggap lulus/selesai
+        $isPassed = true;
 
         CourseVideoQuizCompletion::query()->updateOrCreate([
             'user_id' => $user->id,
@@ -535,23 +569,34 @@ class HomeController extends Controller
             'course_id' => $course->id,
             'course_video_id' => $video->id,
             'score' => $score,
-            'is_passed' => $isPassed,
+            'is_passed' => true,
             'completed_at' => now(),
         ]);
+
+        // Cari video berikutnya untuk navigasi otomatis
+        $videos = $course->sections->flatMap->videos->values();
+        $currentVideoIndex = $videos->search(fn($v) => $v->id === $video->id);
+        $nextVideo = is_int($currentVideoIndex) ? $videos->get($currentVideoIndex + 1) : null;
+        $nextVideoUrl = $nextVideo ? route('course', ['slug' => $course->slug, 'video' => $nextVideo->id]) : null;
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'score' => $score,
                 'passing_score' => $passingScore,
-                'is_passed' => $isPassed,
+                'is_passed' => true,
                 'total_questions' => $totalQuestions,
                 'correct_count' => $correctAnswers,
                 'results' => $questionResults,
-                'message' => $isPassed
-                    ? 'Selamat! Kamu berhasil menyelesaikan quiz.'
-                    : 'Kamu belum mencapai nilai minimum kelulusan. Silakan pelajari kembali materinya dan ulangi quiz.',
+                'next_video_url' => $nextVideoUrl,
+                'message' => 'Selamat! Kamu berhasil menyelesaikan quiz.',
             ]);
+        }
+
+        if ($nextVideoUrl) {
+            return redirect()
+                ->to($nextVideoUrl)
+                ->with('success', 'Selamat! Kamu berhasil menyelesaikan quiz. Lanjut ke materi berikutnya.');
         }
 
         return redirect()

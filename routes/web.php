@@ -45,11 +45,8 @@ Route::delete('/savedCourses/{course}', [HomeController::class, 'destroySavedCou
 
 Route::get('/all-courses', [HomeController::class, 'allCourses'])->name('all-courses');
 
-Route::get('/mentors', [PublicMentorCoachController::class, 'mentors'])->name('mentors.index');
-Route::get('/mentors/{id}', [PublicMentorCoachController::class, 'mentorDetail'])->name('mentors.show');
-
-Route::get('/coaches', [PublicMentorCoachController::class, 'coaches'])->name('coaches.index');
-Route::get('/coaches/{id}', [PublicMentorCoachController::class, 'coachDetail'])->name('coaches.show');
+Route::get('/mentors', [PublicMentorCoachController::class, 'index'])->name('mentors.index');
+Route::get('/coaches', [PublicMentorCoachController::class, 'index'])->name('coaches.index');
 
 Route::get('/mentoring', [MentoringController::class, 'index'])
     ->name('mentoring.index')

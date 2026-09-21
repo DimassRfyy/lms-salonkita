@@ -25,6 +25,10 @@ class StatsOverview extends StatsOverviewWidget
         $activeCourses = Course::query()->where('is_published', true)->count('*');
 
         $totalStudents = User::query()->where('role', 'student')->count('*');
+        $newStudentsThisMonth = User::query()
+            ->where('role', 'student')
+            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count('*');
 
         $totalEnrollments = DB::table('course_user')->count();
         $newEnrollmentsThisMonth = DB::table('course_user')
@@ -32,7 +36,13 @@ class StatsOverview extends StatsOverviewWidget
             ->count();
 
         $paidTransactions = Transaction::query()->paid()->count('*');
+        $paidWithPromoCount = Transaction::query()->paid()->where('price', 0)->count('*');
         $revenue = (int) Transaction::query()->paid()->sum('price');
+
+        $transactionDescription = 'Total ' . $this->formatRupiah($revenue);
+        if ($paidWithPromoCount > 0) {
+            $transactionDescription .= ' (' . $paidWithPromoCount . ' via promo 100%)';
+        }
 
         return [
             Stat::make('Kelas Aktif', number_format($activeCourses))
@@ -41,7 +51,7 @@ class StatsOverview extends StatsOverviewWidget
                 ->color('success'),
 
             Stat::make('Total Student', number_format($totalStudents))
-                ->description('2 student baru bulan ini')
+                ->description(number_format($newStudentsThisMonth) . ' student baru bulan ini')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary'),
 
@@ -51,7 +61,7 @@ class StatsOverview extends StatsOverviewWidget
                 ->color('warning'),
 
             Stat::make('Transaksi Berhasil', number_format($paidTransactions))
-                ->description('Total ' . $this->formatRupiah($revenue))
+                ->description($transactionDescription)
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
         ];
