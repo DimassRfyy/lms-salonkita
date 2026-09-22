@@ -6,6 +6,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MentoringController;
 use App\Http\Controllers\PointController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicMentorCoachController;
 use App\Http\Controllers\RegisterController;
@@ -84,6 +85,11 @@ Route::get('/login', [LoginController::class, 'login'])->name('login')->middlewa
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post')->middleware('guest');
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.redirect')->middleware('guest');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback')->middleware('guest');
+
+Route::get('/forgot-password', [PasswordResetController::class, 'create'])->name('password.request')->middleware('guest');
+Route::post('/forgot-password', [PasswordResetController::class, 'store'])->name('password.email')->middleware('guest');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset')->middleware('guest');
+Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.update')->middleware('guest');
 
 Route::get('/register', [RegisterController::class, 'register'])->name('register')->middleware('guest');
 Route::post('/register', [RegisterController::class, 'store'])->name('register.post')->middleware('guest');
