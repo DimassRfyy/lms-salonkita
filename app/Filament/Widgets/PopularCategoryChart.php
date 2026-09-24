@@ -17,6 +17,7 @@ class PopularCategoryChart extends ChartWidget
     ];
 
     protected static ?int $sort = 3;
+    protected ?string $pollingInterval = null;
 
     public static function canView(): bool
     {
@@ -28,9 +29,9 @@ class PopularCategoryChart extends ChartWidget
         $salesByCategory = Transaction::query()
             ->paid()
             ->with(['course.category'])
-            ->get(['course_id'])
-            ->filter(fn (Transaction $transaction): bool => $transaction->course !== null && $transaction->course->category !== null)
-            ->groupBy(fn (Transaction $transaction): string => $transaction->course->category->name)
+            ->get(['id', 'course_id'])
+            ->filter(fn (Transaction $transaction): bool => $transaction->course !== null && $transaction->course->category !== null && !empty($transaction->course->category->name))
+            ->groupBy(fn (Transaction $transaction): string => (string) $transaction->course->category->name)
             ->map(fn ($transactions): int => $transactions->count())
             ->sortDesc();
 

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class StatsOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
+    protected ?string $pollingInterval = null;
 
     public static function canView(): bool
     {

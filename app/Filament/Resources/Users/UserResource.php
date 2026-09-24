@@ -19,6 +19,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -435,8 +436,17 @@ class UserResource extends Resource
                         ->label('Approve')
                         ->color('success')
                         ->icon('heroicon-m-check')
-                        ->action(fn ($record) => $record->update(['is_approved' => true]))
                         ->requiresConfirmation()
+                        ->modalHeading('Approve Akun Mentor/Coach')
+                        ->modalDescription('Apakah Anda yakin ingin menyetujui akun ini? Email notifikasi persetujuan akan otomatis dikirimkan ke pengguna.')
+                        ->action(function ($record) {
+                            $record->update(['is_approved' => true]);
+                            Notification::make()
+                                ->title('Akun Berhasil Disetujui')
+                                ->body('Email notifikasi telah dikirimkan ke ' . $record->email)
+                                ->success()
+                                ->send();
+                        })
                         ->visible(fn ($record) => ! $record->is_approved && in_array($record->role, ['mentor', 'coach'], true)),
                     DeleteAction::make(),
                 ])
@@ -450,7 +460,16 @@ class UserResource extends Resource
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->action(fn (Collection $records) => $records->each(fn ($record) => $record->update(['is_approved' => true])))
+                        ->modalHeading('Approve Mentor/Coach Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin menyetujui semua akun yang dipilih? Email notifikasi akan dikirimkan ke masing-masing pengguna.')
+                        ->action(function (Collection $records) {
+                            $records->each(fn ($record) => $record->update(['is_approved' => true]));
+                            Notification::make()
+                                ->title('Akun Terpilih Berhasil Disetujui')
+                                ->body(count($records) . ' akun berhasil disetujui dan email notifikasi telah dikirim.')
+                                ->success()
+                                ->send();
+                        })
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make(),
                 ])->visible(fn () => Auth::user()?->role === 'admin'),

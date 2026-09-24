@@ -168,9 +168,9 @@
                             class="mt-1 w-4 h-4 accent-pink-500 rounded border-gray-300 cursor-pointer shrink-0" />
                         <label for="terms" class="text-xs text-gray-500 leading-relaxed">
                             Saya menyetujui
-                            <a href="#" class="text-pink-500 font-semibold hover:text-pink-600">Syarat & Ketentuan</a>
+                            <a href="{{ route('terms') }}" target="_blank" class="text-pink-500 font-semibold hover:text-pink-600">Syarat & Ketentuan</a>
                             serta
-                            <a href="#" class="text-pink-500 font-semibold hover:text-pink-600">Kebijakan Privasi</a>
+                            <a href="{{ route('privacy') }}" target="_blank" class="text-pink-500 font-semibold hover:text-pink-600">Kebijakan Privasi</a>
                             Salonkita.
                         </label>
                     </div>

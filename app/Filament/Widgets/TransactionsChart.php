@@ -16,6 +16,7 @@ class TransactionsChart extends ChartWidget
         'xl' => 1,
     ];
     protected static ?int $sort = 2;
+    protected ?string $pollingInterval = null;
 
     public ?string $filter = 'all';
 
@@ -40,14 +41,14 @@ class TransactionsChart extends ChartWidget
 
         $monthlyTransactions = Transaction::query()
             ->paid()
-            ->get(['paid_at', 'created_at', 'price', 'discount_amount'])
+            ->get(['id', 'paid_at', 'created_at', 'price', 'discount_amount'])
             ->filter(function (Transaction $transaction) use ($startDate, $endDate): bool {
                 $date = $transaction->paid_at ?? $transaction->created_at;
-                return $date !== null && $date->betweenIncluded($startDate, $endDate);
+                return $date instanceof \Carbon\CarbonInterface && $date->betweenIncluded($startDate, $endDate);
             })
             ->groupBy(function (Transaction $transaction): string {
                 $date = $transaction->paid_at ?? $transaction->created_at;
-                return $date->format('Y-m');
+                return $date instanceof \Carbon\CarbonInterface ? $date->format('Y-m') : 'unknown';
             });
 
         $labels = [];

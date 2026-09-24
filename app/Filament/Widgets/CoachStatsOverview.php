@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class CoachStatsOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
+    protected ?string $pollingInterval = null;
 
     public static function canView(): bool
     {

@@ -8,51 +8,78 @@
         <div class="{{ $containerClass }}">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <!-- Footer Brand -->
-                <div>
-                    <div class="mb-4">
+                <div class="space-y-3.5">
+                    <a href="{{ route('home') }}" class="inline-block hover:opacity-90 transition" aria-label="Beranda Salonkita">
                         <img src="{{ asset('assets/images/logos/logo_skid.webp') }}" alt="Salonkita Logo"
-                            class="w-8 h-8 rounded-lg object-contain">
-                    </div>
-                    <p class="text-gray-400 text-sm">Belajar Beauty Skill Profesional dari Rumah dengan Instruktur
-                        Berpengalaman</p>
+                            class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-contain">
+                    </a>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Belajar Beauty Skill Profesional dari Rumah dengan Instruktur Berpengalaman
+                    </p>
                 </div>
 
                 <!-- Footer Links 1 -->
                 <div>
-                    <h4 class="font-bold mb-4">Produk</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="#" class="hover:text-pink-500 transition">Semua Kelas</a></li>
-                        <li><a href="#" class="hover:text-pink-500 transition">Program Premium</a></li>
-                        <li><a href="#" class="hover:text-pink-500 transition">Sertifikat</a></li>
+                    <h4 class="font-bold mb-4 text-white">Program & Kelas</h4>
+                    <ul class="space-y-2.5 text-gray-400 text-sm">
+                        <li><a href="{{ route('all-courses') }}" class="hover:text-pink-500 transition">Semua Kelas Kecantikan</a></li>
+                        <li><a href="{{ route('mentors.index') }}" class="hover:text-pink-500 transition">Mentor & Coach Profesional</a></li>
+                        <li><a href="{{ route('all-courses', ['level' => 'basic']) }}" class="hover:text-pink-500 transition">Kelas Dasar (Gratis)</a></li>
                     </ul>
                 </div>
 
-                <!-- Footer Links 2 -->
+                <!-- Footer Links 2: Kebijakan Publik (Wajib Payment Gateway) -->
                 <div>
-                    <h4 class="font-bold mb-4">Perusahaan</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="#" class="hover:text-pink-500 transition">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-pink-500 transition">Blog</a></li>
-                        <li><a href="#" class="hover:text-pink-500 transition">Karir</a></li>
+                    <h4 class="font-bold mb-4 text-white">Kebijakan Publik</h4>
+                    <ul class="space-y-2.5 text-gray-400 text-sm">
+                        <li>
+                            <a href="{{ route('terms') }}" class="hover:text-pink-500 transition inline-flex items-center gap-1.5">
+                                <span>Terms & Conditions</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('privacy') }}" class="hover:text-pink-500 transition inline-flex items-center gap-1.5">
+                                <span>Privacy Policy</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('refund') }}" class="hover:text-pink-500 transition inline-flex items-center gap-1.5">
+                                <span>Refund & Cancellation</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
-                <!-- Footer Links 3 -->
+                <!-- Footer Links 3: Dukungan & Kontak -->
                 <div>
-                    <h4 class="font-bold mb-4">Dukungan</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="#" class="hover:text-pink-500 transition">Bantuan</a></li>
-                        <li><a href="#" class="hover:text-pink-500 transition">Kebijakan Privasi</a></li>
-                        <li><a href="#" class="hover:text-pink-500 transition">Syarat & Ketentuan</a></li>
+                    <h4 class="font-bold mb-4 text-white">Bantuan & Kontak</h4>
+                    <ul class="space-y-2.5 text-gray-400 text-sm">
+                        <li>
+                            <a href="mailto:support@salonkita.com" class="hover:text-pink-500 transition inline-flex items-center gap-2">
+                                <svg class="w-4 h-4 text-pink-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>support@salonkita.com</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="hover:text-pink-500 transition inline-flex items-center gap-2">
+                                <svg class="w-4 h-4 text-pink-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.076-2.003-.467-1.674-.694-2.73-2.39-2.812-2.502-.084-.112-.676-.902-.676-1.72 0-.819.428-1.222.58-1.388.152-.167.333-.209.444-.209.112 0 .224.002.321.007.103.006.242-.039.378.291.144.35.49 1.196.533 1.284.043.088.072.191.014.307-.058.115-.088.188-.175.291-.088.103-.185.23-.264.309-.088.088-.18.185-.078.361.102.176.452.747.969 1.208.666.594 1.228.778 1.404.866.176.088.278.077.382-.042.103-.119.444-.517.562-.695.118-.178.236-.148.397-.089.16.059 1.016.479 1.19.567.175.088.291.132.334.206.043.074.043.432-.101.837z" />
+                                </svg>
+                                <span>Dukungan WhatsApp</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
 
             <div class="border-t border-gray-800 pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-gray-400 text-sm">&copy; 2026 <span class="text-pink-600">SKID</span>. All rights
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <p class="text-gray-400 text-sm text-center lg:text-left">&copy; {{ date('Y') }} <span class="text-pink-600 font-semibold">SKID</span>. All rights
                         reserved.</p>
-                    <div class="flex gap-4 mt-4 md:mt-0 items-center">
+
+                    <div class="flex gap-4 items-center">
                         <!-- YouTube -->
                         <a href="https://youtube.com/@salonkitaindonesia?si=UiM0TbAFPow0_vNf" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-pink-500 transition" aria-label="YouTube">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

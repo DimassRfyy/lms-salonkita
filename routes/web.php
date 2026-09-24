@@ -8,6 +8,7 @@ use App\Http\Controllers\MentoringController;
 use App\Http\Controllers\PointController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PublicMentorCoachController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -137,4 +138,18 @@ Route::get('/payments/xendit/unfinish', [PaymentController::class, 'unfinish'])
 
 Route::get('/payments/xendit/error', [PaymentController::class, 'error'])
     ->name('payments.xendit.error');
+
+// Public Policy & Legal Routes (Payment Gateway Compliance: Terms, Privacy, Refund)
+Route::get('/terms-and-conditions', [PolicyController::class, 'terms'])->name('terms');
+Route::get('/privacy-policy', [PolicyController::class, 'privacy'])->name('privacy');
+Route::get('/refund-policy', [PolicyController::class, 'refund'])->name('refund');
+
+// Aliases & Redirects for convenience
+Route::get('/terms', fn() => redirect()->route('terms', [], 301));
+Route::get('/privacy', fn() => redirect()->route('privacy', [], 301));
+Route::get('/refund', fn() => redirect()->route('refund', [], 301));
+Route::get('/syarat-ketentuan', fn() => redirect()->route('terms', [], 301));
+Route::get('/kebijakan-privasi', fn() => redirect()->route('privacy', [], 301));
+Route::get('/kebijakan-refund', fn() => redirect()->route('refund', [], 301));
+Route::get('/cancellation-policy', fn() => redirect()->route('refund', [], 301));
 
