@@ -95,7 +95,7 @@
 
                             <!-- Help Contact -->
                             <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0; text-align: center;">
-                                Memiliki pertanyaan atau butuh bantuan saat memulai? Tim dukungan kami siap membantu melalui email <a href="mailto:support@salonkita.com" style="color: #ec4899; text-decoration: none; font-weight: 600;">support@salonkita.com</a>.
+                                Memiliki pertanyaan atau butuh bantuan saat memulai? Tim dukungan kami siap membantu melalui email <a href="mailto:info@skid.co.id" style="color: #ec4899; text-decoration: none; font-weight: 600;">info@skid.co.id</a>.
                             </p>
                         </td>
                     </tr>

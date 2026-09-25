@@ -151,10 +151,10 @@
                 <!-- Footer Note -->
                 <p class="mt-8 text-xs text-gray-500">
                     Jika ada pertanyaan, hubungi kami melalui
-                    <a href="https://wa.me/YOUR_WHATSAPP_NUMBER"
+                    <a href="https://wa.me/6281264444213" target="_blank" rel="noopener noreferrer"
                         class="text-pink-600 font-semibold hover:text-pink-700">WhatsApp</a>
                     atau
-                    <a href="mailto:support@salonkita.com"
+                    <a href="mailto:info@skid.co.id"
                         class="text-pink-600 font-semibold hover:text-pink-700">Email</a>.
                 </p>
             </div>

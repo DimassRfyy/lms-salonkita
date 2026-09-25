@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->sidebarCollapsibleOnDesktop()
             ->collapsibleNavigationGroups(true)
+            ->spa()
             ->sidebarWidth('15.5rem')
             ->maxContentWidth(Width::Full)
             ->default()

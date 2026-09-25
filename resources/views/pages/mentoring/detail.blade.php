@@ -340,97 +340,98 @@
         <!-- MODAL PUTUS HUBUNGAN DENGAN MENTOR (TERMINATE MENTORSHIP) -->
         <div x-show="showTerminateModal"
             x-cloak
-            class="fixed inset-0 z-50 overflow-y-auto"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
             style="display: none;"
+            @click.self="showTerminateModal = false"
             aria-labelledby="modal-title"
             role="dialog"
             aria-modal="true">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div x-show="showTerminateModal"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity"
-                    @click="showTerminateModal = false"
-                    aria-hidden="true"></div>
 
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <!-- Backdrop Overlay -->
+            <div x-show="showTerminateModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity"
+                @click="showTerminateModal = false"
+                aria-hidden="true"></div>
 
-                <div x-show="showTerminateModal"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-pink-100">
-                    
-                    <form method="POST" action="{{ route('mentoring.terminate') }}" id="terminateMentorshipForm">
-                        @csrf
+            <!-- Modal Card (Centered precisely vertically & horizontally) -->
+            <div x-show="showTerminateModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                class="relative z-10 w-full max-w-lg bg-white rounded-3xl text-left shadow-2xl transition-all border border-pink-100 overflow-hidden my-auto max-h-[90vh] flex flex-col"
+                @click.stop>
+                
+                <form method="POST" action="{{ route('mentoring.terminate') }}" id="terminateMentorshipForm" class="flex flex-col max-h-[90vh] overflow-hidden">
+                    @csrf
 
-                        <div class="bg-white px-6 pt-6 pb-4">
-                            <div class="flex items-start justify-between pb-4 border-b border-gray-100">
-                                <div>
-                                    <h3 class="text-lg font-black text-gray-900" id="modal-title">
-                                        Ganti Mentor / Putus Hubungan
-                                    </h3>
-                                    <p class="text-xs text-gray-500 mt-0.5">Akhiri hubungan bimbingan dengan mentor saat ini.</p>
-                                </div>
-                                <button type="button" @click="showTerminateModal = false" class="rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <div class="bg-white px-6 pt-6 pb-4 overflow-y-auto flex-1">
+                        <div class="flex items-start justify-between pb-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-lg font-black text-gray-900" id="modal-title">
+                                    Ganti Mentor / Putus Hubungan
+                                </h3>
+                                <p class="text-xs text-gray-500 mt-0.5">Akhiri hubungan bimbingan dengan mentor saat ini.</p>
+                            </div>
+                            <button type="button" @click="showTerminateModal = false" class="rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="mt-4 space-y-4">
+                            <div class="rounded-2xl bg-amber-50 p-4 border border-amber-200 text-xs text-amber-900 space-y-1">
+                                <p class="font-bold flex items-center gap-1.5 text-amber-800">
+                                    <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                </button>
+                                    Jatah Kuota Mentoring Anda Tetap Aman 100%
+                                </p>
+                                <p class="text-amber-700 leading-relaxed">
+                                    Setelah memutus hubungan dengan <strong>{{ $activeMentorship?->mentor?->name ?? 'Mentor' }}</strong>, Anda dapat langsung memilih mentor baru dari daftar mentor Salonkita.
+                                </p>
                             </div>
 
-                            <div class="mt-4 space-y-4">
-                                <div class="rounded-2xl bg-amber-50 p-4 border border-amber-200 text-xs text-amber-900 space-y-1">
-                                    <p class="font-bold flex items-center gap-1.5 text-amber-800">
-                                        <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        Jatah Kuota Mentoring Anda Tetap Aman 100%
-                                    </p>
-                                    <p class="text-amber-700 leading-relaxed">
-                                        Setelah memutus hubungan dengan <strong>{{ $activeMentorship?->mentor?->name ?? 'Mentor' }}</strong>, Anda dapat langsung memilih mentor baru dari daftar mentor Salonkita.
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label for="termination_reason" class="block text-xs font-bold text-gray-700 mb-1.5">
-                                        Alasan Pembatalan / Evaluasi <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea id="termination_reason"
-                                        name="termination_reason"
-                                        x-model="terminateReason"
-                                        required
-                                        rows="4"
-                                        placeholder="Contoh: Jadwal sesi mentor sering tidak cocok dengan waktu saya / Ingin belajar teknik yang lebih spesifik dengan mentor lain..."
-                                        class="w-full rounded-2xl border border-gray-300 p-3.5 text-xs focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-hidden leading-relaxed"></textarea>
-                                    <p class="text-[11px] text-gray-400 mt-1.5">
-                                        Alasan ini akan ditinjau secara rahasia oleh Admin untuk menjaga standar kualitas bimbingan.
-                                    </p>
-                                </div>
+                            <div>
+                                <label for="termination_reason" class="block text-xs font-bold text-gray-700 mb-1.5">
+                                    Alasan Pembatalan / Evaluasi <span class="text-red-500">*</span>
+                                </label>
+                                <textarea id="termination_reason"
+                                    name="termination_reason"
+                                    x-model="terminateReason"
+                                    required
+                                    rows="4"
+                                    placeholder="Contoh: Jadwal sesi mentor sering tidak cocok dengan waktu saya / Ingin belajar teknik yang lebih spesifik dengan mentor lain..."
+                                    class="w-full rounded-2xl border border-gray-300 p-3.5 text-xs focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-hidden leading-relaxed"></textarea>
+                                <p class="text-[11px] text-gray-400 mt-1.5">
+                                    Alasan ini akan ditinjau secara rahasia oleh Admin untuk menjaga standar kualitas bimbingan.
+                                </p>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 border-t border-gray-100">
-                            <button type="button"
-                                @click="showTerminateModal = false"
-                                class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 transition">
-                                Batal
-                            </button>
-                            <button type="submit"
-                                :disabled="terminateReason.trim().length < 5"
-                                class="w-full sm:w-auto inline-flex justify-center rounded-xl bg-red-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                Ya, Putus Hubungan & Pilih Mentor Baru
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 border-t border-gray-100 shrink-0">
+                        <button type="button"
+                            @click="showTerminateModal = false"
+                            class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 transition cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            :disabled="terminateReason.trim().length < 5"
+                            class="w-full sm:w-auto inline-flex justify-center rounded-xl bg-red-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                            Ya, Putus Hubungan & Pilih Mentor Baru
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>

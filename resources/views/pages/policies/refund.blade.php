@@ -158,7 +158,7 @@
                             <li class="flex items-start gap-3.5">
                                 <span class="w-7 h-7 rounded-lg bg-pink-100 text-pink-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
                                 <div class="flex-1">
-                                    Kirimkan email resmi ke <a href="mailto:support@salonkita.com" class="text-pink-600 font-semibold underline">support@salonkita.com</a> dengan subjek format: <code>[Pengajuan Refund] - [ID Transaksi] - [Nama Anda]</code>.
+                                    Kirimkan email resmi ke <a href="mailto:info@skid.co.id" class="text-pink-600 font-semibold underline">info@skid.co.id</a> dengan subjek format: <code>[Pengajuan Refund] - [ID Transaksi] - [Nama Anda]</code>.
                                 </div>
                             </li>
                             <li class="flex items-start gap-3.5">
@@ -254,8 +254,8 @@
                             Jika Anda membutuhkan bantuan seputar status transaksi, invoice, atau pengajuan pengembalian dana, hubungi kami melalui:
                         </p>
                         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-xs sm:text-sm text-gray-700 space-y-2">
-                            <p><strong>Email Dukungan Pelanggan:</strong> <a href="mailto:support@salonkita.com" class="text-pink-600 font-semibold underline">support@salonkita.com</a></p>
-                            <p><strong>WhatsApp Customer Support:</strong> <a href="https://wa.me/6281234567890" target="_blank" class="text-pink-600 font-semibold underline">+62 812-3456-7890</a></p>
+                            <p><strong>Email Dukungan Pelanggan:</strong> <a href="mailto:info@skid.co.id" class="text-pink-600 font-semibold underline">info@skid.co.id</a></p>
+                            <p><strong>WhatsApp Customer Support:</strong> <a href="https://wa.me/6281264444213" target="_blank" class="text-pink-600 font-semibold underline">+62 812-6444-4213</a></p>
                             <p><strong>Jam Operasional Layanan CS:</strong> Senin - Sabtu, 09.00 - 18.00 WIB</p>
                         </div>
                     </div>

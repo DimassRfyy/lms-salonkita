@@ -55,19 +55,19 @@
                     <h4 class="font-bold mb-4 text-white">Bantuan & Kontak</h4>
                     <ul class="space-y-2.5 text-gray-400 text-sm">
                         <li>
-                            <a href="mailto:support@salonkita.com" class="hover:text-pink-500 transition inline-flex items-center gap-2">
+                            <a href="mailto:info@skid.co.id" class="hover:text-pink-500 transition inline-flex items-center gap-2">
                                 <svg class="w-4 h-4 text-pink-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
-                                <span>support@salonkita.com</span>
+                                <span>info@skid.co.id</span>
                             </a>
                         </li>
                         <li>
-                            <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="hover:text-pink-500 transition inline-flex items-center gap-2">
+                            <a href="https://wa.me/6281264444213" target="_blank" rel="noopener noreferrer" class="hover:text-pink-500 transition inline-flex items-center gap-2">
                                 <svg class="w-4 h-4 text-pink-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.076-2.003-.467-1.674-.694-2.73-2.39-2.812-2.502-.084-.112-.676-.902-.676-1.72 0-.819.428-1.222.58-1.388.152-.167.333-.209.444-.209.112 0 .224.002.321.007.103.006.242-.039.378.291.144.35.49 1.196.533 1.284.043.088.072.191.014.307-.058.115-.088.188-.175.291-.088.103-.185.23-.264.309-.088.088-.18.185-.078.361.102.176.452.747.969 1.208.666.594 1.228.778 1.404.866.176.088.278.077.382-.042.103-.119.444-.517.562-.695.118-.178.236-.148.397-.089.16.059 1.016.479 1.19.567.175.088.291.132.334.206.043.074.043.432-.101.837z" />
                                 </svg>
-                                <span>Dukungan WhatsApp</span>
+                                <span>0812-6444-4213 (WhatsApp)</span>
                             </a>
                         </li>
                     </ul>

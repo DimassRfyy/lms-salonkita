@@ -210,8 +210,8 @@
                             Jika Anda memiliki pertanyaan, keberatan, atau ingin menggunakan hak privasi Anda, silakan hubungi tim Perlindungan Data Salonkita:
                         </p>
                         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-xs sm:text-sm text-gray-700 space-y-2">
-                            <p><strong>Email Tim Privasi & Keamanan:</strong> <a href="mailto:support@salonkita.com" class="text-pink-600 font-semibold underline">support@salonkita.com</a></p>
-                            <p><strong>Layanan Pelanggan WhatsApp:</strong> <a href="https://wa.me/6281234567890" target="_blank" class="text-pink-600 font-semibold underline">+62 812-3456-7890</a></p>
+                            <p><strong>Email Tim Privasi & Keamanan:</strong> <a href="mailto:info@skid.co.id" class="text-pink-600 font-semibold underline">info@skid.co.id</a></p>
+                            <p><strong>Layanan Pelanggan WhatsApp:</strong> <a href="https://wa.me/6281264444213" target="_blank" class="text-pink-600 font-semibold underline">+62 812-6444-4213</a></p>
                             <p><strong>Platform:</strong> Salonkita (SKID) - Edukasi Keahlian Kecantikan Profesional Indonesia</p>
                         </div>
                     </div>

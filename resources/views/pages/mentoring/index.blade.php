@@ -85,96 +85,109 @@
 
 
         <!-- Modal Pengajuan Mentoring -->
-        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;"
+        <div x-show="showModal" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+            style="display: none;"
+            @click.self="showModal = false"
             aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                    class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity" @click="showModal = false"
-                    aria-hidden="true"></div>
 
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <!-- Backdrop Overlay -->
+            <div x-show="showModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity"
+                @click="showModal = false"
+                aria-hidden="true"></div>
 
-                <div x-show="showModal" x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-pink-100">
+            <!-- Modal Card (Centered precisely vertically & horizontally) -->
+            <div x-show="showModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                class="relative z-10 w-full max-w-lg bg-white rounded-3xl text-left shadow-2xl transition-all border border-pink-100 overflow-hidden my-auto max-h-[90vh] flex flex-col"
+                @click.stop>
 
-                    <form method="POST" action="{{ route('mentoring.apply', ['entitlement' => $activeEntitlementId]) }}"
-                        id="applyMentorForm">
-                        @csrf
-                        <input type="hidden" name="mentor_id" :value="selectedMentor?.id">
+                <form method="POST" action="{{ route('mentoring.apply', ['entitlement' => $activeEntitlementId]) }}"
+                    id="applyMentorForm" class="flex flex-col max-h-[90vh] overflow-hidden">
+                    @csrf
+                    <input type="hidden" name="mentor_id" :value="selectedMentor?.id">
 
-                        <div class="bg-white px-6 pt-6 pb-4">
-                            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
-                                <div>
-                                    <h3 class="text-lg font-black text-gray-900" id="modal-title">
-                                        Form Permohonan Mentoring
-                                    </h3>
-                                    <p class="text-xs text-gray-500 mt-0.5">Kirimkan rencana topik yang ingin kamu
-                                        konsultasikan.</p>
-                                </div>
-                                <button type="button" @click="showModal = false"
-                                    class="rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
+                    <div class="bg-white px-6 pt-6 pb-4 overflow-y-auto flex-1">
+                        <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-lg font-black text-gray-900" id="modal-title">
+                                    Form Permohonan Mentoring
+                                </h3>
+                                <p class="text-xs text-gray-500 mt-0.5">Kirimkan rencana topik yang ingin kamu
+                                    konsultasikan.</p>
                             </div>
+                            <button type="button" @click="showModal = false"
+                                class="rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
 
-                            <div class="mt-4 space-y-4">
-                                <!-- Selected Mentor Profile Preview -->
+                        <div class="mt-4 space-y-4">
+                            <!-- Selected Mentor Profile Preview -->
+                            <div
+                                class="rounded-2xl bg-gradient-to-r from-pink-50 to-rose-50 p-4 border border-pink-100 flex items-center gap-3.5">
                                 <div
-                                    class="rounded-2xl bg-gradient-to-r from-pink-50 to-rose-50 p-4 border border-pink-100 flex items-center gap-3.5">
-                                    <div
-                                        class="w-12 h-12 rounded-xl bg-pink-600 text-white flex items-center justify-center font-black text-base shadow-xs shrink-0">
-                                        <span
-                                            x-text="selectedMentor?.name ? selectedMentor.name.charAt(0) : 'M'"></span>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-[10px] text-pink-700 uppercase tracking-wider font-extrabold">
-                                            Mentor yang Dipilih</p>
-                                        <p class="font-bold text-gray-900 text-sm truncate"
-                                            x-text="selectedMentor?.name"></p>
-                                        <p class="text-xs text-gray-600 truncate" x-text="selectedMentor?.job_title">
-                                        </p>
-                                    </div>
+                                    class="w-12 h-12 rounded-xl bg-pink-600 text-white flex items-center justify-center font-black text-base shadow-xs shrink-0 overflow-hidden">
+                                    <template x-if="selectedMentor?.avatar">
+                                        <img :src="selectedMentor.avatar" :alt="selectedMentor.name" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!selectedMentor?.avatar">
+                                        <span x-text="selectedMentor?.name ? selectedMentor.name.charAt(0) : 'M'"></span>
+                                    </template>
                                 </div>
-
-                                <div>
-                                    <label for="student_notes" class="block text-xs font-bold text-gray-700 mb-1.5">
-                                        Topik / Catatan untuk Mentor <span
-                                            class="text-[11px] text-gray-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <textarea id="student_notes" name="student_notes" rows="4"
-                                        placeholder="Contoh: Halo Kak, saya ingin konsultasi mengenai teknik blending foundation pada kulit bertekstur dan review tugas riasan saya..."
-                                        class="w-full rounded-2xl border border-gray-300 p-3.5 text-xs focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-hidden leading-relaxed"></textarea>
-                                    <p class="text-[11px] text-gray-400 mt-1.5 leading-normal">
-                                        💡 Memberikan catatan yang jelas membantu mentor menyiapkan materi bimbingan
-                                        yang tepat untukmu.
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-[10px] text-pink-700 uppercase tracking-wider font-extrabold">
+                                        Mentor yang Dipilih</p>
+                                    <p class="font-bold text-gray-900 text-sm truncate"
+                                        x-text="selectedMentor?.name"></p>
+                                    <p class="text-xs text-gray-600 truncate" x-text="selectedMentor?.job_title">
                                     </p>
                                 </div>
                             </div>
-                        </div>
 
-                        <div
-                            class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 border-t border-gray-100">
-                            <button type="button" @click="showModal = false"
-                                class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 transition">
-                                Batal
-                            </button>
-                            <button type="submit"
-                                class="w-full sm:w-auto inline-flex justify-center rounded-xl bg-pink-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-pink-700 transition">
-                                Kirim Permohonan
-                            </button>
+                            <div>
+                                <label for="student_notes" class="block text-xs font-bold text-gray-700 mb-1.5">
+                                    Topik / Catatan untuk Mentor <span
+                                        class="text-[11px] text-gray-400 font-normal">(Opsional)</span>
+                                </label>
+                                <textarea id="student_notes" name="student_notes" rows="4"
+                                    placeholder="Contoh: Halo Kak, saya ingin konsultasi mengenai teknik blending foundation pada kulit bertekstur dan review tugas riasan saya..."
+                                    class="w-full rounded-2xl border border-gray-300 p-3.5 text-xs focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-hidden leading-relaxed"></textarea>
+                                <p class="text-[11px] text-gray-400 mt-1.5 leading-normal">
+                                    💡 Memberikan catatan yang jelas membantu mentor menyiapkan materi bimbingan
+                                    yang tepat untukmu.
+                                </p>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <div
+                        class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 border-t border-gray-100 shrink-0">
+                        <button type="button" @click="showModal = false"
+                            class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 transition cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="w-full sm:w-auto inline-flex justify-center rounded-xl bg-pink-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-pink-700 transition cursor-pointer">
+                            Kirim Permohonan
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
