@@ -85,12 +85,6 @@ class MentorAvailabilitySlotResource extends Resource
                             ])
                             ->default(MentorAvailabilitySlot::STATUS_AVAILABLE)
                             ->required(),
-
-                        Select::make('mentor_availability_template_id')
-                            ->label('Berdasarkan Pola Rutin')
-                            ->relationship('template', 'id', fn (Builder $query) => $query->where('mentor_id', Auth::id()))
-                            ->placeholder('Slot manual (tanpa pola)')
-                            ->nullable(),
                     ])
                     ->columnSpanFull(),
             ]);
