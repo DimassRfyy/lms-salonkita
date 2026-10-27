@@ -343,20 +343,6 @@
             content.classList.toggle('hidden');
             svg.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
         }
-
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function (event) {
-            const navbar = document.querySelector('nav');
-            if (!navbar.contains(event.target)) {
-                const menu = document.getElementById('mobileMenu');
-                menu.classList.add('hidden');
-            }
-        });
     </script>
 
     <x-footer />
